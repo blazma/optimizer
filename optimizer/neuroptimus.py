@@ -27,8 +27,8 @@ def main(parameters):
 		elif o=="-c":
 			try:
 				import cmd_line
-			except:
-				sys.exit("Cannot find command line file!")
+			except Exception as e:
+				sys.exit(e)
 			try:
 				cmd_line.main(a)
 				sys.exit()

@@ -23,7 +23,7 @@ import multiprocessing
 from math import sqrt
 from optionHandler import optionHandler
 import Core
-import pygmo as pg
+#import pygmo as pg
 from scipy import optimize, array, ndarray
 from scipy import dot, exp, log, sqrt, floor, ones, randn
 
@@ -237,9 +237,16 @@ class InspyredAlgorithmBasis(baseOptimizer):
 			formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 			file_handler.setFormatter(formatter)
 			logger.addHandler(file_handler)
-			self.kwargs={k: v for k, v in self.kwargs.items() if v is not None}
+			self.kwargs={k: v for k, v in self.kwargs.items() if v!='None' and v}
+			print(self.kwargs)
 			self.final_pop = self.evo_strat.evolve(**self.kwargs)
-
+			self.algo_param_dict={}
+			for k,v in self.evo_strat._kwargs.items():
+				try:
+					self.algo_param_dict[k]=float(v)
+				except:
+					""
+			[self.algo_param_dict.pop(x) for x in ['mp_nprocs', 'max_generations', 'num_params']]
 			if hasattr(self.evo_strat, "archive"):
 				self.final_archive = self.evo_strat.archive
 	

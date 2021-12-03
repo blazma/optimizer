@@ -967,6 +967,7 @@ class fF(object):
         :return: the ``list`` of fitness values corresponding to the parameter sets
 
         """
+        
         self.model_trace = []
         self.fitnes = []
         features = self.option.feats

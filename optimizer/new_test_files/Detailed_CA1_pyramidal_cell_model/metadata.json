@@ -1,0 +1,346 @@
+{
+    "amplitudes": {
+        "-0.25": [
+            {
+                "Feature": "steady_state_voltage",
+                "Mean": -64.1491,
+                "Std": 0.6187
+            },
+            {
+                "Feature": "voltage_base",
+                "Mean": -64.4942,
+                "Std": 0.4974
+            },
+            {
+                "Feature": "voltage_deflection",
+                "Mean": -13.057,
+                "Std": 2.0899
+            },
+            {
+                "Feature": "voltage_deflection_begin",
+                "Mean": -14.5082,
+                "Std": 2.6615
+            },
+            {
+                "Feature": "sag_amplitude",
+                "Mean": 3.1869,
+                "Std": 0.681
+            },
+            {
+                "Feature": "sag_ratio1",
+                "Mean": 0.1969,
+                "Std": 0.0297
+            }
+        ],
+        "0.05": [
+            {
+                "Feature": "Spikecount",
+                "Mean": 0.0,
+                "Std": 0.001
+            },
+            {
+                "Feature": "inv_first_ISI",
+                "Mean": 0.0,
+                "Std": 0.001
+            },
+            {
+                "Feature": "inv_last_ISI",
+                "Mean": 0.0,
+                "Std": 0.001
+            },
+            {
+                "Feature": "inv_time_to_first_spike",
+                "Mean": 0.0,
+                "Std": 0.001
+            },
+            {
+                "Feature": "steady_state_voltage",
+                "Mean": -65.1468,
+                "Std": 0.852
+            },
+            {
+                "Feature": "voltage_base",
+                "Mean": -65.1268,
+                "Std": 0.8427
+            }
+        ],
+        "0.1": [
+            {
+                "Feature": "Spikecount",
+                "Mean": 1.4,
+                "Std": 1.1235
+            },
+            {
+                "Feature": "inv_first_ISI",
+                "Mean": 9.0054,
+                "Std": 13.6081
+            },
+            {
+                "Feature": "inv_last_ISI",
+                "Mean": 7.0289,
+                "Std": 9.6911
+            },
+            {
+                "Feature": "inv_time_to_first_spike",
+                "Mean": 5.9281,
+                "Std": 3.9002
+            },
+            {
+                "Feature": "steady_state_voltage",
+                "Mean": -64.9589,
+                "Std": 1.0148
+            },
+            {
+                "Feature": "voltage_base",
+                "Mean": -65.071,
+                "Std": 0.888
+            }
+        ],
+        "0.15": [
+            {
+                "Feature": "Spikecount",
+                "Mean": 6.0667,
+                "Std": 1.902
+            },
+            {
+                "Feature": "inv_first_ISI",
+                "Mean": 41.3156,
+                "Std": 21.6692
+            },
+            {
+                "Feature": "inv_last_ISI",
+                "Mean": 19.9628,
+                "Std": 7.4057
+            },
+            {
+                "Feature": "inv_time_to_first_spike",
+                "Mean": 31.7221,
+                "Std": 3.1874
+            },
+            {
+                "Feature": "steady_state_voltage",
+                "Mean": -64.8553,
+                "Std": 0.9534
+            },
+            {
+                "Feature": "voltage_base",
+                "Mean": -65.0453,
+                "Std": 0.9041
+            },
+            {
+                "Feature": "AHP_depth_abs",
+                "Mean": -52.7415,
+                "Std": 1.4732
+            },
+            {
+                "Feature": "AHP_time_from_peak",
+                "Mean": 4.2597,
+                "Std": 1.5602
+            },
+            {
+                "Feature": "AP2_amp",
+                "Mean": 84.7819,
+                "Std": 4.2673
+            },
+            {
+                "Feature": "AP_amplitude",
+                "Mean": 84.4446,
+                "Std": 4.5457
+            },
+            {
+                "Feature": "AP_begin_voltage",
+                "Mean": -51.1295,
+                "Std": 1.9676
+            },
+            {
+                "Feature": "AP_duration_half_width",
+                "Mean": 1.2266,
+                "Std": 0.0957
+            },
+            {
+                "Feature": "AP_fall_time",
+                "Mean": 1.8744,
+                "Std": 0.1541
+            },
+            {
+                "Feature": "AP_rise_time",
+                "Mean": 0.6474,
+                "Std": 0.0468
+            },
+            {
+                "Feature": "APlast_amp",
+                "Mean": 82.8837,
+                "Std": 5.0409
+            },
+            {
+                "Feature": "time_to_last_spike",
+                "Mean": 252.9133,
+                "Std": 18.9666
+            }
+        ],
+        "0.2": [
+            {
+                "Feature": "Spikecount",
+                "Mean": 9.1333,
+                "Std": 1.8809
+            },
+            {
+                "Feature": "inv_first_ISI",
+                "Mean": 71.3776,
+                "Std": 23.805
+            },
+            {
+                "Feature": "inv_last_ISI",
+                "Mean": 25.2047,
+                "Std": 6.1203
+            },
+            {
+                "Feature": "inv_time_to_first_spike",
+                "Mean": 49.0358,
+                "Std": 8.501
+            },
+            {
+                "Feature": "steady_state_voltage",
+                "Mean": -65.3233,
+                "Std": 1.1019
+            },
+            {
+                "Feature": "voltage_base",
+                "Mean": -65.1791,
+                "Std": 0.9649
+            },
+            {
+                "Feature": "AHP_depth_abs",
+                "Mean": -51.7135,
+                "Std": 1.4109
+            },
+            {
+                "Feature": "AHP_time_from_peak",
+                "Mean": 5.131,
+                "Std": 1.6528
+            },
+            {
+                "Feature": "AP2_amp",
+                "Mean": 81.7932,
+                "Std": 4.7442
+            },
+            {
+                "Feature": "AP_amplitude",
+                "Mean": 81.7908,
+                "Std": 4.5966
+            },
+            {
+                "Feature": "AP_begin_voltage",
+                "Mean": -50.1447,
+                "Std": 1.9673
+            },
+            {
+                "Feature": "AP_duration_half_width",
+                "Mean": 1.2543,
+                "Std": 0.1086
+            },
+            {
+                "Feature": "AP_fall_time",
+                "Mean": 1.8766,
+                "Std": 0.2425
+            },
+            {
+                "Feature": "AP_rise_time",
+                "Mean": 0.6605,
+                "Std": 0.0441
+            },
+            {
+                "Feature": "APlast_amp",
+                "Mean": 79.6,
+                "Std": 4.8218
+            },
+            {
+                "Feature": "time_to_last_spike",
+                "Mean": 279.4267,
+                "Std": 8.3373
+            }
+        ],
+        "0.25": [
+            {
+                "Feature": "Spikecount",
+                "Mean": 11.3333,
+                "Std": 1.8499
+            },
+            {
+                "Feature": "inv_first_ISI",
+                "Mean": 93.952,
+                "Std": 18.2084
+            },
+            {
+                "Feature": "inv_last_ISI",
+                "Mean": 29.9611,
+                "Std": 5.0591
+            },
+            {
+                "Feature": "inv_time_to_first_spike",
+                "Mean": 68.876,
+                "Std": 13.6468
+            },
+            {
+                "Feature": "steady_state_voltage",
+                "Mean": -65.9655,
+                "Std": 1.117
+            },
+            {
+                "Feature": "voltage_base",
+                "Mean": -65.5785,
+                "Std": 0.9657
+            },
+            {
+                "Feature": "AHP_depth_abs",
+                "Mean": -51.1812,
+                "Std": 1.4175
+            },
+            {
+                "Feature": "AHP_time_from_peak",
+                "Mean": 6.1279,
+                "Std": 1.7497
+            },
+            {
+                "Feature": "AP2_amp",
+                "Mean": 79.2277,
+                "Std": 4.2177
+            },
+            {
+                "Feature": "AP_amplitude",
+                "Mean": 79.7826,
+                "Std": 4.1716
+            },
+            {
+                "Feature": "AP_begin_voltage",
+                "Mean": -49.3692,
+                "Std": 2.0246
+            },
+            {
+                "Feature": "AP_duration_half_width",
+                "Mean": 1.3158,
+                "Std": 0.0863
+            },
+            {
+                "Feature": "AP_fall_time",
+                "Mean": 1.9408,
+                "Std": 0.1885
+            },
+            {
+                "Feature": "AP_rise_time",
+                "Mean": 0.6797,
+                "Std": 0.0507
+            },
+            {
+                "Feature": "APlast_amp",
+                "Mean": 77.5431,
+                "Std": 4.3222
+            },
+            {
+                "Feature": "time_to_last_spike",
+                "Mean": 282.9,
+                "Std": 4.1353
+            }
+        ]
+    }
+}

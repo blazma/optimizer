@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <body>
-<p>Thu Jul 22 13:52:26 2021</p>
-<p><span style="text-align:center;">Optimization of <b>hh_pas.hoc</b> based on: /home/mohacsi/work/optimizer/optimizer/new_test_files/hh_pas_surrogate/input_data2.dat</span></p>
+<p>Wed Dec  1 20:57:28 2021</p>
+<p><span style="text-align:center;">Optimization of <b>hh_pas.hoc</b> based on: /home/mohacsi/Asztal/optimizer/optimizer/new_test_files/hh_pas_surrogate/input_data2.dat</span></p>
 <center><p><span style="text-decoration:underline;font-size:200%;">Results</span></p></center>
 <table border="1" align="center">
 <th>Parameter Name</th>
@@ -11,54 +11,54 @@
 <th>Optimum</th>
 <tr>
 <td>soma 0 hh gnabar_hh</td>
-<td>0.001</td>
+<td>0.01</td>
 <td>1.0</td>
-<td>0.25268539379665783</td>
+<td>0.9118662028246329</td>
 </tr>
 <tr>
 <td>soma 0 hh gkbar_hh</td>
-<td>0.001</td>
+<td>0.01</td>
 <td>1.0</td>
-<td>0.07734175060634943</td>
+<td>0.9398763073901264</td>
 </tr>
 <tr>
 <td>soma 0 hh gl_hh</td>
 <td>1e-05</td>
 <td>0.001</td>
-<td>0.0009434245569059634</td>
+<td>0.0005864052973283597</td>
 </tr>
 </table>
-<center><p><b>Fitness: </b><b>[0.022361698397678192]</b></p></center>
+<center><p><b>Fitness: </b><b>[0.7449834648484646]</b></p></center>
 <p align="center"><img style="border:none;" src="result_trace.png" ></p>
-<p><b>seed =</b> 1234</p>
-<p><b>evo_strat =</b> PSOG - Pygmo</p>
-<p><b>Size of Population: =</b> 100.0</p>
-<p><b>Number of Islands: =</b> 1</p>
-<p><b>Number of Generations: =</b> 100.0</p>
-<p><b>Force bounds: =</b> False</p>
-<p><b>Mutation Rate: =</b> None</p>
-<p><b>Crossover Rate: =</b> None</p>
-<p><b>Cooling Rate: =</b> None</p>
-<p><b>Mean of Gaussian: =</b> None</p>
-<p><b>Std. Deviation of Gaussian: =</b> None</p>
-<p><b>Initial Temperature: =</b> None</p>
-<p><b>Step Size: =</b> None</p>
-<p><b>Temperature: =</b> None</p>
-<p><b>Update Frequency: =</b> None</p>
-<p><b>Number of Iterations: =</b> None</p>
-<p><b>Number of Repetition: =</b> None</p>
-<p><b>Error Tolerance for x: =</b> None</p>
-<p><b>Error Tolerance for f: =</b> None</p>
+<p><b>seed =</b> 1234.0</p>
+<p><b>evo_strat =</b> PSO - Inspyred</p>
+<p><b>Size of Population =</b> 2.0</p>
+<p><b>Number of Islands =</b> 1</p>
+<p><b>Number of Generations =</b> 2.0</p>
+<p><b>Force bounds =</b> True</p>
+<p><b>Mutation Rate =</b> 0.25</p>
+<p><b>Crossover Rate =</b> None</p>
+<p><b>Cooling Rate =</b> None</p>
+<p><b>Mean of Gaussian =</b> None</p>
+<p><b>Std. Deviation of Gaussian =</b> None</p>
+<p><b>Initial Temperature =</b> None</p>
+<p><b>Step Size =</b> None</p>
+<p><b>Temperature =</b> None</p>
+<p><b>Update Frequency =</b> None</p>
+<p><b>Number of Iterations =</b> None</p>
+<p><b>Number of Repetition =</b> None</p>
+<p><b>Error Tolerance for x =</b> None</p>
+<p><b>Error Tolerance for f =</b> None</p>
 <p><b>num_params =</b> 3</p>
-<p><b>boundaries =</b> [[0.001, 0.001, 1e-05], [1.0, 1.0, 0.001]]</p>
+<p><b>boundaries =</b> [[0.01, 0.01, 1e-05], [1.0, 1.0, 0.001]]</p>
 <p><b>starting_points =</b> None</p>
-<p><b>Inertia: =</b> 0.5</p>
-<p><b>Cognitive Rate: =</b> 2.1</p>
-<p><b>Social Rate: =</b> 2.1</p>
-<p><b>Neighborhood Size: =</b> None</p>
-<p><b>Number of CPU: =</b> 10.0</p>
-<p><b>feats =</b> MSE</p>
-<p><b>weights =</b> [1.0]</p>
+<p><b>Inertia =</b> None</p>
+<p><b>Cognitive Rate =</b> None</p>
+<p><b>Social Rate =</b> None</p>
+<p><b>Neighborhood Size =</b> None</p>
+<p><b>Number of CPU =</b> 2</p>
+<p><b>feats =</b> MSE (excl. spikes), Spike count, AP amplitude, AP width</p>
+<p><b>weights =</b> [0.25, 0.25, 0.25, 0.25]</p>
 <p><b>user function =</b></p>
 </body>
 </html>
@@ -70,10 +70,31 @@
 <th>Weighted Value</th>
 <th>Weighted Sum</th>
 <tr>
-<td>MSE</td>
-<td>0.022361698397678192</td>
-<td>1.0</td>
-<td>0.022361698397678192</td>
+<td>MSE (excl. spikes)</td>
+<td>0.008505287965286858</td>
+<td>0.25</td>
+<td>0.0021263219913217144</td>
+<td></td>
+</tr>
+<tr>
+<td>Spike count</td>
+<td>0.9714285714285714</td>
+<td>0.25</td>
+<td>0.24285714285714285</td>
+<td></td>
+</tr>
+<tr>
+<td>AP amplitude</td>
+<td>1</td>
+<td>0.25</td>
+<td>0.25</td>
+<td></td>
+</tr>
+<tr>
+<td>AP width</td>
+<td>1</td>
+<td>0.25</td>
+<td>0.25</td>
 <td></td>
 </tr>
 <tr>
@@ -81,7 +102,7 @@
 <td></td>
 <td></td>
 <td></td>
-<td>0.022361698397678192</td>
+<td>0.7449834648484646</td>
 </tr>
 </table>
 <table border="1" align="center">
@@ -90,9 +111,27 @@
 <th>Weight</th>
 <th>Weighted Value</th>
 <tr>
-<td>MSE</td>
-<td>0.022361698397678192</td>
-<td>1.0</td>
-<td>0.022361698397678192</td>
+<td>MSE (excl. spikes)</td>
+<td>0.008505287965286858</td>
+<td>0.25</td>
+<td>0.0021263219913217144</td>
+</tr>
+<tr>
+<td>Spike count</td>
+<td>0.9714285714285714</td>
+<td>0.25</td>
+<td>0.24285714285714285</td>
+</tr>
+<tr>
+<td>AP amplitude</td>
+<td>1</td>
+<td>0.25</td>
+<td>0.25</td>
+</tr>
+<tr>
+<td>AP width</td>
+<td>1</td>
+<td>0.25</td>
+<td>0.25</td>
 </tr>
 </table>

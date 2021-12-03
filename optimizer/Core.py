@@ -6,6 +6,7 @@ from scipy.interpolate import interp1d
 from scipy import linspace
 import time
 import numpy
+import json
 
 class coreModul():
 	"""
@@ -494,6 +495,22 @@ class coreModul():
 		self.error_comps=[]
 		self.last_fitness=self.optimizer.fit_obj.combineFeatures([self.optimal_params],delete_model=False)
 		self.renormed_params=self.optimizer.fit_obj.ReNormalize(self.optimal_params)
+		self.option_handler.input_dir
+		if self.option_handler.type[-1]=='features':
+			with open(self.option_handler.input_dir, 'r') as outfile:
+				json_var=json.load(outfile)
+				amp_dict={amp_vals:[] for amp_vals in json_var["stimuli"]["amplitudes"]}
+				print(amp_dict)
+				for x,y in json_var["features"].items():
+					for t,p in y.items():
+						if ('stimAmp') in t:
+							amp=float(t.replace('stimAmp_',''))
+							pt=p
+							pt["Feature"]=x
+							amp_dict[amp].append(pt)
+			print(amp_dict)
+			with open('metadata.json', 'w') as outfile:
+				json.dump({"amplitudes":amp_dict}, outfile,sort_keys=True, indent=4)
 		#calculate the error components
 		if self.option_handler.type[-1]!= 'features':
 			k_range=self.data_handler.number_of_traces()
@@ -512,16 +529,17 @@ class coreModul():
 		if isinstance(self.optimizer.fit_obj.model, externalHandler):
 			self.optimizer.fit_obj.model.record[0]=[]
 
-		name=self.option_handler.model_path.split("/")[-1].split(".")[0]
-		f_handler=open(name+"_results.html","w")
+		self.name=self.option_handler.model_path.split("/")[-1].split(".")[0]
+		f_handler=open(self.name+"_results.html","w")
 		tmp_str="<!DOCTYPE html>\n<html>\n<body>\n"
 		tmp_str+=self.htmlStr(str(time.asctime( time.localtime(time.time()) )))+"\n"
-		tmp_str+="<p>"+self.htmlStyle("Optimization of <b>"+name+".hoc</b> based on: "+self.option_handler.input_dir,self.htmlAlign("center"))+"</p>\n"
+		tmp_str+="<p>"+self.htmlStyle("Optimization of <b>"+self.name+".hoc</b> based on: "+self.option_handler.input_dir,self.htmlAlign("center"))+"</p>\n"
 		tmp_list=[]
 		#tmp_fit=self.optimizer.fit_obj.ReNormalize(self.optimizer.final_pop[0].candidate[0:len(self.option_handler.adjusted_params)])
 		tmp_fit=self.renormed_params
 		for name,mmin,mmax,f in zip(self.option_handler.GetObjTOOpt(),self.option_handler.boundaries[0],self.option_handler.boundaries[1],tmp_fit):
 			tmp_list.append([str(name),str(mmin),str(mmax),str(f)])
+		param_list=tmp_list
 		tmp_str+="<center><p>"+self.htmlStyle("Results",self.htmlUnderline(),self.htmlResize(200))+"</p></center>\n"
 		tmp_str+=self.htmlTable(["Parameter Name","Minimum","Maximum","Optimum"], tmp_list)+"\n"
 		tmp_str+="<center><p>"+self.htmlStrBold("Fitness: ")
@@ -559,7 +577,7 @@ class coreModul():
 					tmp_w_sum +=c[0]*c[2]
 			tmp_list.append(["","","","",tmp_w_sum])
 			tmp_w_sum=0
-		#print tmp_list
+		error_comps_list=tmp_list
 		tmp_str+=self.htmlTable(["Name","Value","Weight","Weighted Value","Weighted Sum"], tmp_list)+"\n"
 		#print tmp_str
 		#transpose the error comps
@@ -586,6 +604,21 @@ class coreModul():
 		#print tmp_str
 		f_handler.write(tmp_str)
 		f_handler.close()
+
+		param_dict=[{"name":value[0],"min_boundary":value[1],"max_boundary":value[2],"optimum":value[3]} for value in param_list]
+		error_dict=[{"name":value[0],"value":value[1],"weight":value[2],"weighted_value":value[3]} for value in tmp_list]
+		alg_dict = {str(key).lower().replace(' ','_'):value for key, value in self.option_handler.GetOptimizerOptions().items()}
+		opt_dict = {"final_fitness":self.last_fitness,"renormed_params":self.renormed_params}
+		target_dict = {"data_type":self.option_handler.type[-1],"number_of_traces":k_range,"length_ms":self.data_handler.data.t_length,
+			"sampling_frequency":self.data_handler.data.freq,"stim_delay":self.option_handler.stim_del,
+			"stim_duration":self.option_handler.stim_dur,"file_name":self.option_handler.input_dir.split('/')[-1]}
+		json_var={"model":self.name,"optimization":opt_dict,"parameters":param_dict,"error_function":error_dict, "algorithm":alg_dict,"target_data":target_dict}
+		
+		if self.option_handler.type[-1]=='features':
+			with open(self.option_handler.input_dir, 'r') as outfile:
+				json_var.update({"amplitudes":amp_dict})
+		with open('metadata.json', 'w') as outfile:
+			json.dump(json_var, outfile,sort_keys=True, indent=4)
 
 
 	def callGrid(self,resolution):
