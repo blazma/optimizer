@@ -23,7 +23,7 @@ import multiprocessing
 from math import sqrt
 from optionHandler import optionHandler
 import Core
-#import pygmo as pg
+import pygmo as pg
 from scipy import optimize, array, ndarray
 from scipy import dot, exp, log, sqrt, floor, ones, randn
 

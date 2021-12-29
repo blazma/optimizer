@@ -318,7 +318,7 @@ class coreModul():
 
 				mandatory parameters:
 					* seed
-					* evo_strat
+					* current_algorithm
 					* pop_size
 					* num_params
 					* boundaries
@@ -389,13 +389,15 @@ class coreModul():
 				self.option_handler.run_controll_dt=self.data_handler.data.step
 
 		import re 
-		algo_str=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", self.option_handler.evo_strat).replace("-","_").replace(" ","_"))
-		exec("self.optimizer="+algo_str.upper()+"(self.data_handler,self.option_handler)")
+		self.algo_str=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", self.option_handler.current_algorithm).replace("-","_").replace(" ","_"))
+		exec("self.optimizer="+self.algo_str.upper()+"(self.data_handler,self.option_handler)")
 		
 
 		f_handler=open(self.option_handler.GetFileOption()+"/"+self.option_handler.GetFileOption().split("/")[-1]+"_settings.xml", 'w')
 		f_handler.write(self.option_handler.dump(self.ffun_mapper))
 		f_handler.close()
+		with open(self.option_handler.GetFileOption()+"/"+self.option_handler.GetFileOption().split("/")[-1]+"_settings.json", 'w') as outfile:
+			json.dump(self.option_handler.create_dict_for_json(self.ffun_mapper), outfile,sort_keys=True, indent=4)
 
 		if self.option_handler.type[-1]!= 'features':
 			self.feat_str=", ".join([self.ffun_mapper[x.__name__] for x in self.option_handler.feats])
@@ -409,13 +411,15 @@ class coreModul():
 		except:
 			"no model yet"
 
+
+
 		start_time=time.time()
 		self.optimizer.Optimize()
 		stop_time=time.time()
 
 		self.cands,self.fits = [],[]
 
-		if self.option_handler.evo_strat.split(" ")[-1] == "Bluepyopt":
+		if self.option_handler.current_algorithm.split(" ")[-1] == "Bluepyopt":
 			self.cands=[list(normalize(hof,self.optimizer)) for hof in self.optimizer.hall_of_fame]
 			self.fits=[x.fitness.values for x in self.optimizer.hall_of_fame]
 			popsize=int(self.option_handler.pop_size)
@@ -454,7 +458,7 @@ class coreModul():
 					current_gen=self.allpop[idx*popsize:(idx+1)*popsize]
 					for gen,fit in zip(current_gen,current_fits):
 						out_handler.write(str(int(idx/2+1))+":"+str(gen)+":"+str(fit)+"\n")
-		elif(self.option_handler.evo_strat.split(" ")[-1] == "Pygmo"):
+		elif(self.option_handler.current_algorithm.split(" ")[-1] == "Pygmo"):
 			'''
 			Currently only the best individual with its fitness is passed
 			'''
@@ -462,7 +466,7 @@ class coreModul():
 			self.fits = [self.optimizer.best_fitness]
 			print((self.cands, "CANDS"))
 			print((self.fits, "FITS"))
-		elif(self.option_handler.evo_strat.split(" ")[-1] == "Base"):
+		elif(self.option_handler.current_algorithm.split(" ")[-1] == "Base"):
 			'''
 			Currently only the best individual with its fitness is passed
 			'''
@@ -604,16 +608,20 @@ class coreModul():
 		#print tmp_str
 		f_handler.write(tmp_str)
 		f_handler.close()
+		
+
 
 		param_dict=[{"name":value[0],"min_boundary":value[1],"max_boundary":value[2],"optimum":value[3]} for value in param_list]
-		error_dict=[{"name":value[0],"value":value[1],"weight":value[2],"weighted_value":value[3]} for value in tmp_list]
-		alg_dict = {str(key).lower().replace(' ','_'):value for key, value in self.option_handler.GetOptimizerOptions().items()}
+		error_dict=[{"name":value[0],"value":value[1],"weight":value[2],"weighted_value":value[3]} for value in tmp_list]  
+		alg_dict=self.option_handler.current_algorithm
 		opt_dict = {"final_fitness":self.last_fitness,"renormed_params":self.renormed_params}
 		target_dict = {"data_type":self.option_handler.type[-1],"number_of_traces":k_range,"length_ms":self.data_handler.data.t_length,
 			"sampling_frequency":self.data_handler.data.freq,"stim_delay":self.option_handler.stim_del,
 			"stim_duration":self.option_handler.stim_dur,"file_name":self.option_handler.input_dir.split('/')[-1]}
 		json_var={"model":self.name,"optimization":opt_dict,"parameters":param_dict,"error_function":error_dict, "algorithm":alg_dict,"target_data":target_dict}
 		
+
+	
 		if self.option_handler.type[-1]=='features':
 			with open(self.option_handler.input_dir, 'r') as outfile:
 				json_var.update({"amplitudes":amp_dict})
