@@ -388,9 +388,8 @@ class coreModul():
 			if self.option_handler.run_controll_dt>self.data_handler.data.step:
 				self.option_handler.run_controll_dt=self.data_handler.data.step
 
-		import re 
-		self.algo_str=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", self.option_handler.current_algorithm).replace("-","_").replace(" ","_"))
-		exec("self.optimizer="+self.algo_str.upper()+"(self.data_handler,self.option_handler)")
+		self.option_handler.current_algorithm=self.option_handler.current_algorithm.upper().replace("-","_").replace(" ","")
+		exec("self.optimizer="+self.option_handler.current_algorithm+"(self.data_handler,self.option_handler)")
 		
 
 		f_handler=open(self.option_handler.GetFileOption()+"/"+self.option_handler.GetFileOption().split("/")[-1]+"_settings.xml", 'w')
@@ -410,16 +409,16 @@ class coreModul():
 				del self.model_handler
 		except:
 			"no model yet"
-
-
-
+		print(self.option_handler.current_algorithm)
+		print(self.option_handler.current_algorithm.split("_")[-1])
 		start_time=time.time()
 		self.optimizer.Optimize()
 		stop_time=time.time()
 
 		self.cands,self.fits = [],[]
-
-		if self.option_handler.current_algorithm.split(" ")[-1] == "Bluepyopt":
+		
+		if self.option_handler.current_algorithm.split("_")[-1] == "BLUEPYOPT":
+			print("************Bleupyopt*******")
 			self.cands=[list(normalize(hof,self.optimizer)) for hof in self.optimizer.hall_of_fame]
 			self.fits=[x.fitness.values for x in self.optimizer.hall_of_fame]
 			popsize=int(self.option_handler.pop_size)
@@ -458,28 +457,29 @@ class coreModul():
 					current_gen=self.allpop[idx*popsize:(idx+1)*popsize]
 					for gen,fit in zip(current_gen,current_fits):
 						out_handler.write(str(int(idx/2+1))+":"+str(gen)+":"+str(fit)+"\n")
-		elif(self.option_handler.current_algorithm.split(" ")[-1] == "Pygmo"):
+		elif(self.option_handler.current_algorithm.split("_")[-1] == "PYGMO"):
+			print("************pygmo*******")
 			'''
 			Currently only the best individual with its fitness is passed
 			'''
 			self.cands = [self.optimizer.best]
 			self.fits = [self.optimizer.best_fitness]
-			print((self.cands, "CANDS"))
-			print((self.fits, "FITS"))
-		elif(self.option_handler.current_algorithm.split(" ")[-1] == "Base"):
+
+		elif(self.option_handler.current_algorithm.split("_")[-1] == "INSPYRED"):
+			print("************inspy*******")
+			self.optimizer.final_pop.sort(reverse=True)
+			for i in range(len(self.optimizer.final_pop)):
+				self.cands.append(self.optimizer.final_pop[i].candidate[0:len(self.option_handler.adjusted_params)])
+				self.fits.append(self.optimizer.final_pop[i].fitness)
+		else:
+			print("************else*******")
 			'''
 			Currently only the best individual with its fitness is passed
 			'''
 			self.cands = [x.candidate[0] for x in reversed(self.optimizer.final_pop)]
 			self.fits = [x.fitness[0] for x in reversed(self.optimizer.final_pop)]
-			print((self.cands[0], "CANDS"))
-			print((self.fits[0], "FITS"))
-		else:
-			self.optimizer.final_pop.sort(reverse=True)
-			for i in range(len(self.optimizer.final_pop)):
-				self.cands.append(self.optimizer.final_pop[i].candidate[0:len(self.option_handler.adjusted_params)])
-				self.fits.append(self.optimizer.final_pop[i].fitness)
-
+		print((self.cands[0], "CANDS"))
+		print((self.fits, "FITS"))
 		print(("Optimization lasted for ", stop_time-start_time, " s"))	
 		self.optimal_params=self.cands[0]
 		
@@ -498,13 +498,13 @@ class coreModul():
 		self.final_result=[]
 		self.error_comps=[]
 		self.last_fitness=self.optimizer.fit_obj.combineFeatures([self.optimal_params],delete_model=False)
+		print(self.last_fitness)
 		self.renormed_params=self.optimizer.fit_obj.ReNormalize(self.optimal_params)
 		self.option_handler.input_dir
 		if self.option_handler.type[-1]=='features':
 			with open(self.option_handler.input_dir, 'r') as outfile:
 				json_var=json.load(outfile)
 				amp_dict={amp_vals:[] for amp_vals in json_var["stimuli"]["amplitudes"]}
-				print(amp_dict)
 				for x,y in json_var["features"].items():
 					for t,p in y.items():
 						if ('stimAmp') in t:
@@ -512,7 +512,6 @@ class coreModul():
 							pt=p
 							pt["Feature"]=x
 							amp_dict[amp].append(pt)
-			print(amp_dict)
 			with open('metadata.json', 'w') as outfile:
 				json.dump({"amplitudes":amp_dict}, outfile,sort_keys=True, indent=4)
 		#calculate the error components

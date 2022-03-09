@@ -208,7 +208,6 @@ class optionHandler(object):
 
 		root=e("settings")
 		for m in self.class_content:
-			print(m)
 			child=se(root,m)
 			try:
 				if m=="feats":
@@ -222,7 +221,7 @@ class optionHandler(object):
 						child.text="\"\""
 			except TypeError:
 				child.text="None"
-	
+		
 		return prettify(root)
 
 

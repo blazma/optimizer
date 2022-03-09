@@ -1,40 +1,40 @@
 {
-    "algorithm": "CMAES - Pygmo",
+    "algorithm": "PSO_INSPYRED",
     "error_function": [
         {
             "name": "MSE (excl. spikes)",
-            "value": "0.003810765864950803",
+            "value": "0.005174637999666578",
             "weight": "0.25",
-            "weighted_value": "0.0009526914662377008"
+            "weighted_value": "0.0012936594999166445"
         },
         {
             "name": "Spike count",
-            "value": "0.9166666666666666",
+            "value": "0.0",
             "weight": "0.25",
-            "weighted_value": "0.22916666666666666"
+            "weighted_value": "0.0"
         },
         {
             "name": "AP amplitude",
-            "value": "0.0008237117072662009",
+            "value": "0.008389696177316846",
             "weight": "0.25",
-            "weighted_value": "0.00020592792681655022"
+            "weighted_value": "0.0020974240443292114"
         },
         {
             "name": "AP width",
-            "value": "0.004074241738343141",
+            "value": "0.012752811987461308",
             "weight": "0.25",
-            "weighted_value": "0.0010185604345857853"
+            "weighted_value": "0.003188202996865327"
         }
     ],
     "model": "hh_pas",
     "optimization": {
         "final_fitness": [
-            0.2313438464943067
+            0.006579286541111183
         ],
         "renormed_params": [
-            0.2594179578165077,
-            0.0856539870873733,
-            0.0009434245569059634
+            0.22010934154153544,
+            0.05355933404258555,
+            0.001
         ]
     },
     "parameters": [
@@ -42,19 +42,19 @@
             "max_boundary": "1.0",
             "min_boundary": "0.01",
             "name": "soma 0 hh gnabar_hh",
-            "optimum": "0.2594179578165077"
+            "optimum": "0.22010934154153544"
         },
         {
             "max_boundary": "1.0",
             "min_boundary": "0.01",
             "name": "soma 0 hh gkbar_hh",
-            "optimum": "0.0856539870873733"
+            "optimum": "0.05355933404258555"
         },
         {
             "max_boundary": "0.001",
             "min_boundary": "1e-05",
             "name": "soma 0 hh gl_hh",
-            "optimum": "0.0009434245569059634"
+            "optimum": "0.001"
         }
     ],
     "target_data": {

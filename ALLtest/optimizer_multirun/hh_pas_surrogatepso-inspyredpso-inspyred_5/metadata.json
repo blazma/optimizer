@@ -1,0 +1,69 @@
+{
+    "algorithm": "PSO_INSPYRED",
+    "error_function": [
+        {
+            "name": "MSE (excl. spikes)",
+            "value": "6.494988925808877e-08",
+            "weight": "0.25",
+            "weighted_value": "1.6237472314522193e-08"
+        },
+        {
+            "name": "Spike count",
+            "value": "0.0",
+            "weight": "0.25",
+            "weighted_value": "0.0"
+        },
+        {
+            "name": "AP amplitude",
+            "value": "5.477739638938032e-08",
+            "weight": "0.25",
+            "weighted_value": "1.369434909734508e-08"
+        },
+        {
+            "name": "AP width",
+            "value": "0.0",
+            "weight": "0.25",
+            "weighted_value": "0.0"
+        }
+    ],
+    "model": "hh_pas",
+    "optimization": {
+        "final_fitness": [
+            2.9931821411867275e-08
+        ],
+        "renormed_params": [
+            0.12011303456186966,
+            0.03601233045832827,
+            0.0003011721779509972
+        ]
+    },
+    "parameters": [
+        {
+            "max_boundary": "1.0",
+            "min_boundary": "0.01",
+            "name": "soma 0 hh gnabar_hh",
+            "optimum": "0.12011303456186966"
+        },
+        {
+            "max_boundary": "1.0",
+            "min_boundary": "0.01",
+            "name": "soma 0 hh gkbar_hh",
+            "optimum": "0.03601233045832827"
+        },
+        {
+            "max_boundary": "0.001",
+            "min_boundary": "1e-05",
+            "name": "soma 0 hh gl_hh",
+            "optimum": "0.0003011721779509972"
+        }
+    ],
+    "target_data": {
+        "data_type": "voltage",
+        "file_name": "input_data2.dat",
+        "length_ms": 1000,
+        "number_of_traces": 1,
+        "sampling_frequency": 40000,
+        "stim_delay": 200.0,
+        "stim_duration": 500.0
+    }
+}

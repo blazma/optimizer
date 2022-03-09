@@ -1056,7 +1056,6 @@ class fF(object):
         if(self.option.simulator == 'Neuron') and delete_model:
             "Deletes the reference of the instance"
             del self.model
-
         return self.fitnes
 
     def getErrorComponents(self, index_of_trace, model_output):
