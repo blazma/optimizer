@@ -3,7 +3,7 @@ matplotlib.use('Agg')
 import sys
 import Core
 import xml.etree.ElementTree as ET
-
+import json
 matplotlib.interactive(False)
 from pylab import *
 ioff()
@@ -22,18 +22,19 @@ def main(fname, param=None):
     """
     try:
         f = open(fname, "r")
+        json_data = json.load(f)
     except IOError as ioe:
         print(ioe)
         sys.exit("File not found!\n")
-    tree = ET.parse(fname)
+    """tree = ET.parse(fname)
     root = tree.getroot()
     if root.tag != "settings":
-        sys.exit("Missing \"settings\" tag in xml!")
-
+        sys.exit("Missing \"settings\" tag in xml!")"""
+    
     core = Core.coreModul()
     if param != None:
         core.option_handler.output_level = param.lstrip("-v_level=")
-    core.option_handler.read_all(root)
+    core.option_handler.read_all_json(json_data['attributes'])
     core.Print()
     kwargs = {"file" : core.option_handler.GetFileOption(),
             "input": core.option_handler.GetInputOptions()}

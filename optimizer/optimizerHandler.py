@@ -124,6 +124,41 @@ def SetBoundaries(bounds):
 		"""
 		return ec.Bounder([0]*len(bounds[0]),[1]*len(bounds[1]))
 
+
+class SINGLERUN():
+	"""
+	An abstract base class to implement an optimization process.
+	"""
+	def __init__(self, reader_obj,  option_obj):
+		self.fit_obj = fF(reader_obj,  option_obj)
+		self.SetFFun(option_obj)
+		self.directory = option_obj.base_dir
+
+		self.num_params = option_obj.num_params
+		self.min_max=option_obj.boundaries
+		self.bounder=SetBoundaries(option_obj.boundaries)
+
+	def SetFFun(self,option_obj):
+		"""
+		Sets the combination function and converts the name of the fitness functions into function instances.
+
+		:param option_obj: an ``optionHandler`` instance
+
+		"""
+
+		try:
+			self.ffun=self.fit_obj.fun_dict["Combinations"]
+		except KeyError:
+			sys.exit("Unknown fitness function!")
+		
+		if option_obj.type[-1]!='features':
+			try:
+				option_obj.feats=[self.fit_obj.calc_dict[x] for x in option_obj.feats]
+			except KeyError:
+				print("error with fitness function: ",option_obj.feats," not in: ",list(self.fit_obj.calc_dict.keys()))
+
+	
+
 class oldBaseOptimizer():
 	"""
 	An abstract base class to implement an optimization process.
@@ -150,6 +185,8 @@ class oldBaseOptimizer():
 				option_obj.feats=[self.fit_obj.calc_dict[x] for x in option_obj.feats]
 			except KeyError:
 				print("error with fitness function: ",option_obj.feats," not in: ",list(self.fit_obj.calc_dict.keys()))
+
+
 
 # to generate a new set of parameters
 class baseOptimizer():

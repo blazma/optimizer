@@ -4,7 +4,7 @@ from xml.etree.ElementTree import Element as e, SubElement as se
 from xml.etree import ElementTree
 from xml.dom import minidom
 import pickle as pickle
-
+import re
 import collections
 
 class OrderedSet(collections.MutableSet):
@@ -185,26 +185,16 @@ class optionHandler(object):
 		post=dir(self)
 		self.class_content=list(OrderedSet(post)-OrderedSet(prev))
 
-#    def dump(self):
-#        target=""
-#        for m in self.class_content:
-#            #error here:TypeError: cannot concatenate 'str' and 'NoneType' objects
-#            try:
-#                target+=m+" = "+self.__getattribute__(m).__repr__()+"\n"
-#            except TypeError:
-#                target+=m+" = "+"None"+"\n"
-#
-#        return target
 
-	def dump(self,f_mapper):
-		"""
+	"""def dump(self,f_mapper):
+		
 		Dumps the content of the class into a string.
 
 		:param f_mapper: a ``dictionary`` that maps the fitness function objects to their names (used in the GUI)
 
 		:return: the content of the class as ``string``
 
-		"""
+		
 
 		root=e("settings")
 		for m in self.class_content:
@@ -222,7 +212,7 @@ class optionHandler(object):
 			except TypeError:
 				child.text="None"
 		
-		return prettify(root)
+		return prettify(root)"""
 
 
 	def create_dict_for_json(self,f_mapper):
@@ -230,11 +220,11 @@ class optionHandler(object):
 		for m in self.class_content:
 			if m=="feats":
 				if self.type[-1]!='features':
-					json_dict[m]=", ".join([f_mapper[x.__name__] for x in self.__getattribute__(m)])
+					json_dict[m]=[f_mapper[x.__name__] for x in self.__getattribute__(m)]
 				else:
-					json_dict[m]=", ".join(self.feats)
+					json_dict[m]=self.feats
 			else:
-				json_dict[m]=str(self.__getattribute__(m).__str__())
+				json_dict[m]=self.__getattribute__(m)
 		
 		algorithm_parameters_dict={"GA_Inspyred":{"num_selected":self.pop_size,"crossover_rate":1,"num_crossover_points":1,"mutation_rate":1,"num_elites":0},
 		"CES_Inspyred":{"tau":None,"tau_prime":None,"epsilon":0.00001},
@@ -259,6 +249,19 @@ class optionHandler(object):
 		}
 		
 		return {"selectable_algorithms":algorithm_parameters_dict,"attributes":json_dict}
+
+
+	def read_all_json(self,settings):
+		for key, value in settings.items():
+			print((key,value))
+			self.__setattr__(key,value)
+		print(self.current_algorithm)
+		print(type(self.current_algorithm))
+		if isinstance(self.current_algorithm, str):
+			self.algorithm_name=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", self.current_algorithm).replace("-","_").replace(" ","_")).upper()
+		else:
+			self.algorithm_name=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", list(self.current_algorithm.keys())[0]).replace("-","_").replace(" ","_")).upper()
+			self.algorithm_parameters=list(self.current_algorithm.values())[0]
 
 	def read_all(self,root):
 		"""

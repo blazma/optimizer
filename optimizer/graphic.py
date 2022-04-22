@@ -438,6 +438,9 @@ class Ui_Neuroptimus(object):
         self.pushButton_31 = QtWidgets.QPushButton(self.runtab)
         self.pushButton_31.setGeometry(QtCore.QRect(110, 460, 111, 22))
         self.pushButton_31.setObjectName("pushButton_31")
+        self.pushButton_33 = QtWidgets.QPushButton(self.runtab)
+        self.pushButton_33.setGeometry(QtCore.QRect(240, 460, 111, 22))
+        self.pushButton_33.setObjectName("pushButton_33")
         self.pushButton_32 = QtWidgets.QPushButton(self.runtab)
         self.pushButton_32.setGeometry(QtCore.QRect(10, 460, 80, 22))
         self.pushButton_32.setObjectName("pushButton_32")
@@ -715,6 +718,8 @@ class Ui_Neuroptimus(object):
         self.pushButton_30.clicked.connect(self.runsim)
         self.pushButton_31.setText(_translate("Neuroptimus", "Starting points"))
         self.pushButton_31.clicked.connect(self.startingpoints)
+        self.pushButton_33.setText(_translate("Neuroptimus", "Evaluate"))
+        self.pushButton_33.clicked.connect(self.evaluatewindow)
         self.pushButton_32.setText(_translate("Neuroptimus", "Boundaries"))
         self.pushButton_32.clicked.connect(self.boundarywindow)
         self.label_59.setText(_translate("Neuroptimus", "Algorithms"))
@@ -1539,7 +1544,7 @@ class Ui_Neuroptimus(object):
             "ok"
 
 
-    def runsim(self): 
+    def runsim(self,singlerun=False): 
         """
         Check all the tabs and sends the options to the Core.
         Check the fitness values and if they are normalized.
@@ -1604,32 +1609,36 @@ class Ui_Neuroptimus(object):
             errpop.append("Fitness Values not right")
         
         try:
-            selected_algo = self.algolist.selectionModel().selectedRows()
-            algo_name=str(self.algolist.item(selected_algo[0].row(), 0).text())
-            algo_str=algo_name[algo_name.find("(")+1:].replace(")","")
-            print(algo_str)
-            tmp = {"seed" : int(self.aspectlist.item(0,1).text()),
-                "evo_strat" : str(algo_str)
-                }
-            #for n in self.algo_param:
-                #tmp.update({str(n[1]) : float(n[0].GetValue())})
-            allRows = self.aspectlist.rowCount()
-            for row in range(1,allRows):
-                aspect=str(self.aspectlist.item(row,0).text())
-                if aspect=='Force bounds:':
-                    value=bool(self.aspectlist.item(row,1).checkState())
-                else:
-                    value=float(self.aspectlist.item(row,1).text())
-                tmp.update({aspect:value})
+            if singlerun:
+                tmp = {"seed" : None,
+                    "current_algorithm" : "singleRun"}
+            else:
+                selected_algo = self.algolist.selectionModel().selectedRows()
+                algo_name=str(self.algolist.item(selected_algo[0].row(), 0).text())
+                algo_str=algo_name[algo_name.find("(")+1:].replace(")","")
+                tmp = {"seed" : int(self.aspectlist.item(0,1).text()),
+                    "current_algorithm" : str(algo_str)
+                    }
+                #for n in self.algo_param:
+                    #tmp.update({str(n[1]) : float(n[0].GetValue())})
+                allRows = self.aspectlist.rowCount()
+                for row in range(1,allRows):
+                    aspect=str(self.aspectlist.item(row,0).text())
+                    if aspect=='Force bounds:':
+                        value=bool(self.aspectlist.item(row,1).checkState())
+                    else:
+                        value=float(self.aspectlist.item(row,1).text())
+                    tmp.update({aspect:value})
             tmp.update({
                 "num_params" : len(self.core.option_handler.GetObjTOOpt()),
                 "boundaries" : self.core.option_handler.boundaries ,
                 "starting_points" : self.seed
                 })
             self.kwargs.update({"algo_options":tmp})
-        except:
+        except Exception as e:
             err.append(4)
-            errpop.append("You forget to select an algorithm!")
+            print(e)
+            errpop.append("Please select an algorithm")
         try:
             self.seed = None
             self.core.ThirdStep(self.kwargs)
@@ -1651,15 +1660,16 @@ class Ui_Neuroptimus(object):
                 popup(errpop[0])
             self.tabwidget.setCurrentIndex(int(min(err)))
         else:
-            #try:
-            self.core.FourthStep()
-            self.tabwidget.setTabEnabled(5,True)
-            self.tabwidget.setTabEnabled(6,True)
-            self.eval_tab_plot()
-            self.plot_tab_fun()
-            self.tabwidget.setCurrentIndex(5)
-            #except:
-            #   popup("Forth step error")
+            try:
+                self.core.FourthStep()
+                self.tabwidget.setTabEnabled(5,True)
+                self.tabwidget.setTabEnabled(6,True)
+                self.tabwidget.setCurrentIndex(5)
+                self.eval_tab_plot()
+                if not singlerun:
+                    self.plot_tab_fun()
+            except:
+               popup("Evaluation step error")
 
 
 
@@ -1670,17 +1680,18 @@ class Ui_Neuroptimus(object):
         """
         text = "Results:"
         #for n, k in zip(self.core.option_handler.GetObjTOOpt(), self.core.Neuroptimus.fit_obj.ReNormalize(self.core.Neuroptimus.final_pop[0].candidate[0:len(self.core.option_handler.adjusted_params)])):
-        for n, k in zip(self.core.option_handler.GetObjTOOpt(), self.core.cands[0]):
-            if n.split()[0]==n.split()[-1]:
-                param=[n.split()[0], n.split()[-1]]
-                text += "\n" + param[0] + "\n" + "\t" + str(k)
-            else:
-                param=[n.split()[0], "segment: " + n.split()[1], n.split()[-1]]
-                #print param
-                if n.split()[1]!=n.split()[-1]:
-                    text += "\n" + ": \n".join(param) + ":" + "\n" + "\t" + str(k)
+        if self.core.cands:
+            for n, k in zip(self.core.option_handler.GetObjTOOpt(), self.core.cands[0]):
+                if n.split()[0]==n.split()[-1]:
+                    param=[n.split()[0], n.split()[-1]]
+                    text += "\n" + param[0] + "\n" + "\t" + str(k)
                 else:
-                    text += "\n" + param[0] + ": " + param[-1] + "\n" + "\t" + str(k)
+                    param=[n.split()[0], "segment: " + n.split()[1], n.split()[-1]]
+                    #print param
+                    if n.split()[1]!=n.split()[-1]:
+                        text += "\n" + ": \n".join(param) + ":" + "\n" + "\t" + str(k)
+                    else:
+                        text += "\n" + param[0] + ": " + param[-1] + "\n" + "\t" + str(k)
         #text += "\n" + "fitness:\n" + "\t" + str(self.core.Neuroptimus.final_pop[0].fitnes)
         text += "\n" + "fitness:\n" + "\t" + str(self.core.last_fitness)
         for tabs in [self.eval_tab,self.plot_tab]:
@@ -1872,6 +1883,12 @@ class Ui_Neuroptimus(object):
         self.SPW.resize(400, 500)
         self.SPW.show()
 
+    def evaluatewindow(self):
+        num_o_params=len(self.core.option_handler.GetObjTOOpt())
+        self.EW = EvaluateSingle(self,num_o_params) 
+        self.EW.setObjectName("Neuroptimus")
+        self.EW.resize(400, 500)
+        self.EW.show()
     
 class SecondWindow(QtWidgets.QMainWindow):
     def __init__(self,parent): 
@@ -2287,6 +2304,93 @@ class Startingpoints(QtWidgets.QMainWindow):
             self.parent.seed.append(params)
         self.close()
 
+class EvaluateSingle(QtWidgets.QMainWindow):
+    def __init__(self,parent,*args,**kwargs):
+        super(EvaluateSingle,self).__init__()
+        _translate = QtCore.QCoreApplication.translate
+        n_o_params=args[0]
+        self.parent=parent
+        self.container=[]
+        hstep = 130
+        vstep = 35
+        hoffset = 10
+        voffset = 15
+        for n in range(n_o_params):
+            param=parent.core.option_handler.GetObjTOOpt()[n].split()
+            if len(param)==4:
+                p_name=param[0] + " " + param[1] + " " + param[3]
+            else:
+                if param[0]!=param[-1]:
+                    p_name=param[0] + " " + param[-1]
+                else:
+                    p_name=param[-1]
+            
+            #p_name=self.parent.core.option_handler.GetObjTOOpt()[n].split()[-1]
+            lbl = QtWidgets.QLabel(self)
+            lbl.setGeometry(QtCore.QRect(hoffset, voffset + n * vstep, 121, 16))
+            font = QtGui.QFont()
+            font.setFamily("Ubuntu")
+            font.setPointSize(10)
+            font.setBold(False)
+            font.setWeight(50)
+            lbl.setFont(font)
+            lbl.setObjectName("ctrl")
+            lbl.setText(QtCore.QCoreApplication.translate("Neuroptimus", p_name))
+
+            ctrl = QtWidgets.QLineEdit(self)
+            ctrl.setGeometry(QtCore.QRect(hstep, voffset + n * vstep, 61, 22))
+            ctrl.setObjectName("ctrl")
+            if self.parent.seed:
+            	ctrl.setText(str(self.parent.seed[n]))
+            lbl.show()
+            ctrl.show()
+            self.container.append(ctrl)
+
+        Evaluatebutton = QtWidgets.QPushButton(self)
+        Evaluatebutton.setGeometry(QtCore.QRect(10, 400, 80, 22))
+        Evaluatebutton.setObjectName("Evaluatebutton")
+        Evaluatebutton.setText(_translate("Neuroptimus", "Evaluate"))
+        Evaluatebutton.clicked.connect(self.OnEvaluate)
+        Closebutton = QtWidgets.QPushButton(self)
+        Closebutton.setGeometry(QtCore.QRect(100, 400, 80, 22))
+        Closebutton.setObjectName("Closebutton")
+        Closebutton.setText(_translate("Neuroptimus", "Cancel"))
+        Closebutton.clicked.connect(self.close)
+        
+
+    def OnEvaluate(self,e):
+        #try:
+        self.parent.core.optimal_params = []
+        self.parent.core.option_handler.boundaries = [[],[]]
+        for n in self.container:
+            param_value=float(n.text())
+            self.parent.core.optimal_params.append(param_value)
+            self.parent.core.option_handler.boundaries[0].append(param_value*0.99)
+            self.parent.core.option_handler.boundaries[1].append(param_value*1.01)
+            print(self.parent.core.option_handler.boundaries)
+        self.parent.runsim(singlerun=True)
+        self.close()
+        '''except ValueError as e:
+            popup("""You must give every parameter an initial value!
+                        Error""")'''
+            
+
+    def OnLoad(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(None,"QFileDialog.getOpenFileName()", "","Text Files (*.txt);;All Files (*);;", options=options)
+        if fileName:
+            try:
+                f = open(fileName, "r")
+                for idx, l in enumerate(f):
+                    self.container[idx].setText(str(l))
+            except Exception as e:
+                
+                
+                popup("Error: " + e)
+                
+    
+   
 
 class gridwindow(QtWidgets.QMainWindow):
     def __init__(self,parent,*args):
