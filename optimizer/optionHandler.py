@@ -253,10 +253,7 @@ class optionHandler(object):
 
 	def read_all_json(self,settings):
 		for key, value in settings.items():
-			print((key,value))
 			self.__setattr__(key,value)
-		print(self.current_algorithm)
-		print(type(self.current_algorithm))
 		if isinstance(self.current_algorithm, str):
 			self.algorithm_name=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", self.current_algorithm).replace("-","_").replace(" ","_")).upper()
 		else:

@@ -22,20 +22,20 @@ void modl_reg(){
   if (!nrn_nobanner_) if (nrnmpi_myid < 1) {
     fprintf(stderr, "Additional mechanisms from files\n");
 
-    fprintf(stderr," cacum.mod");
-    fprintf(stderr," H_CA1pyr_dist.mod");
-    fprintf(stderr," H_CA1pyr_prox.mod");
-    fprintf(stderr," K_A_dist.mod");
-    fprintf(stderr," K_A_prox.mod");
-    fprintf(stderr," kd_params3.mod");
-    fprintf(stderr," K_DRS4_params_voltage_dep.mod");
-    fprintf(stderr," km_q10_2.mod");
-    fprintf(stderr," Leak_pyr.mod");
-    fprintf(stderr," Na_BG_axon.mod");
-    fprintf(stderr," Na_BG_dend.mod");
-    fprintf(stderr," Na_BG_soma.mod");
-    fprintf(stderr," vecevent.mod");
-    fprintf(stderr," vmax.mod");
+    fprintf(stderr," \"cacum.mod\"");
+    fprintf(stderr," \"H_CA1pyr_dist.mod\"");
+    fprintf(stderr," \"H_CA1pyr_prox.mod\"");
+    fprintf(stderr," \"K_A_dist.mod\"");
+    fprintf(stderr," \"K_A_prox.mod\"");
+    fprintf(stderr," \"kd_params3.mod\"");
+    fprintf(stderr," \"K_DRS4_params_voltage_dep.mod\"");
+    fprintf(stderr," \"km_q10_2.mod\"");
+    fprintf(stderr," \"Leak_pyr.mod\"");
+    fprintf(stderr," \"Na_BG_axon.mod\"");
+    fprintf(stderr," \"Na_BG_dend.mod\"");
+    fprintf(stderr," \"Na_BG_soma.mod\"");
+    fprintf(stderr," \"vecevent.mod\"");
+    fprintf(stderr," \"vmax.mod\"");
     fprintf(stderr, "\n");
   }
   _cacum_reg();

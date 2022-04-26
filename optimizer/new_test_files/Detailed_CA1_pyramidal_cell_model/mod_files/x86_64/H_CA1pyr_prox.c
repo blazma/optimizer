@@ -22,16 +22,16 @@ extern int _method3;
 extern double hoc_Exp(double);
 #endif
  
-#define nrn_init _nrn_init__H_CA1pyr_dist
-#define _nrn_initial _nrn_initial__H_CA1pyr_dist
-#define nrn_cur _nrn_cur__H_CA1pyr_dist
-#define _nrn_current _nrn_current__H_CA1pyr_dist
-#define nrn_jacob _nrn_jacob__H_CA1pyr_dist
-#define nrn_state _nrn_state__H_CA1pyr_dist
-#define _net_receive _net_receive__H_CA1pyr_dist 
-#define _f_rates _f_rates__H_CA1pyr_dist 
-#define rates rates__H_CA1pyr_dist 
-#define states states__H_CA1pyr_dist 
+#define nrn_init _nrn_init__H_CA1pyr_prox
+#define _nrn_initial _nrn_initial__H_CA1pyr_prox
+#define nrn_cur _nrn_cur__H_CA1pyr_prox
+#define _nrn_current _nrn_current__H_CA1pyr_prox
+#define nrn_jacob _nrn_jacob__H_CA1pyr_prox
+#define nrn_state _nrn_state__H_CA1pyr_prox
+#define _net_receive _net_receive__H_CA1pyr_prox 
+#define _f_rates _f_rates__H_CA1pyr_prox 
+#define rates rates__H_CA1pyr_prox 
+#define states states__H_CA1pyr_prox 
  
 #define _threadargscomma_ _p, _ppvar, _thread, _nt,
 #define _threadargsprotocomma_ double* _p, Datum* _ppvar, Datum* _thread, _NrnThread* _nt,
@@ -104,8 +104,8 @@ extern void hoc_reg_nmodl_filename(int, const char*);
 }
  /* connect user functions to hoc names */
  static VoidFunc hoc_intfunc[] = {
- "setdata_H_CA1pyr_dist", _hoc_setdata,
- "rates_H_CA1pyr_dist", _hoc_rates,
+ "setdata_H_CA1pyr_prox", _hoc_setdata,
+ "rates_H_CA1pyr_prox", _hoc_rates,
  0, 0
 };
  
@@ -114,26 +114,26 @@ static void _check_table_thread(double* _p, Datum* _ppvar, Datum* _thread, _NrnT
    _check_rates(_p, _ppvar, _thread, _nt);
  }
  /* declare global and static user variables */
-#define usetable usetable_H_CA1pyr_dist
+#define usetable usetable_H_CA1pyr_prox
  double usetable = 1;
  /* some parameters have upper and lower limits */
  static HocParmLimits _hoc_parm_limits[] = {
- "usetable_H_CA1pyr_dist", 0, 1,
+ "usetable_H_CA1pyr_prox", 0, 1,
  0,0,0
 };
  static HocParmUnits _hoc_parm_units[] = {
- "gmax_H_CA1pyr_dist", "S/cm2",
- "e_H_CA1pyr_dist", "mV",
- "i_H_CA1pyr_dist", "mA/cm2",
- "gion_H_CA1pyr_dist", "S/cm2",
- "Xtau_H_CA1pyr_dist", "ms",
+ "gmax_H_CA1pyr_prox", "S/cm2",
+ "e_H_CA1pyr_prox", "mV",
+ "i_H_CA1pyr_prox", "mA/cm2",
+ "gion_H_CA1pyr_prox", "S/cm2",
+ "Xtau_H_CA1pyr_prox", "ms",
  0,0
 };
  static double X0 = 0;
  static double delta_t = 0.01;
  /* connect global user variables to hoc */
  static DoubScal hoc_scdoub[] = {
- "usetable_H_CA1pyr_dist", &usetable_H_CA1pyr_dist,
+ "usetable_H_CA1pyr_prox", &usetable_H_CA1pyr_prox,
  0,0
 };
  static DoubVec hoc_vdoub[] = {
@@ -156,16 +156,16 @@ static void _ode_matsol(_NrnThread*, _Memb_list*, int);
  /* connect range variables in _p that hoc is supposed to know about */
  static const char *_mechanism[] = {
  "7.7.0",
-"H_CA1pyr_dist",
- "gmax_H_CA1pyr_dist",
- "e_H_CA1pyr_dist",
+"H_CA1pyr_prox",
+ "gmax_H_CA1pyr_prox",
+ "e_H_CA1pyr_prox",
  0,
- "i_H_CA1pyr_dist",
- "gion_H_CA1pyr_dist",
- "Xinf_H_CA1pyr_dist",
- "Xtau_H_CA1pyr_dist",
+ "i_H_CA1pyr_prox",
+ "gion_H_CA1pyr_prox",
+ "Xinf_H_CA1pyr_prox",
+ "Xtau_H_CA1pyr_prox",
  0,
- "X_H_CA1pyr_dist",
+ "X_H_CA1pyr_prox",
  0,
  0};
  
@@ -176,7 +176,7 @@ static void nrn_alloc(Prop* _prop) {
 	double *_p; Datum *_ppvar;
  	_p = nrn_prop_data_alloc(_mechtype, 10, _prop);
  	/*initialize range parameters*/
- 	gmax = 0.000456;
+ 	gmax = 3.5e-05;
  	e = -30;
  	_prop->param = _p;
  	_prop->param_size = 10;
@@ -197,7 +197,7 @@ extern void _nrn_thread_table_reg(int, void(*)(double*, Datum*, Datum*, _NrnThre
 extern void hoc_register_tolerance(int, HocStateTolerance*, Symbol***);
 extern void _cvode_abstol( Symbol**, double*, int);
 
- void _H_CA1pyr_dist_reg() {
+ void _H_CA1pyr_prox_reg() {
 	int _vectorized = 1;
   _initlists();
  	register_mech(_mechanism, nrn_alloc,nrn_cur, nrn_jacob, nrn_state, nrn_init, hoc_nrnpointerindex, 1);
@@ -213,14 +213,14 @@ extern void _cvode_abstol( Symbol**, double*, int);
  	hoc_register_cvode(_mechtype, _ode_count, _ode_map, _ode_spec, _ode_matsol);
  	hoc_register_tolerance(_mechtype, _hoc_state_tol, &_atollist);
  	hoc_register_var(hoc_scdoub, hoc_vdoub, hoc_intfunc);
- 	ivoc_help("help ?1 H_CA1pyr_dist /home/mohacsi/Desktop/optimizer/optimizer/new_test_files/Detailed_CA1_pyramidal_cell_model/mod_files/H_CA1pyr_dist.mod\n");
+ 	ivoc_help("help ?1 H_CA1pyr_prox /home/mohacsi/Desktop/optimizer/optimizer/new_test_files/Detailed_CA1_pyramidal_cell_model/mod_files/H_CA1pyr_prox.mod\n");
  hoc_register_limits(_mechtype, _hoc_parm_limits);
  hoc_register_units(_mechtype, _hoc_parm_units);
  }
  static double *_t_Xinf;
  static double *_t_Xtau;
 static int _reset;
-static char *modelname = "Channel: H_CA1pyr_dist";
+static char *modelname = "Channel: H_CA1pyr_prox";
 
 static int error;
 static int _ninits = 0;
@@ -317,7 +317,7 @@ static int  _f_rates ( _threadargsprotocomma_ double _lv ) {
    _lv = _lv * 1000.0 ;
    Xtau = _ltau / _ltemp_adj_X ;
    _lv = _lv * 0.0010 ;
-   _linf = 1.0 / ( 1.0 + ( exp ( 300.0 * ( _lv + 0.089 ) ) ) ) ;
+   _linf = 1.0 / ( 1.0 + ( exp ( 300.0 * ( _lv + 0.083 ) ) ) ) ;
    _lv = _lv * 1000.0 ;
    Xinf = _linf ;
     return 0; }
@@ -529,7 +529,7 @@ _first = 0;
 #endif
 
 #if NMODL_TEXT
-static const char* nmodl_filename = "/home/mohacsi/Desktop/optimizer/optimizer/new_test_files/Detailed_CA1_pyramidal_cell_model/mod_files/H_CA1pyr_dist.mod";
+static const char* nmodl_filename = "/home/mohacsi/Desktop/optimizer/optimizer/new_test_files/Detailed_CA1_pyramidal_cell_model/mod_files/H_CA1pyr_prox.mod";
 static const char* nmodl_file_text = 
   "COMMENT\n"
   "\n"
@@ -538,12 +538,12 @@ static const char* nmodl_file_text =
   "   **************************************************\n"
   "\n"
   "   This file holds the implementation in NEURON of the Cell Mechanism:\n"
-  "   H_CA1pyr_dist (Type: Channel mechanism, Model: ChannelML based process)\n"
+  "   H_CA1pyr_prox (Type: Channel mechanism, Model: ChannelML based process)\n"
   "\n"
   "   with parameters: \n"
   "   /channelml/@units = SI Units \n"
   "   /channelml/notes = ChannelML file containing a single Channel description \n"
-  "   /channelml/channel_type/@name = H_CA1pyr_dist \n"
+  "   /channelml/channel_type/@name = H_CA1pyr_prox \n"
   "   /channelml/channel_type/status/@value = stable \n"
   "   /channelml/channel_type/status/comment = Equations adapted from Kali \n"
   "   /channelml/channel_type/status/contributor/name = Szoke Boglarka \n"
@@ -552,7 +552,7 @@ static const char* nmodl_file_text =
   "   /channelml/channel_type/authorList/modelTranslator/institution = PPKE-ITK \n"
   "   /channelml/channel_type/authorList/modelTranslator/email = szoboce - at - digitus.itk.ppke.hu \n"
   "   /channelml/channel_type/current_voltage_relation/@cond_law = ohmic \n"
-  "   /channelml/channel_type/current_voltage_relation/@default_gmax = 4.56 \n"
+  "   /channelml/channel_type/current_voltage_relation/@default_gmax = 0.35 \n"
   "   /channelml/channel_type/current_voltage_relation/@default_erev = -0.030 \n"
   "   /channelml/channel_type/current_voltage_relation/gate/@name = X \n"
   "   /channelml/channel_type/current_voltage_relation/gate/@instances = 1 \n"
@@ -562,19 +562,19 @@ static const char* nmodl_file_text =
   "   /channelml/channel_type/current_voltage_relation/gate/time_course/@from = X0 \n"
   "   /channelml/channel_type/current_voltage_relation/gate/time_course/@to = X \n"
   "   /channelml/channel_type/current_voltage_relation/gate/time_course/@expr_form = generic \n"
-  "   /channelml/channel_type/current_voltage_relation/gate/time_course/@expr = (exp (33.0 * (v + 0.075))) / (11.0 * (1 + (exp (83.0* (v + 0.075))))) \n"
+  "   /channelml/channel_type/current_voltage_relation/gate/time_course/@expr =  (exp (33.0 * (v + 0.075))) / (11.0 * (1 + (exp (83.0* (v + 0.075))))) \n"
   "   /channelml/channel_type/current_voltage_relation/gate/steady_state/@name = inf \n"
   "   /channelml/channel_type/current_voltage_relation/gate/steady_state/@from = X0 \n"
   "   /channelml/channel_type/current_voltage_relation/gate/steady_state/@to = X \n"
   "   /channelml/channel_type/current_voltage_relation/gate/steady_state/@expr_form = generic \n"
-  "   /channelml/channel_type/current_voltage_relation/gate/steady_state/@expr = 1 / (1 + (exp (300*(v + 0.089)))) \n"
+  "   /channelml/channel_type/current_voltage_relation/gate/steady_state/@expr =  1 / (1 + (exp (300*(v + 0.083)))) \n"
   "   /channelml/channel_type/impl_prefs/table_settings/@max_v = 0.05 \n"
   "   /channelml/channel_type/impl_prefs/table_settings/@min_v = -0.1 \n"
   "   /channelml/channel_type/impl_prefs/table_settings/@table_divisions = 3000 \n"
   "\n"
-  "// File from which this was generated: /home/kali/nC_projects/CA1_NEURON/cellMechanisms/H_CA1pyr_dist/H_CA1pyr_dist.xml\n"
+  "// File from which this was generated: /home/kali/nC_projects/CA1_NEURON/cellMechanisms/H_CA1pyr_prox/H_CA1pyr_prox.xml\n"
   "\n"
-  "// XSL file with mapping to simulator: /home/kali/nC_projects/CA1_NEURON/cellMechanisms/H_CA1pyr_dist/ChannelML_v1.8.1_NEURONmod.xsl\n"
+  "// XSL file with mapping to simulator: /home/kali/nC_projects/CA1_NEURON/cellMechanisms/H_CA1pyr_prox/ChannelML_v1.8.1_NEURONmod.xsl\n"
   "\n"
   "ENDCOMMENT\n"
   "\n"
@@ -587,7 +587,7 @@ static const char* nmodl_file_text =
   "    ChannelML file containing a single Channel description\n"
   "ENDCOMMENT\n"
   "\n"
-  "TITLE Channel: H_CA1pyr_dist\n"
+  "TITLE Channel: H_CA1pyr_prox\n"
   "\n"
   "COMMENT\n"
   "    Hiperpolarization activated channel in CA1 pyramid cell\n"
@@ -609,7 +609,7 @@ static const char* nmodl_file_text =
   "NEURON {\n"
   "      \n"
   "\n"
-  "    SUFFIX H_CA1pyr_dist\n"
+  "    SUFFIX H_CA1pyr_prox\n"
   "    RANGE e\n"
   "    NONSPECIFIC_CURRENT i\n"
   "\n"
@@ -622,10 +622,8 @@ static const char* nmodl_file_text =
   "PARAMETER { \n"
   "      \n"
   "\n"
-  "    gmax = 0.00045599999999999997 (S/cm2)  ? default value, should be overwritten when conductance placed on cell\n"
-  "    \n"
+  "    gmax = 0.000035 (S/cm2)  ? default value, should be overwritten when conductance placed on cell\n"
   "    e = -30 (mV) ? default value, should be overwritten when conductance placed on cell\n"
-  "\n"
   "}\n"
   "\n"
   "\n"
@@ -634,9 +632,9 @@ static const char* nmodl_file_text =
   "      \n"
   "\n"
   "    v (mV)\n"
-  "    \n"
-  "    i (mA/cm2)\n"
   "\n"
+  "    i (mA/cm2)\n"
+  "    \n"
   "    celsius (degC)\n"
   "    \n"
   "    \n"
@@ -697,13 +695,13 @@ static const char* nmodl_file_text =
   "        \n"
   "    ?      ***  Adding rate equations for gate: X  ***\n"
   "         \n"
-  "    ? Found a generic form of the rate equation for tau, using expression: (exp (33.0 * (v + 0.075))) / (11.0 * (1 + (exp (83.0* (v + 0.075)))))\n"
+  "    ? Found a generic form of the rate equation for tau, using expression:  (exp (33.0 * (v + 0.075))) / (11.0 * (1 + (exp (83.0* (v + 0.075)))))\n"
   "    \n"
   "    ? Note: Equation (and all ChannelML file values) in SI Units so need to convert v first...\n"
   "    \n"
   "    v = v * 0.0010   ? temporarily set v to units of equation...\n"
   "            \n"
-  "    tau = (exp (33.0 * (v + 0.075))) / (11.0 * (1 + (exp (83.0* (v + 0.075)))))\n"
+  "    tau =  (exp (33.0 * (v + 0.075))) / (11.0 * (1 + (exp (83.0* (v + 0.075)))))\n"
   "        \n"
   "    ? Set correct units of tau for NEURON\n"
   "    tau = tau * 1000 \n"
@@ -712,13 +710,13 @@ static const char* nmodl_file_text =
   "        \n"
   "    Xtau = tau/temp_adj_X\n"
   "     \n"
-  "    ? Found a generic form of the rate equation for inf, using expression: 1 / (1 + (exp (300*(v + 0.089))))\n"
+  "    ? Found a generic form of the rate equation for inf, using expression:  1 / (1 + (exp (300*(v + 0.083))))\n"
   "    \n"
   "    ? Note: Equation (and all ChannelML file values) in SI Units so need to convert v first...\n"
   "    \n"
   "    v = v * 0.0010   ? temporarily set v to units of equation...\n"
   "            \n"
-  "    inf = 1 / (1 + (exp (300*(v + 0.089))))\n"
+  "    inf =  1 / (1 + (exp (300*(v + 0.083))))\n"
   "         \n"
   "    \n"
   "    v = v * 1000   ? reset v\n"
