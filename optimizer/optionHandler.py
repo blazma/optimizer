@@ -77,18 +77,6 @@ def meanstdv(x):
 	return mean, std
 
 
-def prettify(e):
-	"""
-	Converts the given xml tree object to human readable form.
-
-	:param e: the xml tree element
-
-	:return: the reformatted content of the xml tree as ``string``
-
-	"""
-	r_str=ElementTree.tostring(e,'utf-8')
-	repsed=minidom.parseString(r_str)
-	return repsed.toprettyxml(indent="  ")
 
 # class to handle the settings specified by the user
 # there are no separate classes for the different settings, only get-set member functions
@@ -158,7 +146,6 @@ class optionHandler(object):
 		self.step_size=None
 		self.init_temp=None
 		self.temperature=None
-
 		self.acc=None
 		self.update_freq=None
 		self.num_iter=None
@@ -260,62 +247,7 @@ class optionHandler(object):
 			self.algorithm_name=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", list(self.current_algorithm.keys())[0]).replace("-","_").replace(" ","_")).upper()
 			self.algorithm_parameters=list(self.current_algorithm.values())[0]
 
-	def read_all(self,root):
-		"""
-		Reads settings from an xml tree and converts them to the necessary type.
-
-		:param root: the root of the xml tree
-
-		.. note::
-			If there is an element in the tree whose tag is not a valid option name, then
-			``AttributeError`` is raised.
-
-		.. note::
-			The program does not verify if every parameter which are needed to the current process is present.
-			We strongly recommend that you use the GUI to create a configuration file, which will contain the needed values,
-			instead of writing the xml file by hand.
-
-		"""
-		def _float_or_int(val):
-			try:
-				a=int(val)
-				return a
-			except ValueError:
-				try:
-					return float(val)
-				except ValueError:
-					return str(val.strip("u").strip('\''))
-
-		for child in root:
-			if child.tag not in self.class_content:
-				raise AttributeError(child.tag)
-			if child.tag=="adjusted_params":
-				self.__setattr__(child.tag,child.text.strip().lstrip("['").rstrip("']").split("', '"))
-			elif child.tag=="param_vals":
-				self.__setattr__(child.tag,list(map(_float_or_int,child.text.strip().lstrip("[").rstrip("]").split(","))))
-			elif child.tag=="boundaries":
-				#print child.text.strip()[2:len(child.text.strip())-2]#.strip().split("], [")
-				self.__setattr__(child.tag,[list(map(_float_or_int,x.strip().split(", "))) for x in child.text.strip()[2:len(child.text.strip())-2].split("], [")])
-			elif child.tag=="type":
-				self.__setattr__(child.tag,[[x.strip().lstrip("['").rstrip("']") for x in child.text.split(", ")][-1]])
-			elif child.tag=="feats":
-				self.__setattr__(child.tag,child.text.strip().split(", "))
-			elif child.tag=="stim_amp":
-				self.__setattr__(child.tag,list(map(_float_or_int,child.text.strip().lstrip("[").rstrip("]").split(","))))
-			elif child.tag=="weights":
-				self.__setattr__(child.tag,list(map(_float_or_int,child.text.strip().lstrip("[").rstrip("]").split(","))))
-			else:
-				try:
-					self.__setattr__(child.tag,_float_or_int(child.text.strip()))
-				except ValueError:
-					self.__setattr__(child.tag,None if child.text.strip()=="None" else True if child.text.strip()=="True" else False if child.text.strip()=="false" else child.text.strip() )
-				except TypeError:
-					print("type error",child.tag,child.text.strip())
-
-
-
-
-
+	
 
 
 	# returns the current settings of the current working directory (referred as base in modelHandler, used in traceReader )

@@ -47,7 +47,7 @@
         "num_iter": null,
         "num_params": 3,
         "num_repet": null,
-        "number_of_cpu": null,
+        "number_of_cpu": 4,
         "param_vals": [
             0,
             0,

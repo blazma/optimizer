@@ -151,7 +151,6 @@ class coreModul():
 		:param args: dictionary with keys "simulator" and "sim_command"
 
 		"""
-		print(args)
 		self.model_handler=None
 		self.option_handler.SetSimParam([args.get("simulator","Neuron"),args.get("sim_command"),None])
 		if self.option_handler.GetSimParam()[0]=="Neuron":
@@ -456,7 +455,10 @@ class coreModul():
 			elif(self.option_handler.current_algorithm.split("_")[-1] == "PYGMO"):
 				self.cands = [self.optimizer.best]
 				self.fits = [self.optimizer.best_fitness]
-
+			elif(self.option_handler.current_algorithm.split("_")[-1] == "CMAES"):
+				all_solutions = dict(sorted(self.optimizer.all_solutions.items(), key=lambda item: item[1]))
+				self.cands = list(all_solutions.keys())
+				self.fits = list(all_solutions.values())
 			elif(self.option_handler.current_algorithm.split("_")[-1] == "INSPYRED"):
 				self.optimizer.final_pop.sort(reverse=True)
 				for i in range(len(self.optimizer.final_pop)):
@@ -466,7 +468,7 @@ class coreModul():
 				self.cands = [x.candidate[0] for x in reversed(self.optimizer.final_pop)]
 				self.fits = [x.fitness[0] for x in reversed(self.optimizer.final_pop)]
 			print((self.cands[0], "CANDS"))
-			print((self.fits, "FITS"))
+			print((self.fits[0], "FITS"))
 			print(("Optimization lasted for ", stop_time-start_time, " s"))	
 			self.optimal_params=self.cands[0]
 		
@@ -585,8 +587,8 @@ class coreModul():
 		error_dict=[{"name":value[0],"value":value[1],"weight":value[2],"weighted_value":value[3]} for value in tmp_list]  
 		alg_dict=self.option_handler.current_algorithm
 		opt_dict = {"final_fitness":self.last_fitness,"renormed_params":self.renormed_params}
-		target_dict = {"data_type":self.option_handler.type[-1],"number_of_traces":k_range,"stim_delay":self.option_handler.stim_del,
-			"stim_duration":self.option_handler.stim_dur,"file_name":self.option_handler.input_dir.split('/')[-1]}
+		target_dict = {"data_type":self.option_handler.type[-1],"file_name":self.option_handler.input_dir.split('/')[-1],"number_of_traces":k_range,"stim_delay":self.option_handler.stim_del,
+			"stim_duration":self.option_handler.stim_dur}
 		json_var={"model":self.name,"optimization":opt_dict,"parameters":param_dict,"error_function":error_dict, "algorithm":alg_dict,"target_data":target_dict}
 		
 
@@ -599,16 +601,17 @@ class coreModul():
 					for t,p in y.items():
 						if ('stimAmp') in t:
 							amp=float(t.replace('stimAmp_',''))
+							
 							pt=p
 							pt["Feature"]=x
-							amp_dict[amp].append(pt)
+							amp_dict[amp].append(sorted(pt))
 				json_var["target_data"].update({"stim_amp":amp_dict})
 			with open('metadata.json', 'w') as outfile:
-				json.dump(json_var, outfile,sort_keys=True, indent=4)
+				json.dump(json_var, outfile, indent=4)
 		else:
 			json_var["target_data"].update({"length_ms":self.data_handler.data.t_length,"sampling_frequency":self.data_handler.data.freq})
 			with open('metadata.json', 'w') as outfile:
-				json.dump(json_var, outfile,sort_keys=True, indent=4)
+				json.dump(json_var, outfile, indent=4)
 			
 		
 

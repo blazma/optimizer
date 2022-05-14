@@ -19,13 +19,14 @@ from inspyred.ec import emo
 from inspyred.ec import terminators
 from inspyred.ec import variators
 from inspyred.ec import observers
-import multiprocessing
 from math import sqrt
 from optionHandler import optionHandler
 import Core
 import pygmo as pg
 from scipy import optimize, array, ndarray
 from scipy import dot, exp, log, sqrt, floor, ones, randn
+
+from multiprocessing import Pool
 
 from itertools import combinations, product
 
@@ -200,8 +201,12 @@ class baseOptimizer():
 		self.seed = int(option_obj.seed)
 		self.rand.seed(self.seed)
 		self.directory = option_obj.base_dir
-
 		self.num_params = option_obj.num_params
+		if option_obj.type[-1]!="features":
+			self.number_of_traces=reader_obj.number_of_traces()
+		else:
+			self.number_of_traces=len(reader_obj.features_data["stim_amp"])
+		self.num_obj=self.num_params*int(self.number_of_traces)
 		self.number_of_cpu=option_obj.number_of_cpu
 		self.min_max=option_obj.boundaries
 		self.bounder=SetBoundaries(option_obj.boundaries)
@@ -234,7 +239,6 @@ class InspyredAlgorithmBasis(baseOptimizer):
 		baseOptimizer.__init__(self, reader_obj,  option_obj)
 		self.pop_size = option_obj.pop_size
 		self.max_evaluation = option_obj.max_evaluation
-		self.maximize = False  # hard wired, always minimize
 		self.stat_file = open(self.directory + "/stat_file.txt", "w")
 		self.ind_file = open(self.directory + "/ind_file.txt", "w")
 
@@ -257,7 +261,7 @@ class InspyredAlgorithmBasis(baseOptimizer):
 						   seeds=self.starting_points,
 						   max_generations=self.max_evaluation,
 						   num_params=self.num_params,
-						   maximize=self.maximize,
+						   maximize=False,
 						   bounder=self.bounder,
 						   boundaries=self.min_max,
 						   statistics_file=self.stat_file,
@@ -308,6 +312,48 @@ class ScipyAlgorithmBasis(baseOptimizer):
 		tmp = ndarray.tolist(candidates)
 		candidates = self.bounder(tmp, args)
 		return self.ffun([candidates], args)[0]
+
+class CMAES_CMAES(baseOptimizer):
+	def __init__(self, reader_obj,  option_obj):
+		baseOptimizer.__init__(self, reader_obj,  option_obj)
+		self.pop_size = option_obj.pop_size
+		self.max_evaluation = option_obj.max_evaluation
+		self.stat_file = open(self.directory + "/stat_file.txt", "w")
+		self.ind_file = open(self.directory + "/ind_file.txt", "w")
+		self.all_solutions = {}
+		"""try:
+			if isinstance(option_obj.starting_points[0], list):
+				self.starting_points = option_obj.starting_points
+			else:
+				self.starting_points = [normalize(option_obj.starting_points, self)]
+		except TypeError:
+			self.starting_points = None"""
+		if option_obj.output_level == "1":
+			print("starting points: ", self.starting_points)
+
+		from cmaes import CMA
+		import numpy as np
+		
+		self.cmaoptimizer = CMA(mean=(np.ones(self.num_obj)*0.5), sigma=1.3, seed=1234, population_size=int(self.pop_size), bounds=np.transpose(np.array(self.min_max)))
+		
+				
+	def Optimize(self):
+			"""
+			Performs the optimization.
+			"""
+			with Pool(4) as p:
+				for generation in range(int(self.max_evaluation)):
+					print("Generation: {0}".format(generation))
+					solutions = []
+					
+					pop = [[normalize(self.cmaoptimizer.ask(),self)] for _ in range(self.cmaoptimizer.population_size)]
+					fitness = p.map(self.ffun,pop)
+					solutions=[(p[0], f[0]) for p,f in zip(pop,fitness)]
+					print(solutions)
+					self.cmaoptimizer.tell(solutions)
+					
+					self.all_solutions.update({tuple(p):f for p,f in solutions})
+
 
 class PygmoAlgorithmBasis(baseOptimizer):
 
@@ -406,7 +452,6 @@ class PygmoAlgorithmBasis(baseOptimizer):
 class Problem:
 	
 	def __init__(self, fitnes_fun, bounds, num_islands=1, pop_size=1, max_evaluations=1,n_obj=1, directory=''):
-		self.bounds = bounds
 		self.min_max = bounds
 		self.fitnes_fun = fitnes_fun
 		self.num_islands = num_islands
@@ -448,7 +493,7 @@ class Problem:
 		return self.nobj
 
 	def get_bounds(self):
-		return(self.bounds[0], self.bounds[1])
+		return(self.min_max[0], self.min_max[1])
 
 
 class SinglePygmoAlgorithmBasis(baseOptimizer):
@@ -632,6 +677,13 @@ class CMAES_PYGMO(PygmoAlgorithmBasis):
 		self.max_evaluation=int(option_obj.max_evaluation)
 		self.pop_size = int(option_obj.pop_size)
 		self.force_bounds = option_obj.force_bounds
+		if int(option_obj.pop_size)<5:
+			print("***************************************************")
+			print("CMA-ES NEEDS A POPULATION WITH AT LEAST 5 INDIVIDUALS")
+			print("***************************************************")
+			self.pop_size = 5
+		else:
+			self.pop_size = int(option_obj.pop_size)
 		self.algorithm = pg.cmaes(gen=self.max_evaluation,ftol=0, xtol=0, force_bounds=bool(self.force_bounds))
 		
 class PSO_PYGMO(PygmoAlgorithmBasis):
@@ -1011,7 +1063,7 @@ class L_BFGS_B_SCIPY(baseOptimizer):
 		self.SetFFun(option_obj)
 		self.rand=random
 		self.seed=option_obj.seed
-		self.rand.seed(self.seed)
+		self.rand.seed(self.seed)  #ez mi?
 		self.max_evaluation=option_obj.max_evaluation
 		self.accuracy=option_obj.acc
 		self.num_params=option_obj.num_params
@@ -1231,30 +1283,29 @@ class RANDOM_SEARCH(baseOptimizer):
 		"""
 		Performs the optimization.
 		"""
-		self.pool = multiprocessing.Pool(processes=int(self.number_of_cpu),maxtasksperchild=1)
-		init_candidate=uniform(self.rand, {"self":self,"num_params":self.num_params})
-		self.act_min=pool.apply(self.ffun,([init_candidate],))
-		
-		for i in range(int(self.max_evaluation)):
-			act_candidate=[]
-			act_fitess=[]
-			for j in range(int(self.pop_size)):
-				act_candidate.append([uniform(self.rand, {"self":self,"num_params":self.num_params})])
+		with Pool(processes=int(self.number_of_cpu),maxtasksperchild=1) as pool:
+			init_candidate=uniform(self.rand, {"self":self,"num_params":self.num_params})
+			self.act_min=pool.apply(self.ffun,([init_candidate],))
 			
-			try:
-				act_fitess=self.pool.map(self.ffun,act_candidate)
-			except (OSError, RuntimeError) as e:
-				raise
-
-			
-			for act_fit,act_cand in zip(act_fitess,act_candidate):
-				if (act_fit<self.act_min.fitness):
-					self.act_min=my_candidate(array(act_cand),act_fit)
-					
+			for i in range(int(self.max_evaluation)):
+				act_candidate=[]
+				act_fitess=[]
+				for j in range(int(self.pop_size)):
+					act_candidate.append([uniform(self.rand, {"self":self,"num_params":self.num_params})])
 				
-			self.gen_min.append(self.act_min)		
+				try:
+					act_fitess=pool.map(self.ffun,act_candidate)
+				except (OSError, RuntimeError) as e:
+					raise
 
-		self.pool.close()
+				
+				for act_fit,act_cand in zip(act_fitess,act_candidate):
+					if (act_fit<self.act_min.fitness):
+						self.act_min=my_candidate(array(act_cand),act_fit)
+						
+					
+				self.gen_min.append(self.act_min)		
+
 		with open(self.directory+"/ind_file.txt","w") as f:
 			for x in self.gen_min:
 				f.write(str(x.candidate))

@@ -1,5 +1,98 @@
 {
-    "algorithm": "CMAES_PYGMO",
+    "model": "load_model_na_inhomo_minimal_model+KM+KA+KD",
+    "optimization": {
+        "final_fitness": [
+            349.5836685749188
+        ],
+        "renormed_params": [
+            11.799535945404386,
+            0.060607281772091334,
+            0.002,
+            0.482804862371137,
+            0.01,
+            7.872830269468682e-05,
+            15.0,
+            -40.0,
+            5e-05,
+            5.0,
+            0.3,
+            0.005518318311367116
+        ]
+    },
+    "parameters": [
+        {
+            "name": "Na_BG_act_inact_shift 0",
+            "min_boundary": "5.0",
+            "max_boundary": "15.0",
+            "optimum": "11.799535945404386"
+        },
+        {
+            "name": "gmax_K_DRS4_params_voltage_dep_dend 1",
+            "min_boundary": "0.01",
+            "max_boundary": "0.2",
+            "optimum": "0.060607281772091334"
+        },
+        {
+            "name": "gmax_Na_BG_soma 2",
+            "min_boundary": "0.002",
+            "max_boundary": "0.1",
+            "optimum": "0.002"
+        },
+        {
+            "name": "gmax_K_DRS4_params_voltage_dep_soma 3",
+            "min_boundary": "0.01",
+            "max_boundary": "0.5",
+            "optimum": "0.482804862371137"
+        },
+        {
+            "name": "gmax_K_DRS4_params_voltage_dep_axon 4",
+            "min_boundary": "0.01",
+            "max_boundary": "10.0",
+            "optimum": "0.01"
+        },
+        {
+            "name": "gmax_Leak_pyr 5",
+            "min_boundary": "1e-05",
+            "max_boundary": "0.0001",
+            "optimum": "7.872830269468682e-05"
+        },
+        {
+            "name": "H_ratio 6",
+            "min_boundary": "0.1",
+            "max_boundary": "15.0",
+            "optimum": "15.0"
+        },
+        {
+            "name": "e_Leak_pyr 7",
+            "min_boundary": "-70.0",
+            "max_boundary": "-40.0",
+            "optimum": "-40.0"
+        },
+        {
+            "name": "gbar_km_soma_dend 8",
+            "min_boundary": "5e-05",
+            "max_boundary": "0.01",
+            "optimum": "5e-05"
+        },
+        {
+            "name": "gbar_km_axon 9",
+            "min_boundary": "0.0001",
+            "max_boundary": "5.0",
+            "optimum": "5.0"
+        },
+        {
+            "name": "KA_ratio 10",
+            "min_boundary": "0.3",
+            "max_boundary": "3.0",
+            "optimum": "0.3"
+        },
+        {
+            "name": "gbar_kd 11",
+            "min_boundary": "1e-05",
+            "max_boundary": "0.01",
+            "optimum": "0.005518318311367116"
+        }
+    ],
     "error_function": [
         {
             "name": "Spikecount",
@@ -27,27 +120,27 @@
         },
         {
             "name": "steady_state_voltage",
-            "value": "nan",
+            "value": "22.251863856043357",
             "weight": "0.05",
-            "weighted_value": "nan"
+            "weighted_value": "1.112593192802168"
         },
         {
             "name": "voltage_base",
-            "value": "nan",
+            "value": "25.958594287735025",
             "weight": "0.05",
-            "weighted_value": "nan"
+            "weighted_value": "1.2979297143867514"
         },
         {
             "name": "voltage_deflection",
-            "value": "nan",
+            "value": "4.008688644930585",
             "weight": "0.05",
-            "weighted_value": "nan"
+            "weighted_value": "0.20043443224652924"
         },
         {
             "name": "voltage_deflection_begin",
-            "value": "nan",
+            "value": "3.59095906944929",
             "weight": "0.05",
-            "weighted_value": "nan"
+            "weighted_value": "0.17954795347246452"
         },
         {
             "name": "AHP_depth_abs",
@@ -111,460 +204,367 @@
         },
         {
             "name": "sag_amplitude",
-            "value": "250",
+            "value": "4.195012205309797",
             "weight": "0.05",
-            "weighted_value": "12.5"
+            "weighted_value": "0.20975061026548986"
         },
         {
             "name": "sag_ratio1",
-            "value": "250",
+            "value": "4.513771753316028",
             "weight": "0.05",
-            "weighted_value": "12.5"
+            "weighted_value": "0.22568858766580144"
         }
     ],
-    "model": "load_model_na_inhomo_minimal_model+KM+KA+KD",
-    "optimization": {
-        "final_fitness": [
-            NaN
-        ],
-        "renormed_params": [
-            9.365092961609916,
-            0.1556059290496167,
-            0.00824573553172075,
-            0.13344929225261498,
-            0.7734175060634944,
-            9.485677790054213e-05,
-            3.306730669840116,
-            -56.79264982965871,
-            0.0015809369492270743,
-            2.810174145131434,
-            2.9964255206832413,
-            0.00020358783374691816
-        ]
-    },
-    "parameters": [
-        {
-            "max_boundary": "15.0",
-            "min_boundary": "5.0",
-            "name": "Na_BG_act_inact_shift 0",
-            "optimum": "9.365092961609916"
-        },
-        {
-            "max_boundary": "0.2",
-            "min_boundary": "0.01",
-            "name": "gmax_K_DRS4_params_voltage_dep_dend 1",
-            "optimum": "0.1556059290496167"
-        },
-        {
-            "max_boundary": "0.1",
-            "min_boundary": "0.002",
-            "name": "gmax_Na_BG_soma 2",
-            "optimum": "0.00824573553172075"
-        },
-        {
-            "max_boundary": "0.5",
-            "min_boundary": "0.01",
-            "name": "gmax_K_DRS4_params_voltage_dep_soma 3",
-            "optimum": "0.13344929225261498"
-        },
-        {
-            "max_boundary": "10.0",
-            "min_boundary": "0.01",
-            "name": "gmax_K_DRS4_params_voltage_dep_axon 4",
-            "optimum": "0.7734175060634944"
-        },
-        {
-            "max_boundary": "0.0001",
-            "min_boundary": "1e-05",
-            "name": "gmax_Leak_pyr 5",
-            "optimum": "9.485677790054213e-05"
-        },
-        {
-            "max_boundary": "15.0",
-            "min_boundary": "0.1",
-            "name": "H_ratio 6",
-            "optimum": "3.306730669840116"
-        },
-        {
-            "max_boundary": "-40.0",
-            "min_boundary": "-70.0",
-            "name": "e_Leak_pyr 7",
-            "optimum": "-56.79264982965871"
-        },
-        {
-            "max_boundary": "0.01",
-            "min_boundary": "5e-05",
-            "name": "gbar_km_soma_dend 8",
-            "optimum": "0.0015809369492270743"
-        },
-        {
-            "max_boundary": "5.0",
-            "min_boundary": "0.0001",
-            "name": "gbar_km_axon 9",
-            "optimum": "2.810174145131434"
-        },
-        {
-            "max_boundary": "3.0",
-            "min_boundary": "0.3",
-            "name": "KA_ratio 10",
-            "optimum": "2.9964255206832413"
-        },
-        {
-            "max_boundary": "0.01",
-            "min_boundary": "1e-05",
-            "name": "gbar_kd 11",
-            "optimum": "0.00020358783374691816"
-        }
-    ],
+    "algorithm": "CMAES_PYGMO",
     "target_data": {
         "data_type": "features",
         "file_name": "opt_data_JMakara_OUR_features_selected_stim.json",
         "number_of_traces": 6,
+        "stim_delay": 200.0,
+        "stim_duration": 300.0,
         "stim_amp": {
             "-0.25": [
-                {
-                    "Feature": "steady_state_voltage",
-                    "Mean": -64.1491,
-                    "Std": 0.6187
-                },
-                {
-                    "Feature": "voltage_base",
-                    "Mean": -64.4942,
-                    "Std": 0.4974
-                },
-                {
-                    "Feature": "voltage_deflection",
-                    "Mean": -13.057,
-                    "Std": 2.0899
-                },
-                {
-                    "Feature": "voltage_deflection_begin",
-                    "Mean": -14.5082,
-                    "Std": 2.6615
-                },
-                {
-                    "Feature": "sag_amplitude",
-                    "Mean": 3.1869,
-                    "Std": 0.681
-                },
-                {
-                    "Feature": "sag_ratio1",
-                    "Mean": 0.1969,
-                    "Std": 0.0297
-                }
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ]
             ],
             "0.05": [
-                {
-                    "Feature": "Spikecount",
-                    "Mean": 0.0,
-                    "Std": 0.001
-                },
-                {
-                    "Feature": "inv_first_ISI",
-                    "Mean": 0.0,
-                    "Std": 0.001
-                },
-                {
-                    "Feature": "inv_last_ISI",
-                    "Mean": 0.0,
-                    "Std": 0.001
-                },
-                {
-                    "Feature": "inv_time_to_first_spike",
-                    "Mean": 0.0,
-                    "Std": 0.001
-                },
-                {
-                    "Feature": "steady_state_voltage",
-                    "Mean": -65.1468,
-                    "Std": 0.852
-                },
-                {
-                    "Feature": "voltage_base",
-                    "Mean": -65.1268,
-                    "Std": 0.8427
-                }
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ]
             ],
             "0.1": [
-                {
-                    "Feature": "Spikecount",
-                    "Mean": 1.4,
-                    "Std": 1.1235
-                },
-                {
-                    "Feature": "inv_first_ISI",
-                    "Mean": 9.0054,
-                    "Std": 13.6081
-                },
-                {
-                    "Feature": "inv_last_ISI",
-                    "Mean": 7.0289,
-                    "Std": 9.6911
-                },
-                {
-                    "Feature": "inv_time_to_first_spike",
-                    "Mean": 5.9281,
-                    "Std": 3.9002
-                },
-                {
-                    "Feature": "steady_state_voltage",
-                    "Mean": -64.9589,
-                    "Std": 1.0148
-                },
-                {
-                    "Feature": "voltage_base",
-                    "Mean": -65.071,
-                    "Std": 0.888
-                }
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ]
             ],
             "0.15": [
-                {
-                    "Feature": "Spikecount",
-                    "Mean": 6.0667,
-                    "Std": 1.902
-                },
-                {
-                    "Feature": "inv_first_ISI",
-                    "Mean": 41.3156,
-                    "Std": 21.6692
-                },
-                {
-                    "Feature": "inv_last_ISI",
-                    "Mean": 19.9628,
-                    "Std": 7.4057
-                },
-                {
-                    "Feature": "inv_time_to_first_spike",
-                    "Mean": 31.7221,
-                    "Std": 3.1874
-                },
-                {
-                    "Feature": "steady_state_voltage",
-                    "Mean": -64.8553,
-                    "Std": 0.9534
-                },
-                {
-                    "Feature": "voltage_base",
-                    "Mean": -65.0453,
-                    "Std": 0.9041
-                },
-                {
-                    "Feature": "AHP_depth_abs",
-                    "Mean": -52.7415,
-                    "Std": 1.4732
-                },
-                {
-                    "Feature": "AHP_time_from_peak",
-                    "Mean": 4.2597,
-                    "Std": 1.5602
-                },
-                {
-                    "Feature": "AP2_amp",
-                    "Mean": 84.7819,
-                    "Std": 4.2673
-                },
-                {
-                    "Feature": "AP_amplitude",
-                    "Mean": 84.4446,
-                    "Std": 4.5457
-                },
-                {
-                    "Feature": "AP_begin_voltage",
-                    "Mean": -51.1295,
-                    "Std": 1.9676
-                },
-                {
-                    "Feature": "AP_duration_half_width",
-                    "Mean": 1.2266,
-                    "Std": 0.0957
-                },
-                {
-                    "Feature": "AP_fall_time",
-                    "Mean": 1.8744,
-                    "Std": 0.1541
-                },
-                {
-                    "Feature": "AP_rise_time",
-                    "Mean": 0.6474,
-                    "Std": 0.0468
-                },
-                {
-                    "Feature": "APlast_amp",
-                    "Mean": 82.8837,
-                    "Std": 5.0409
-                },
-                {
-                    "Feature": "time_to_last_spike",
-                    "Mean": 252.9133,
-                    "Std": 18.9666
-                }
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ]
             ],
             "0.2": [
-                {
-                    "Feature": "Spikecount",
-                    "Mean": 9.1333,
-                    "Std": 1.8809
-                },
-                {
-                    "Feature": "inv_first_ISI",
-                    "Mean": 71.3776,
-                    "Std": 23.805
-                },
-                {
-                    "Feature": "inv_last_ISI",
-                    "Mean": 25.2047,
-                    "Std": 6.1203
-                },
-                {
-                    "Feature": "inv_time_to_first_spike",
-                    "Mean": 49.0358,
-                    "Std": 8.501
-                },
-                {
-                    "Feature": "steady_state_voltage",
-                    "Mean": -65.3233,
-                    "Std": 1.1019
-                },
-                {
-                    "Feature": "voltage_base",
-                    "Mean": -65.1791,
-                    "Std": 0.9649
-                },
-                {
-                    "Feature": "AHP_depth_abs",
-                    "Mean": -51.7135,
-                    "Std": 1.4109
-                },
-                {
-                    "Feature": "AHP_time_from_peak",
-                    "Mean": 5.131,
-                    "Std": 1.6528
-                },
-                {
-                    "Feature": "AP2_amp",
-                    "Mean": 81.7932,
-                    "Std": 4.7442
-                },
-                {
-                    "Feature": "AP_amplitude",
-                    "Mean": 81.7908,
-                    "Std": 4.5966
-                },
-                {
-                    "Feature": "AP_begin_voltage",
-                    "Mean": -50.1447,
-                    "Std": 1.9673
-                },
-                {
-                    "Feature": "AP_duration_half_width",
-                    "Mean": 1.2543,
-                    "Std": 0.1086
-                },
-                {
-                    "Feature": "AP_fall_time",
-                    "Mean": 1.8766,
-                    "Std": 0.2425
-                },
-                {
-                    "Feature": "AP_rise_time",
-                    "Mean": 0.6605,
-                    "Std": 0.0441
-                },
-                {
-                    "Feature": "APlast_amp",
-                    "Mean": 79.6,
-                    "Std": 4.8218
-                },
-                {
-                    "Feature": "time_to_last_spike",
-                    "Mean": 279.4267,
-                    "Std": 8.3373
-                }
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ]
             ],
             "0.25": [
-                {
-                    "Feature": "Spikecount",
-                    "Mean": 11.3333,
-                    "Std": 1.8499
-                },
-                {
-                    "Feature": "inv_first_ISI",
-                    "Mean": 93.952,
-                    "Std": 18.2084
-                },
-                {
-                    "Feature": "inv_last_ISI",
-                    "Mean": 29.9611,
-                    "Std": 5.0591
-                },
-                {
-                    "Feature": "inv_time_to_first_spike",
-                    "Mean": 68.876,
-                    "Std": 13.6468
-                },
-                {
-                    "Feature": "steady_state_voltage",
-                    "Mean": -65.9655,
-                    "Std": 1.117
-                },
-                {
-                    "Feature": "voltage_base",
-                    "Mean": -65.5785,
-                    "Std": 0.9657
-                },
-                {
-                    "Feature": "AHP_depth_abs",
-                    "Mean": -51.1812,
-                    "Std": 1.4175
-                },
-                {
-                    "Feature": "AHP_time_from_peak",
-                    "Mean": 6.1279,
-                    "Std": 1.7497
-                },
-                {
-                    "Feature": "AP2_amp",
-                    "Mean": 79.2277,
-                    "Std": 4.2177
-                },
-                {
-                    "Feature": "AP_amplitude",
-                    "Mean": 79.7826,
-                    "Std": 4.1716
-                },
-                {
-                    "Feature": "AP_begin_voltage",
-                    "Mean": -49.3692,
-                    "Std": 2.0246
-                },
-                {
-                    "Feature": "AP_duration_half_width",
-                    "Mean": 1.3158,
-                    "Std": 0.0863
-                },
-                {
-                    "Feature": "AP_fall_time",
-                    "Mean": 1.9408,
-                    "Std": 0.1885
-                },
-                {
-                    "Feature": "AP_rise_time",
-                    "Mean": 0.6797,
-                    "Std": 0.0507
-                },
-                {
-                    "Feature": "APlast_amp",
-                    "Mean": 77.5431,
-                    "Std": 4.3222
-                },
-                {
-                    "Feature": "time_to_last_spike",
-                    "Mean": 282.9,
-                    "Std": 4.1353
-                }
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ]
             ]
-        },
-        "stim_delay": 200.0,
-        "stim_duration": 300.0
+        }
     }
 }

@@ -1100,6 +1100,7 @@ class Ui_Neuroptimus(object):
             pass
         
         self.input_label.setText(QtCore.QCoreApplication.translate("Neuroptimus", input_string))
+        print(self.core.option_handler.__dict__)
         if self.core.option_handler.type[-1]!="features":
                 self.my_list = copy(self.core.ffun_calc_list)
                
@@ -1365,6 +1366,9 @@ class Ui_Neuroptimus(object):
                 [tmp.remove("None") for i in range(tmp.count("None"))]
                 self.section_rec.addItems(tmp)
                 self.section_stim.addItems(tmp)
+                if "soma" in tmp:
+                    self.section_rec.setCurrentText("soma")
+                    self.section_stim.setCurrentText("soma")
             except:
                 popup("Section error")
 
@@ -1631,7 +1635,7 @@ class Ui_Neuroptimus(object):
                     tmp.update({aspect:value})
             tmp.update({
                 "num_params" : len(self.core.option_handler.GetObjTOOpt()),
-                "boundaries" : self.core.option_handler.boundaries ,
+                "boundaries" : self.core.option_handler.boundaries,
                 "starting_points" : self.seed
                 })
             self.kwargs.update({"algo_options":tmp})
@@ -2315,36 +2319,33 @@ class EvaluateSingle(QtWidgets.QMainWindow):
         vstep = 35
         hoffset = 10
         voffset = 15
-        for n in range(n_o_params):
-            param=parent.core.option_handler.GetObjTOOpt()[n].split()
+        self.option_handler=parent.core.option_handler
+        self.evaluate_table = QtWidgets.QTableWidget(self)
+        self.evaluate_table.setGeometry(QtCore.QRect(10, 10, 302, 361))
+        self.evaluate_table.setObjectName("evaluate_table")
+        self.evaluate_table.setColumnCount(2)
+        self.evaluate_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.evaluate_table.setHorizontalHeaderLabels(("Parameters;Value").split(";"))
+        self.evaluate_table.setRowCount(len(self.option_handler.GetObjTOOpt()))
+        
+
+        for l in range(len(self.option_handler.GetObjTOOpt())):
+            param=self.option_handler.GetObjTOOpt()[l].split()
             if len(param)==4:
-                p_name=param[0] + " " + param[1] + " " + param[3]
+                label=param[0] + " " + param[1] + " " + param[3]
             else:
                 if param[0]!=param[-1]:
-                    p_name=param[0] + " " + param[-1]
+                    label=param[0] + " " + param[-1]
                 else:
-                    p_name=param[-1]
+                    label=param[-1]
+           
             
-            #p_name=self.parent.core.option_handler.GetObjTOOpt()[n].split()[-1]
-            lbl = QtWidgets.QLabel(self)
-            lbl.setGeometry(QtCore.QRect(hoffset, voffset + n * vstep, 121, 16))
-            font = QtGui.QFont()
-            font.setFamily("Ubuntu")
-            font.setPointSize(10)
-            font.setBold(False)
-            font.setWeight(50)
-            lbl.setFont(font)
-            lbl.setObjectName("ctrl")
-            lbl.setText(QtCore.QCoreApplication.translate("Neuroptimus", p_name))
-
-            ctrl = QtWidgets.QLineEdit(self)
-            ctrl.setGeometry(QtCore.QRect(hstep, voffset + n * vstep, 61, 22))
-            ctrl.setObjectName("ctrl")
-            if self.parent.seed:
-            	ctrl.setText(str(self.parent.seed[n]))
-            lbl.show()
-            ctrl.show()
-            self.container.append(ctrl)
+            item = QTableWidgetItem(label)
+            item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
+            self.evaluate_table.setItem(l, 0, item)
+            
+        
+           
 
         Evaluatebutton = QtWidgets.QPushButton(self)
         Evaluatebutton.setGeometry(QtCore.QRect(10, 400, 80, 22))
@@ -2362,12 +2363,11 @@ class EvaluateSingle(QtWidgets.QMainWindow):
         #try:
         self.parent.core.optimal_params = []
         self.parent.core.option_handler.boundaries = [[],[]]
-        for n in self.container:
-            param_value=float(n.text())
-            self.parent.core.optimal_params.append(param_value)
+        for idx in range(self.evaluate_table.rowCount()):
+            self.parent.core.optimal_params.append(float(self.evaluate_table.item(idx,1).text()))
             self.parent.core.option_handler.boundaries[0].append(param_value*0.99)
             self.parent.core.option_handler.boundaries[1].append(param_value*1.01)
-            print(self.parent.core.option_handler.boundaries)
+            
         self.parent.runsim(singlerun=True)
         self.close()
         '''except ValueError as e:
@@ -2382,12 +2382,12 @@ class EvaluateSingle(QtWidgets.QMainWindow):
         if fileName:
             try:
                 f = open(fileName, "r")
-                for idx, l in enumerate(f):
-                    self.container[idx].setText(str(l))
+                for idx,l in enumerate(f):
+                    self.evaluate_table.setItem(idx, 1, QTableWidgetItem(str(l)))
+            except IOError:
+                popup("Error reading the file!")
             except Exception as e:
-                
-                
-                popup("Error: " + e)
+                print("Error:"+ str(e))
                 
     
    
