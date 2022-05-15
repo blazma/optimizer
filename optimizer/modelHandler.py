@@ -120,9 +120,6 @@ class modelHandlerNeuron():
         #self.hoc_obj.steps_per_ms=1/settings[1]
         #self.hoc_obj.dt=settings[1]
 
-    def __del__(self):
-            print("model instance deleted")
-
     # creates and adjusts the stimulus parameters
     # stims: 0.: stimulation type, 1.: place inside the section, 2.: section name
     def CreateStimuli(self,stims):

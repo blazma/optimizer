@@ -321,6 +321,7 @@ class CMAES_CMAES(baseOptimizer):
 		self.stat_file = open(self.directory + "/stat_file.txt", "w")
 		self.ind_file = open(self.directory + "/ind_file.txt", "w")
 		self.all_solutions = {}
+		self.gen_fits = []
 		"""try:
 			if isinstance(option_obj.starting_points[0], list):
 				self.starting_points = option_obj.starting_points
@@ -341,17 +342,16 @@ class CMAES_CMAES(baseOptimizer):
 			"""
 			Performs the optimization.
 			"""
-			with Pool(4) as p:
+			with Pool(int(self.number_of_cpu)) as p:
 				for generation in range(int(self.max_evaluation)):
-					print("Generation: {0}".format(generation))
+					print("Generation: {0}".format(generation+1))
 					solutions = []
 					
 					pop = [[normalize(self.cmaoptimizer.ask(),self)] for _ in range(self.cmaoptimizer.population_size)]
 					fitness = p.map(self.ffun,pop)
 					solutions=[(p[0], f[0]) for p,f in zip(pop,fitness)]
-					print(solutions)
 					self.cmaoptimizer.tell(solutions)
-					
+					self.gen_fits.append(fitness)
 					self.all_solutions.update({tuple(p):f for p,f in solutions})
 
 

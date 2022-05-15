@@ -459,6 +459,18 @@ class coreModul():
 				all_solutions = dict(sorted(self.optimizer.all_solutions.items(), key=lambda item: item[1]))
 				self.cands = list(all_solutions.keys())
 				self.fits = list(all_solutions.values())
+				with open("ind_file.txt",'w') as ind_file:
+					gen = 0
+					for idx,(k,v) in enumerate(self.optimizer.all_solutions.items()):
+						if idx % self.option_handler.pop_size == 0:
+							gen += 1
+						ind_file.write("{0}, {1}, {2}, {3} \n".format(gen,
+						int(idx % self.option_handler.pop_size)+1, v, k))
+				with open("stat_file.txt",'w') as stat_file:
+					for idx,fitness in enumerate(self.optimizer.gen_fits):
+						stat_file.write("{0}, {1}, {2}, {3}, {4}, {5}, {6} \n".format(
+							idx+1, int(self.option_handler.pop_size), np.max(fitness),
+							 np.min(fitness), np.median(fitness), np.mean(fitness), np.std(fitness)))
 			elif(self.option_handler.current_algorithm.split("_")[-1] == "INSPYRED"):
 				self.optimizer.final_pop.sort(reverse=True)
 				for i in range(len(self.optimizer.final_pop)):
@@ -470,7 +482,7 @@ class coreModul():
 			print((self.cands[0], "CANDS"))
 			print((self.fits[0], "FITS"))
 			print(("Optimization lasted for ", stop_time-start_time, " s"))	
-			self.optimal_params=self.cands[0]
+			self.normed_params=self.cands[0]
 		
 		
 
@@ -486,8 +498,8 @@ class coreModul():
 		"""
 		self.final_result=[]
 		self.error_comps=[]
-		self.last_fitness=self.optimizer.fit_obj.combineFeatures([self.optimal_params],delete_model=False)
-		self.renormed_params=self.optimizer.fit_obj.ReNormalize(self.optimal_params)
+		self.last_fitness=self.optimizer.fit_obj.combineFeatures([self.normed_params],delete_model=False)
+		self.optimal_params=self.optimizer.fit_obj.ReNormalize(self.normed_params)
 		#calculate the error components
 		if self.option_handler.type[-1]!= 'features':
 			k_range=self.data_handler.number_of_traces()
@@ -513,7 +525,7 @@ class coreModul():
 		tmp_str+="<p>"+self.htmlStyle("Optimization of <b>"+self.name+".hoc</b> based on: "+self.option_handler.input_dir,self.htmlAlign("center"))+"</p>\n"
 		tmp_list=[]
 		#tmp_fit=self.optimizer.fit_obj.ReNormalize(self.optimizer.final_pop[0].candidate[0:len(self.option_handler.adjusted_params)])
-		tmp_fit=self.renormed_params
+		tmp_fit=self.optimal_params
 		for name,mmin,mmax,f in zip(self.option_handler.GetObjTOOpt(),self.option_handler.boundaries[0],self.option_handler.boundaries[1],tmp_fit):
 			tmp_list.append([str(name),str(mmin),str(mmax),str(f)])
 		param_list=tmp_list
@@ -586,7 +598,7 @@ class coreModul():
 		param_dict=[{"name":value[0],"min_boundary":value[1],"max_boundary":value[2],"optimum":value[3]} for value in param_list]
 		error_dict=[{"name":value[0],"value":value[1],"weight":value[2],"weighted_value":value[3]} for value in tmp_list]  
 		alg_dict=self.option_handler.current_algorithm
-		opt_dict = {"final_fitness":self.last_fitness,"renormed_params":self.renormed_params}
+		opt_dict = {"final_fitness":self.last_fitness,"optimal_params":self.optimal_params}
 		target_dict = {"data_type":self.option_handler.type[-1],"file_name":self.option_handler.input_dir.split('/')[-1],"number_of_traces":k_range,"stim_delay":self.option_handler.stim_del,
 			"stim_duration":self.option_handler.stim_dur}
 		json_var={"model":self.name,"optimization":opt_dict,"parameters":param_dict,"error_function":error_dict, "algorithm":alg_dict,"target_data":target_dict}

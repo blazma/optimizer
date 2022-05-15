@@ -22,7 +22,7 @@
         "cognitive_rate": null,
         "cooling_rate": null,
         "crossover_rate": null,
-        "current_algorithm": "CMAES_PYGMO",
+        "current_algorithm": "CMAES_CMAES",
         "f_tol": null,
         "feats": [
             "MSE",

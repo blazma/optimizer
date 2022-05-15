@@ -748,7 +748,7 @@ class Ui_Neuroptimus(object):
         self.aspectlist.cellChanged.connect(self.aspect_changed)
         self.seed = []
         self.resolution=0
-        self.Recom=["Classical Evolution Strategy (CES) - Inspyred","Covariance Matrix Adaptation ES (CMAES) - Pygmo",
+        self.Recom=["Classical Evolution Strategy (CES) - Inspyred","Covariance Matrix Adaptation ES (CMAES) - Cmaes", "Covariance Matrix Adaptation ES (CMAES) - Pygmo",
                 "Particle Swarm (PSO) - Inspyred","Particle Swarm Gen (PSOG) - Pygmo","Indicator Based (IBEA) - Bluepyopt","L-BFGS-B - Scipy","Random Search"]
         self.Inspyred=["Classical Evolution Strategy (CES) - Inspyred","Particle Swarm (PSO) - Inspyred",
                 "Differential Evolution (DE) - Inspyred",
@@ -1685,7 +1685,7 @@ class Ui_Neuroptimus(object):
         text = "Results:"
         #for n, k in zip(self.core.option_handler.GetObjTOOpt(), self.core.Neuroptimus.fit_obj.ReNormalize(self.core.Neuroptimus.final_pop[0].candidate[0:len(self.core.option_handler.adjusted_params)])):
         if self.core.cands:
-            for n, k in zip(self.core.option_handler.GetObjTOOpt(), self.core.cands[0]):
+            for n, k in zip(self.core.option_handler.GetObjTOOpt(), self.core.optimal_params):
                 if n.split()[0]==n.split()[-1]:
                     param=[n.split()[0], n.split()[-1]]
                     text += "\n" + param[0] + "\n" + "\t" + str(k)
@@ -1793,7 +1793,7 @@ class Ui_Neuroptimus(object):
             if save_file_name[0]:
                 f=open(str(save_file_name)+".txt","w")
                 #params=self.core.Neuroptimus.final_pop[0].candidate[0:len(self.core.option_handler.adjusted_params)]
-                f.write("\n".join(map(str,self.core.renormed_params)))
+                f.write("\n".join(map(str,self.core.optimal_params)))
         except Exception as e:
             popup("Couldn't save the parameters." + str(e))
 

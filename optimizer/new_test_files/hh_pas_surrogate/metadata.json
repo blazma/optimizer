@@ -2,12 +2,12 @@
     "model": "hh_pas",
     "optimization": {
         "final_fitness": [
-            0.038391861776481885
+            0.03397855129225907
         ],
-        "renormed_params": [
-            0.2800689020121146,
-            0.05569524891733495,
-            1e-05
+        "optimal_params": [
+            0.7027788846072199,
+            0.13865127011924128,
+            0.001
         ]
     },
     "parameters": [
@@ -15,36 +15,36 @@
             "name": "soma 0 hh gnabar_hh",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.2800689020121146"
+            "optimum": "0.7027788846072199"
         },
         {
             "name": "soma 0 hh gkbar_hh",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.05569524891733495"
+            "optimum": "0.13865127011924128"
         },
         {
             "name": "soma 0 hh gl_hh",
             "min_boundary": "1e-05",
             "max_boundary": "0.001",
-            "optimum": "1e-05"
+            "optimum": "0.001"
         }
     ],
     "error_function": [
         {
             "name": "MSE",
-            "value": "0.06249800926724948",
+            "value": "0.053251220231576954",
             "weight": "0.5",
-            "weighted_value": "0.03124900463362474"
+            "weighted_value": "0.026625610115788477"
         },
         {
             "name": "Spike count",
-            "value": "0.014285714285714285",
+            "value": "0.014705882352941176",
             "weight": "0.5",
-            "weighted_value": "0.007142857142857143"
+            "weighted_value": "0.007352941176470588"
         }
     ],
-    "algorithm": "CMAES_PYGMO",
+    "algorithm": "CMAES_CMAES",
     "target_data": {
         "data_type": "voltage",
         "file_name": "input_data2.dat",
