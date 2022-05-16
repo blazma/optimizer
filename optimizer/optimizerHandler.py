@@ -334,8 +334,9 @@ class CMAES_CMAES(baseOptimizer):
 
 		from cmaes import CMA
 		import numpy as np
-		
-		self.cmaoptimizer = CMA(mean=(np.ones(self.num_obj)*0.5), sigma=1.3, seed=1234, population_size=int(self.pop_size), bounds=np.transpose(np.array(self.min_max)))
+		print(np.array([[0,1]]*len(self.min_max[0])))
+		print(np.array([[0,1]]*len(self.min_max[0])).shape)
+		self.cmaoptimizer = CMA(mean=(np.ones(len(self.min_max[0]))*0.5), sigma=1.3, seed=1234, population_size=int(self.pop_size), bounds=np.array([[0,1]]*len(self.min_max[0])))
 		
 				
 	def Optimize(self):
@@ -347,7 +348,7 @@ class CMAES_CMAES(baseOptimizer):
 					print("Generation: {0}".format(generation+1))
 					solutions = []
 					
-					pop = [[normalize(self.cmaoptimizer.ask(),self)] for _ in range(self.cmaoptimizer.population_size)]
+					pop = [[self.cmaoptimizer.ask()] for _ in range(self.cmaoptimizer.population_size)]
 					fitness = p.map(self.ffun,pop)
 					solutions=[(p[0], f[0]) for p,f in zip(pop,fitness)]
 					self.cmaoptimizer.tell(solutions)

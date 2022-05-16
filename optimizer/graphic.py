@@ -829,7 +829,8 @@ class Ui_Neuroptimus(object):
             "Bee Colony (ABC) - Pygmo":[descr19.copy(),descr20.copy(),descr41],
             "FullGrid - Pygmo":[descr19.copy(),descr20.copy(),descr41],
             "Praxis - Pygmo":[descr19.copy(),descr20.copy(),descr41],
-            "Nelder-Mead (NM) - Pygmo":[descr19.copy(),descr20.copy(),descr41]
+            "Nelder-Mead (NM) - Pygmo":[descr19.copy(),descr20.copy(),descr41],
+            "Covariance Matrix Adaptation ES (CMAES) - Cmaes":[descr19.copy(),descr20.copy(),descr40],
                 #NM,prax 
             }
         

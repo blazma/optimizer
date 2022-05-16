@@ -49,7 +49,7 @@
         "cognitive_rate": null,
         "cooling_rate": null,
         "crossover_rate": null,
-        "current_algorithm": "CMAES_PYGMO",
+        "current_algorithm": "CMAES_CMAES",
         "f_tol": null,
         "feats": [
             "Spikecount",
@@ -83,7 +83,7 @@
         "input_scale": "mV",
         "input_size": 6,
         "m_gauss": null,
-        "max_evaluation": 2.0,
+        "max_evaluation": 5.0,
         "model_path": "/home/mohacsi/Desktop/optimizer/optimizer/new_test_files/Detailed_CA1_pyramidal_cell_model/load_model_na_inhomo_minimal_model+KM+KA+KD.hoc",
         "model_spec_dir": "/home/mohacsi/Desktop/optimizer/optimizer/new_test_files/Detailed_CA1_pyramidal_cell_model/mod_files",
         "mutation_rate": null,
@@ -92,7 +92,7 @@
         "num_iter": null,
         "num_params": 12,
         "num_repet": null,
-        "number_of_cpu": 2,
+        "number_of_cpu": 4,
         "param_vals": [
             0.1,
             0.1,
@@ -107,7 +107,7 @@
             0.1,
             0.1
         ],
-        "pop_size": 2.0,
+        "pop_size": 8.0,
         "run_controll_dt": 0.05,
         "run_controll_pos": 0.5,
         "run_controll_record": "v",

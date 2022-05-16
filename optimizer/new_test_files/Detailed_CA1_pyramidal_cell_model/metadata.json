@@ -2,21 +2,21 @@
     "model": "load_model_na_inhomo_minimal_model+KM+KA+KD",
     "optimization": {
         "final_fitness": [
-            349.5836685749188
+            NaN
         ],
-        "renormed_params": [
-            11.799535945404386,
-            0.060607281772091334,
-            0.002,
-            0.482804862371137,
+        "optimal_params": [
+            5.0,
             0.01,
-            7.872830269468682e-05,
+            0.002,
+            0.5,
+            10.0,
+            1e-05,
             15.0,
             -40.0,
-            5e-05,
-            5.0,
-            0.3,
-            0.005518318311367116
+            0.01,
+            0.0001,
+            3.0,
+            0.002918006461030755
         ]
     },
     "parameters": [
@@ -24,13 +24,13 @@
             "name": "Na_BG_act_inact_shift 0",
             "min_boundary": "5.0",
             "max_boundary": "15.0",
-            "optimum": "11.799535945404386"
+            "optimum": "5.0"
         },
         {
             "name": "gmax_K_DRS4_params_voltage_dep_dend 1",
             "min_boundary": "0.01",
             "max_boundary": "0.2",
-            "optimum": "0.060607281772091334"
+            "optimum": "0.01"
         },
         {
             "name": "gmax_Na_BG_soma 2",
@@ -42,19 +42,19 @@
             "name": "gmax_K_DRS4_params_voltage_dep_soma 3",
             "min_boundary": "0.01",
             "max_boundary": "0.5",
-            "optimum": "0.482804862371137"
+            "optimum": "0.5"
         },
         {
             "name": "gmax_K_DRS4_params_voltage_dep_axon 4",
             "min_boundary": "0.01",
             "max_boundary": "10.0",
-            "optimum": "0.01"
+            "optimum": "10.0"
         },
         {
             "name": "gmax_Leak_pyr 5",
             "min_boundary": "1e-05",
             "max_boundary": "0.0001",
-            "optimum": "7.872830269468682e-05"
+            "optimum": "1e-05"
         },
         {
             "name": "H_ratio 6",
@@ -72,25 +72,25 @@
             "name": "gbar_km_soma_dend 8",
             "min_boundary": "5e-05",
             "max_boundary": "0.01",
-            "optimum": "5e-05"
+            "optimum": "0.01"
         },
         {
             "name": "gbar_km_axon 9",
             "min_boundary": "0.0001",
             "max_boundary": "5.0",
-            "optimum": "5.0"
+            "optimum": "0.0001"
         },
         {
             "name": "KA_ratio 10",
             "min_boundary": "0.3",
             "max_boundary": "3.0",
-            "optimum": "0.3"
+            "optimum": "3.0"
         },
         {
             "name": "gbar_kd 11",
             "min_boundary": "1e-05",
             "max_boundary": "0.01",
-            "optimum": "0.005518318311367116"
+            "optimum": "0.002918006461030755"
         }
     ],
     "error_function": [
@@ -120,27 +120,27 @@
         },
         {
             "name": "steady_state_voltage",
-            "value": "22.251863856043357",
+            "value": "nan",
             "weight": "0.05",
-            "weighted_value": "1.112593192802168"
+            "weighted_value": "nan"
         },
         {
             "name": "voltage_base",
-            "value": "25.958594287735025",
+            "value": "nan",
             "weight": "0.05",
-            "weighted_value": "1.2979297143867514"
+            "weighted_value": "nan"
         },
         {
             "name": "voltage_deflection",
-            "value": "4.008688644930585",
+            "value": "nan",
             "weight": "0.05",
-            "weighted_value": "0.20043443224652924"
+            "weighted_value": "nan"
         },
         {
             "name": "voltage_deflection_begin",
-            "value": "3.59095906944929",
+            "value": "nan",
             "weight": "0.05",
-            "weighted_value": "0.17954795347246452"
+            "weighted_value": "nan"
         },
         {
             "name": "AHP_depth_abs",
@@ -204,18 +204,18 @@
         },
         {
             "name": "sag_amplitude",
-            "value": "4.195012205309797",
+            "value": "250",
             "weight": "0.05",
-            "weighted_value": "0.20975061026548986"
+            "weighted_value": "12.5"
         },
         {
             "name": "sag_ratio1",
-            "value": "4.513771753316028",
+            "value": "250",
             "weight": "0.05",
-            "weighted_value": "0.22568858766580144"
+            "weighted_value": "12.5"
         }
     ],
-    "algorithm": "CMAES_PYGMO",
+    "algorithm": "CMAES_CMAES",
     "target_data": {
         "data_type": "features",
         "file_name": "opt_data_JMakara_OUR_features_selected_stim.json",
