@@ -333,9 +333,6 @@ class CMAES_CMAES(baseOptimizer):
 			print("starting points: ", self.starting_points)
 
 		from cmaes import CMA
-		import numpy as np
-		print(np.array([[0,1]]*len(self.min_max[0])))
-		print(np.array([[0,1]]*len(self.min_max[0])).shape)
 		self.cmaoptimizer = CMA(mean=(np.ones(len(self.min_max[0]))*0.5), sigma=1.3, seed=1234, population_size=int(self.pop_size), bounds=np.array([[0,1]]*len(self.min_max[0])))
 		
 				
@@ -343,17 +340,17 @@ class CMAES_CMAES(baseOptimizer):
 			"""
 			Performs the optimization.
 			"""
-			with Pool(int(self.number_of_cpu)) as p:
+			with Pool(int(self.number_of_cpu)) as pool:
 				for generation in range(int(self.max_evaluation)):
 					print("Generation: {0}".format(generation+1))
 					solutions = []
 					
-					pop = [[self.cmaoptimizer.ask()] for _ in range(self.cmaoptimizer.population_size)]
-					fitness = p.map(self.ffun,pop)
-					solutions=[(p[0], f[0]) for p,f in zip(pop,fitness)]
+					population = [[self.cmaoptimizer.ask()] for _ in range(self.cmaoptimizer.population_size)]
+					fitness = pool.map(self.ffun,population)
+					solutions=[(pop[0], fit[0]) for pop,fit in zip(population,fitness)]
 					self.cmaoptimizer.tell(solutions)
 					self.gen_fits.append(fitness)
-					self.all_solutions.update({tuple(p):f for p,f in solutions})
+					self.all_solutions.update({tuple(pop):fit for pop,fit in solutions})
 
 
 class PygmoAlgorithmBasis(baseOptimizer):

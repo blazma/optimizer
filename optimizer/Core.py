@@ -44,6 +44,7 @@ class coreModul():
 		self.model_handler=None
 		self.optimizer=None
 		self.optimal_params=None
+		self.normed_params=None
 		self.wfits = []
 		self.wfits2 = []
 		f_m={"MSE": "calc_ase",
@@ -483,6 +484,8 @@ class coreModul():
 			print((self.fits[0], "FITS"))
 			print(("Optimization lasted for ", stop_time-start_time, " s"))	
 			self.normed_params=self.cands[0]
+		else:
+			self.normed_params=normalize(self.optimal_params,self.optimizer)
 		
 		
 

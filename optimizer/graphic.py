@@ -2365,10 +2365,10 @@ class EvaluateSingle(QtWidgets.QMainWindow):
         self.parent.core.optimal_params = []
         self.parent.core.option_handler.boundaries = [[],[]]
         for idx in range(self.evaluate_table.rowCount()):
-            self.parent.core.optimal_params.append(float(self.evaluate_table.item(idx,1).text()))
+            param_value=float(self.evaluate_table.item(idx,1).text())
+            self.parent.core.optimal_params.append(param_value)
             self.parent.core.option_handler.boundaries[0].append(param_value*0.99)
             self.parent.core.option_handler.boundaries[1].append(param_value*1.01)
-            
         self.parent.runsim(singlerun=True)
         self.close()
         '''except ValueError as e:
