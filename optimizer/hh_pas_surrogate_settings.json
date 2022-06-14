@@ -22,7 +22,11 @@
         "cognitive_rate": null,
         "cooling_rate": null,
         "crossover_rate": null,
-        "current_algorithm": "CMAES_CMAES",
+        "current_algorithm": {"CES_Inspyred": {
+            "epsilon": 1e-04,
+            "tau": null,
+            "tau_prime": null
+        }},
         "f_tol": null,
         "feats": [
             "MSE",

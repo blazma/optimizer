@@ -2,49 +2,55 @@
     "model": "hh_pas",
     "optimization": {
         "final_fitness": [
-            2.598215913421485e-14
+            0.04293789487376719
         ],
         "optimal_params": [
-            0.12,
-            0.036,
-            0.0003
+            0.8877464263019639,
+            0.1667634109339722,
+            0.0005806447329759319
         ]
     },
     "parameters": [
         {
             "name": "soma 0 hh gnabar_hh",
-            "min_boundary": "0.11879999999999999",
-            "max_boundary": "0.1212",
-            "optimum": "0.12"
+            "min_boundary": "0.001",
+            "max_boundary": "1.0",
+            "optimum": "0.8877464263019639"
         },
         {
             "name": "soma 0 hh gkbar_hh",
-            "min_boundary": "0.03564",
-            "max_boundary": "0.036359999999999996",
-            "optimum": "0.036"
+            "min_boundary": "0.001",
+            "max_boundary": "1.0",
+            "optimum": "0.1667634109339722"
         },
         {
             "name": "soma 0 hh gl_hh",
-            "min_boundary": "0.00029699999999999996",
-            "max_boundary": "0.000303",
-            "optimum": "0.0003"
+            "min_boundary": "1e-05",
+            "max_boundary": "0.001",
+            "optimum": "0.0005806447329759319"
         }
     ],
     "error_function": [
         {
             "name": "MSE",
-            "value": "5.19643182684297e-14",
+            "value": "0.05602504347887766",
             "weight": "0.5",
-            "weighted_value": "2.598215913421485e-14"
+            "weighted_value": "0.02801252173943883"
         },
         {
             "name": "Spike count",
-            "value": "0.0",
+            "value": "0.029850746268656716",
             "weight": "0.5",
-            "weighted_value": "0.0"
+            "weighted_value": "0.014925373134328358"
         }
     ],
-    "algorithm": "SINGLERUN",
+    "algorithm": {
+        "CES_Inspyred": {
+            "epsilon": 0.0001,
+            "tau": null,
+            "tau_prime": null
+        }
+    },
     "target_data": {
         "data_type": "voltage",
         "file_name": "input_data2.dat",

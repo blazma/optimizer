@@ -834,7 +834,7 @@ class Ui_Neuroptimus(object):
                 #NM,prax 
             }
         
-
+        self.algo_dict=self.core.option_handler.algorithm_parameters_dict.copy()
 
         self.tabwidget.setTabText(self.tabwidget.indexOf(self.eval_tab), _translate("Neuroptimus", "Results"))
         self.label_72.setText(_translate("Neuroptimus", "Final Result"))
@@ -1511,24 +1511,39 @@ class Ui_Neuroptimus(object):
         """
         try:
             selected_algo = self.algolist.selectionModel().selectedRows()[0].row()
-            aspects=self.algo_dict.get(str(self.algolist.item(selected_algo, 0).text()))
-            self.aspectlist.setRowCount(len(aspects)+1)
+            algo_name = str(self.algolist.item(selected_algo, 0).text())
+            aspects = self.algo_dict[algo_name[algo_name.find("(")+1:].replace(")","").replace(" - ","_")]
+            self.aspectlist.setRowCount(len(aspects)+4)
             item = QTableWidgetItem('Seed')
             item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
             self.aspectlist.setItem(0, 0, item)
             item2 = QTableWidgetItem('1234')   
             self.aspectlist.setItem(0, 1, item2)
-            for index,elems in enumerate(aspects):
-                key=next(iter(elems))
+            item = QTableWidgetItem('Size of Population')
+            item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
+            self.aspectlist.setItem(1, 0, item)
+            item2 = QTableWidgetItem('100')   
+            self.aspectlist.setItem(1, 1, item2)
+            item = QTableWidgetItem('Number of Generations')
+            item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
+            self.aspectlist.setItem(2, 0, item)
+            item2 = QTableWidgetItem('100')
+            self.aspectlist.setItem(2, 1, item2)
+            item = QTableWidgetItem('Number of Islands')
+            item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
+            self.aspectlist.setItem(3, 0, item)
+            item2 = QTableWidgetItem('1')   
+            self.aspectlist.setItem(3, 1, item2)
+            for index, (key, value) in enumerate(aspects.items()):
                 item = QTableWidgetItem(key)
                 item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
-                self.aspectlist.setItem(index+1, 0, item)     
-                item2 = QTableWidgetItem(str(elems.get(key)))
-                if str(key)=='Force bounds:':
+                self.aspectlist.setItem(index+4, 0, item)     
+                item2 = QTableWidgetItem(str(value))
+                if str(value)=='True' or str(value)=='False':
                     item2 = QTableWidgetItem()
                     item2.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
                     item2.setCheckState(QtCore.Qt.Unchecked)    
-                self.aspectlist.setItem(index+1, 1, item2)
+                self.aspectlist.setItem(index+4, 1, item2)
         except:
             print('Algorithm selection error')
 
@@ -1629,10 +1644,10 @@ class Ui_Neuroptimus(object):
                 allRows = self.aspectlist.rowCount()
                 for row in range(1,allRows):
                     aspect=str(self.aspectlist.item(row,0).text())
-                    if aspect=='Force bounds:':
-                        value=bool(self.aspectlist.item(row,1).checkState())
-                    else:
+                    if self.aspectlist.item(row,1).text():
                         value=float(self.aspectlist.item(row,1).text())
+                    else:
+                        value=bool(self.aspectlist.item(row,1).checkState())
                     tmp.update({aspect:value})
             tmp.update({
                 "num_params" : len(self.core.option_handler.GetObjTOOpt()),

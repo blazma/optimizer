@@ -389,8 +389,7 @@ class coreModul():
 			if self.option_handler.run_controll_dt>self.data_handler.data.step:
 				self.option_handler.run_controll_dt=self.data_handler.data.step
 
-		self.option_handler.current_algorithm=self.option_handler.current_algorithm.upper().replace("-","_").replace(" ","")
-		exec("self.optimizer="+self.option_handler.current_algorithm+"(self.data_handler,self.option_handler)")
+		exec("self.optimizer="+self.option_handler.algorithm_name+"(self.data_handler,self.option_handler)")
 		
 		if self.option_handler.type[-1]!= 'features':
 			self.feat_str=", ".join([self.ffun_mapper[x.__name__] for x in self.option_handler.feats])
@@ -399,7 +398,7 @@ class coreModul():
 
 		self.cands,self.fits = [],[]
 
-		if self.option_handler.current_algorithm != "SINGLERUN":
+		if self.option_handler.algorithm_name != "SINGLERUN":
 			with open(self.option_handler.GetFileOption()+"/"+self.option_handler.GetFileOption().split("/")[-1]+"_settings.json", 'w') as outfile:
 				json.dump(self.option_handler.create_dict_for_json(self.ffun_mapper), outfile,sort_keys=True, indent=4)
 				
@@ -414,7 +413,7 @@ class coreModul():
 			stop_time=time.time()
 
 
-			if self.option_handler.current_algorithm.split("_")[-1] == "BLUEPYOPT":
+			if self.option_handler.algorithm_name.split("_")[-1] == "BLUEPYOPT":
 				self.cands=[list(normalize(hof,self.optimizer)) for hof in self.optimizer.hall_of_fame]
 				self.fits=[x.fitness.values for x in self.optimizer.hall_of_fame]
 				popsize=int(self.option_handler.pop_size)
@@ -453,10 +452,10 @@ class coreModul():
 						current_gen=self.allpop[idx*popsize:(idx+1)*popsize]
 						for gen,fit in zip(current_gen,current_fits):
 							out_handler.write(str(int(idx/2+1))+":"+str(gen)+":"+str(fit)+"\n")
-			elif(self.option_handler.current_algorithm.split("_")[-1] == "PYGMO"):
+			elif(self.option_handler.algorithm_name.split("_")[-1] == "PYGMO"):
 				self.cands = [self.optimizer.best]
 				self.fits = [self.optimizer.best_fitness]
-			elif(self.option_handler.current_algorithm.split("_")[-1] == "CMAES"):
+			elif(self.option_handler.algorithm_name.split("_")[-1] == "CMAES"):
 				all_solutions = dict(sorted(self.optimizer.all_solutions.items(), key=lambda item: item[1]))
 				self.cands = list(all_solutions.keys())
 				self.fits = list(all_solutions.values())
@@ -472,7 +471,7 @@ class coreModul():
 						stat_file.write("{0}, {1}, {2}, {3}, {4}, {5}, {6} \n".format(
 							idx+1, int(self.option_handler.pop_size), np.max(fitness),
 							 np.min(fitness), np.median(fitness), np.mean(fitness), np.std(fitness)))
-			elif(self.option_handler.current_algorithm.split("_")[-1] == "INSPYRED"):
+			elif(self.option_handler.algorithm_name.split("_")[-1] == "INSPYRED"):
 				self.optimizer.final_pop.sort(reverse=True)
 				for i in range(len(self.optimizer.final_pop)):
 					self.cands.append(self.optimizer.final_pop[i].candidate[0:len(self.option_handler.adjusted_params)])

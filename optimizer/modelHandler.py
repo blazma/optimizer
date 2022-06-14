@@ -3,7 +3,10 @@ import sys
 from traceHandler import Trace
 import optimizerHandler
 import importlib
+import neuron
 
+first_hoc_cls = neuron.h.__class__
+first_hoc_dict = neuron.h.__dict__
 
 try:
     import copyreg
@@ -93,14 +96,15 @@ class modelHandlerNeuron():
     def __init__(self,model_path,special_path,base=os.getcwd()):
         self.base_directory=base
         os.chdir(self.base_directory)
-        import neuron
         print('*********** NEURON '+neuron.__version__+' LOADED ***********')
         self.special= None if special_path == 'None' else special_path
         self.model=model_path
         self.model_dir=('/').join(self.model.rsplit('/')[0:-1])
         if self.special:
             neuron.load_mechanisms(self.special)
-        self.hoc_obj=neuron.h
+
+        self.hoc_obj=first_hoc_cls.__new__(first_hoc_cls)
+        self.hoc_obj.__dict__.update(first_hoc_dict)
         self.hoc_obj.load_file(1,str(self.model))
         self.hoc_obj.load_file("stdrun.hoc")
         self.vec=self.hoc_obj.Vector()

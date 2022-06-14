@@ -49,7 +49,7 @@
         "cognitive_rate": null,
         "cooling_rate": null,
         "crossover_rate": null,
-        "current_algorithm": "CMAES_CMAES",
+        "current_algorithm": {"CMAES_CMAES":{"omega":1}},
         "f_tol": null,
         "feats": [
             "Spikecount",

@@ -172,6 +172,27 @@ class optionHandler(object):
 		post=dir(self)
 		self.class_content=list(OrderedSet(post)-OrderedSet(prev))
 
+		self.algorithm_parameters_dict={"GA_Inspyred":{"num_selected":self.pop_size,"crossover_rate":1,"num_crossover_points":1,"mutation_rate":1,"num_elites":0},
+		"CES_Inspyred":{"tau":None,"tau_prime":None,"epsilon":0.00001},
+		"EDA_Inspyred":{"num_selected":2,"num_offspring":self.pop_size,"num_elites":0},
+		"DEA_Inspyred":{"num_selected":2,"tournament_size":2,"crossover_rate":1,"mutation_rate":0.1,"gaussian_mean":0,"gaussian_stdev":1},
+		"SA_Inspyred":{"temperature":None,"cooling_rate":None,"mutation_rate":None,"gaussian_mean":0,"gaussian_stdev":1},
+		"ACO_Inspyred":{"initial_pheromone":0,"evaporation_rate":0.1,"learning_rate":0.1},
+		"PSO_Inspyred":{"inertia":0.5,"cognitive_rate":2.1,"social_rate":2.1},
+		"GACO_Pygmo":{"ker":63,"q":1.0,"oracle":0.,"acc":0.01,"threshold":1,"n_gen_mark":7,"impstop":100000,"evalstop":100000,"focus":0.,"memory":False},
+		"DE_Pygmo":{"F":0.8,"CR":0.9,"variant":2,"f_tol":1e-6,"x_tol":1e-6},
+		"SADE_Pygmo":{"variant":2, "variant_adptv":1, "f_tol":1e-06, "x_tol":1e-06, "memory":False},
+		"DE1220_Pygmo":{"allowed_variants":[2, 3, 7, 10, 13, 14, 15, 16], "variant_adptv":1, "f_tol":1e-06, "x_tol":1e-06, "memory":False},
+		"PSO_Pygmo":{"omega":0.7298, "eta1":2.05, "eta2":2.05, "max_vel":0.5, "variant":5, "neighb_type":2, "neighb_param":4, "memory":False},
+		"PSOG_Pygmo":{"omega":0.7298, "eta1":2.05, "eta2":2.05, "max_vel":0.5, "variant":5, "neighb_type":2, "neighb_param":4, "memory":False},
+		"SGA_Pygmo":{"cr":0.9, "eta_c":1.0, "m":0.02, "param_m":1.0, "param_s":2, "crossover":'exponential', "mutation":'polynomial', "selection":'tournament'},
+		"ABC_Pygmo":{"limit":1},
+		"CMAES_Pygmo":{"cc":- 1, "cs":- 1, "c1":- 1, "cmu":- 1, "sigma0":0.5, "f_tol":1e-06, "x_tol":1e-06, "memory":False, "force_bounds":False},
+		"XNES_Pygmo":{"eta_mu":- 1, "eta_sigma":- 1, "eta_b":- 1, "sigma0":- 1, "f_tol":1e-06, "x_tol":1e-06, "memory":False, "force_bounds":False},
+		"NSGA_Pygmo":{"cr":0.95, "eta_c":10.0, "m":0.01, "eta_m":50.0},
+		"MACO_Pygmo":{"ker":63, "q":1.0, "threshold":1, "n_gen_mark":7, "evalstop":100000, "focus":0.0, "memory":False},
+		"NSPSO_Pygmo":{"omega":0.6, "c1":0.01, "c2":0.5, "chi":0.5, "v_coeff":0.5, "leader_selection_range":2, "diversity_mechanism":'crowding distance', "memory":False}
+		}
 
 	"""def dump(self,f_mapper):
 		
@@ -213,29 +234,7 @@ class optionHandler(object):
 			else:
 				json_dict[m]=self.__getattribute__(m)
 		
-		algorithm_parameters_dict={"GA_Inspyred":{"num_selected":self.pop_size,"crossover_rate":1,"num_crossover_points":1,"mutation_rate":1,"num_elites":0},
-		"CES_Inspyred":{"tau":None,"tau_prime":None,"epsilon":0.00001},
-		"EDA_Inspyred":{"num_selected":self.pop_size/2,"num_offspring":self.pop_size,"num_elites":0},
-		"DEA_Inspyred":{"num_selected":2,"tournament_size":2,"crossover_rate":1,"mutation_rate":0.1,"gaussian_mean":0,"gaussian_stdev":1},
-		"SA_Inspyred":{"temperature":None,"cooling_rate":None,"mutation_rate":None,"gaussian_mean":0,"gaussian_stdev":1},
-		"ACO_Inspyred":{"initial_pheromone":0,"evaporation_rate":0.1,"learning_rate":0.1},
-		"PSO_Inspyred":{"inertia":0.5,"cognitive_rate":2.1,"social_rate":2.1},
-		"GACO_Pygmo":{"ker":63,"q":1.0,"oracle":0.,"acc":0.01,"threshold":1,"n_gen_mark":7,"impstop":100000,"evalstop":100000,"focus":0.,"memory":False},
-		"DE_Pygmo":{"F":0.8,"CR":0.9,"variant":2,"f_tol":1e-6,"x_tol":1e-6},
-		"SADE_Pygmo":{"variant":2, "variant_adptv":1, "f_tol":1e-06, "x_tol":1e-06, "memory":False},
-		"DE1220_Pygmo":{"allowed_variants":[2, 3, 7, 10, 13, 14, 15, 16], "variant_adptv":1, "f_tol":1e-06, "x_tol":1e-06, "memory":False},
-		"PSO_Pygmo":{"inertia":0.7298, "social_rate":2.05, "cognitive_rate":2.05, "max_vel":0.5, "variant":5, "neighb_type":2, "neighb_param":4, "memory":False},
-		"PSOG_Pygmo":{"inertia":0.7298, "social_rate":2.05, "cognitive_rate":2.05, "max_vel":0.5, "variant":5, "neighb_type":2, "neighb_param":4, "memory":False},
-		"SGA_Pygmo":{"cr":0.9, "eta_c":1.0, "m":0.02, "param_m":1.0, "param_s":2, "crossover":'exponential', "mutation":'polynomial', "selection":'tournament'},
-		"ABC_Pygmo":{"limit":1},
-		"CMAES_Pygmo":{"cc":- 1, "cs":- 1, "c1":- 1, "cmu":- 1, "sigma0":0.5, "f_tol":1e-06, "x_tol":1e-06, "memory":False, "force_bounds":False},
-		"XNES_Pygmo":{"eta_mu":- 1, "eta_sigma":- 1, "eta_b":- 1, "sigma0":- 1, "f_tol":1e-06, "x_tol":1e-06, "memory":False, "force_bounds":False},
-		"NSGA_Pygmo":{"cr":0.95, "eta_c":10.0, "m":0.01, "eta_m":50.0},
-		"MACO_Pygmo":{"ker":63, "q":1.0, "threshold":1, "n_gen_mark":7, "evalstop":100000, "focus":0.0, "memory":False},
-		"NSPSO_Pygmo":{"inertia":0.6, "c1":0.01, "c2":0.5, "chi":0.5, "v_coeff":0.5, "leader_selection_range":2, "diversity_mechanism":'crowding distance', "memory":False}
-		}
-		
-		return {"selectable_algorithms":algorithm_parameters_dict,"attributes":json_dict}
+		return {"selectable_algorithms":self.algorithm_parameters_dict,"attributes":json_dict}
 
 
 	def read_all_json(self,settings):
@@ -243,11 +242,11 @@ class optionHandler(object):
 			self.__setattr__(key,value)
 		if isinstance(self.current_algorithm, str):
 			self.algorithm_name=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", self.current_algorithm).replace("-","_").replace(" ","_")).upper()
+			self.algorithm_parameters={}
 		else:
 			self.algorithm_name=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", list(self.current_algorithm.keys())[0]).replace("-","_").replace(" ","_")).upper()
 			self.algorithm_parameters=list(self.current_algorithm.values())[0]
-
-	
+		
 
 
 	# returns the current settings of the current working directory (referred as base in modelHandler, used in traceReader )
@@ -573,39 +572,40 @@ class optionHandler(object):
 		"""
 		self.seed=options.get("seed",1234)
 		self.current_algorithm=options.get("current_algorithm")
-
-		self.pop_size=options.get("Size of Population:",None)
-		self.num_islands=options.get("Number of Islands:", None)
-		self.max_evaluation=options.get("Number of Generations:",None)
-		self.mutation_rate=options.get("Mutation Rate:",None)
+		self.algorithm_name=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", self.current_algorithm).replace("-","_").replace(" ","_")).upper()
+		self.algorithm_parameters={}
+		self.pop_size=options.get("Size of Population",None)
+		self.num_islands=options.get("Number of Islands", None)
+		self.max_evaluation=options.get("Number of Generations",None)
+		self.mutation_rate=options.get("Mutation Rate",None)
 		self.crossover_rate=options.get("Crossover Rate:",None)
-		self.force_bounds=options.get("Force bounds:",False)
-		self.cooling_rate=options.get("Cooling Rate:",None)
+		self.force_bounds=options.get("Force bounds",False)
+		self.cooling_rate=options.get("Cooling Rate",None)
 
-		self.m_gauss=options.get("Mean of Gaussian:",None)
-		self.std_gauss=options.get("Std. Deviation of Gaussian:",None)
-		self.init_temp=options.get("Initial Temperature:",None)
-		self.step_size=options.get("Step Size:",None)
-		self.temperature=options.get("Temperature:",None)
+		self.m_gauss=options.get("Mean of Gaussian",None)
+		self.std_gauss=options.get("Std. Deviation of Gaussian",None)
+		self.init_temp=options.get("Initial Temperature",None)
+		self.step_size=options.get("Step Size",None)
+		self.temperature=options.get("Temperature",None)
 
-		self.acc=options.get("Accuracy:",None)
-		self.update_freq=options.get("Update Frequency:",None)
-		self.num_iter=options.get('Number of Iterations:',None)
-		self.num_repet=options.get('Number of Repetition:',None)
+		self.acc=options.get("Accuracy",None)
+		self.update_freq=options.get("Update Frequency",None)
+		self.num_iter=options.get('Number of Iterations',None)
+		self.num_repet=options.get('Number of Repetition',None)
 
-		self.x_tol=options.get("Error Tolerance for x:",None)
-		self.f_tol=options.get("Error Tolerance for f:",None)
+		self.x_tol=options.get("Error Tolerance for x",None)
+		self.f_tol=options.get("Error Tolerance for f",None)
 
 		self.num_params=options.get("num_params")
 		self.boundaries=options.get("boundaries")
 		self.starting_points=options.get("starting_points",None)
 
-		self.inertia=options.get("Inertia:",None)
-		self.cognitive_rate=options.get("Cognitive Rate:",None)
-		self.social_rate=options.get("Social Rate:",None)
-		self.neighborhood_size=options.get("Neighborhood Size:",None)
+		self.inertia=options.get("Inertia",None)
+		self.cognitive_rate=options.get("Cognitive Rate",None)
+		self.social_rate=options.get("Social Rate",None)
+		self.neighborhood_size=options.get("Neighborhood Size",None)
 
-		self.number_of_cpu=options.get("Number of CPU:",None)
+		self.number_of_cpu=options.get("Number of CPU",None)
 	#self.topology=options.GetCurrentSelection("Topology:")
 
 
