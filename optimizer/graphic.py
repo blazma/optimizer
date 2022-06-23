@@ -486,48 +486,48 @@ class Ui_Neuroptimus(object):
         self.label_60.setFont(font)
         self.label_60.setObjectName("label_60")
         self.tabwidget.addTab(self.runtab, "")
-        self.eval_tab = QtWidgets.QWidget()
-        self.eval_tab.setObjectName("eval_tab")
+        self.results_tab = QtWidgets.QWidget()
+        self.results_tab.setObjectName("results_tab")
 
-        #eval tab 6
+        #plot tab 6
         font = QtGui.QFont()
         font.setFamily("Ubuntu")
         font.setPointSize(11)
         font.setBold(False)
         font.setWeight(75)
-        self.label_72 = QtWidgets.QLabel(self.eval_tab)
+        self.label_72 = QtWidgets.QLabel(self.results_tab)
         self.label_72.setGeometry(QtCore.QRect(10, 50, 200, 16))
         self.label_72.setFont(font)
         self.label_72.setObjectName("label_72")
-        self.tabwidget.addTab(self.eval_tab, "")
-        self.plot_tab = QtWidgets.QWidget()
-        self.plot_tab.setObjectName("plot_tab")
-        self.widget2 = QtWidgets.QWidget(self.eval_tab)
-        self.widget2.setGeometry(QtCore.QRect(180, 80, 630, 400))
-        self.widget2.setObjectName("widget2")
-        self.pushButton_34 = QtWidgets.QPushButton(self.eval_tab)
-        self.pushButton_34.setGeometry(QtCore.QRect(50, 360, 111, 22))
+        self.tabwidget.addTab(self.results_tab, "")
+        self.stat_tab = QtWidgets.QWidget()
+        self.stat_tab.setObjectName("stat_tab")
+        self.plot_widget = QtWidgets.QWidget(self.results_tab)
+        self.plot_widget.setGeometry(QtCore.QRect(200, 80, 630, 400))
+        self.plot_widget.setObjectName("plot_widget")
+        self.pushButton_34 = QtWidgets.QPushButton(self.results_tab)
+        self.pushButton_34.setGeometry(QtCore.QRect(30, 400, 111, 22))
         self.pushButton_34.setObjectName("pushButton_34")
         
-        #plot tab 7
-        self.tabwidget.addTab(self.plot_tab, "")
-        self.pushButton_35 = QtWidgets.QPushButton(self.plot_tab)
+        #stat tab 7
+        self.tabwidget.addTab(self.stat_tab, "")
+        self.pushButton_35 = QtWidgets.QPushButton(self.stat_tab)
         self.pushButton_35.setGeometry(QtCore.QRect(30, 400, 111, 22))
         self.pushButton_35.setObjectName("pushButton_34")
-        #self.pushButton_36 = QtWidgets.QPushButton(self.plot_tab)  grid_plot
+        #self.pushButton_36 = QtWidgets.QPushButton(self.stat_tab)  grid_plot
         #self.pushButton_36.setGeometry(QtCore.QRect(150, 400, 111, 22))
         #self.pushButton_36.setObjectName("pushButton_34")
-        self.pushButton_37 = QtWidgets.QPushButton(self.plot_tab)
+        self.pushButton_37 = QtWidgets.QPushButton(self.stat_tab)
         self.pushButton_37.setGeometry(QtCore.QRect(300, 400, 111, 22))
         self.pushButton_37.setObjectName("pushButton_34")
-        self.label_74 = QtWidgets.QLabel(self.plot_tab)
+        self.label_74 = QtWidgets.QLabel(self.stat_tab)
         self.label_74.setGeometry(QtCore.QRect(10, 50, 200, 16))
         self.label_74.setFont(font)
         self.label_74.setObjectName("label_74")
-        self.errorlist = QtWidgets.QTableWidget(self.plot_tab)
+        self.errorlist = QtWidgets.QTableWidget(self.stat_tab)
         self.errorlist.setGeometry(QtCore.QRect(300, 200, 350, 180))
         self.errorlist.setObjectName("errorlist")
-        self.fitstat = QtWidgets.QLabel(self.plot_tab)
+        self.fitstat = QtWidgets.QLabel(self.stat_tab)
         self.fitstat.setGeometry(QtCore.QRect(300, 50,200, 24))
         font = QtGui.QFont()
         font.setFamily("Ubuntu")
@@ -808,7 +808,7 @@ class Ui_Neuroptimus(object):
             "Nelder-Mead (NM) - Scipy": [descr20.copy(),descr30.copy(),descr31],
             "L-BFGS-B - Scipy": [descr20.copy(),descr28],
             "Differential Evolution (DE) - Inspyred": [descr19.copy(),descr20.copy(),descr21.copy(),descr39.copy(),descr40],
-            "Random Search": [descr19.copy(),descr40],
+            "Random - Search": [descr19.copy(),descr40],
             "Nondominated Sorted GA (NSGA2) - Inspyred": [descr19.copy(),descr20.copy(),descr21.copy(),descr40],
             "Pareto Archived ES (PAES) - Inspyred": [descr19.copy(),descr20.copy(),descr40],
             "Nondominated Sorted GA (NSGA2) - Bluepyopt": [descr19.copy(),descr20.copy(),descr21.copy(),descr40],
@@ -836,18 +836,19 @@ class Ui_Neuroptimus(object):
         
         self.algo_dict=self.core.option_handler.algorithm_parameters_dict.copy()
 
-        self.tabwidget.setTabText(self.tabwidget.indexOf(self.eval_tab), _translate("Neuroptimus", "Results"))
+        self.tabwidget.setTabText(self.tabwidget.indexOf(self.results_tab), _translate("Neuroptimus", "Results"))
         self.label_72.setText(_translate("Neuroptimus", "Final Result"))
         #plt.tight_layout()
         self.figure2 = plt.figure(figsize=(4,2), dpi=130)
         # self.figure2.gcf().subplots_adjust()
         self.canvas2 = FigureCanvas(self.figure2)
-        self.canvas2.setParent(self.widget2)
+        self.canvas2.setParent(self.plot_widget)
+        self.results_tab_axes = self.figure2.add_subplot(1,1,1)
         self.pushButton_34.setText(_translate("Neuroptimus", "Save Parameters"))
         self.pushButton_34.clicked.connect(self.SaveParam)
 
 
-        self.tabwidget.setTabText(self.tabwidget.indexOf(self.plot_tab), _translate("Neuroptimus", "Statistics"))
+        self.tabwidget.setTabText(self.tabwidget.indexOf(self.stat_tab), _translate("Neuroptimus", "Statistics"))
         self.label_74.setText(_translate("Neuroptimus", "Analysis"))
         self.pushButton_35.setText(_translate("Neuroptimus", "Generation Plot"))
         self.pushButton_35.clicked.connect(self.PlotGen)
@@ -1511,9 +1512,9 @@ class Ui_Neuroptimus(object):
         """
         try:
             selected_algo = self.algolist.selectionModel().selectedRows()[0].row()
-            algo_name = str(self.algolist.item(selected_algo, 0).text())
-            aspects = self.algo_dict[algo_name[algo_name.find("(")+1:].replace(")","").replace(" - ","_")]
-            self.aspectlist.setRowCount(len(aspects)+4)
+            algo_name = str(self.algolist.item(selected_algo, 0).text()).upper()
+            aspects = self.algo_dict[algo_name[algo_name.find("(")+1:].replace(")","").replace(" - ","_").replace("-","_").replace(" ","_")]
+            self.aspectlist.setRowCount(len(aspects)+5)
             item = QTableWidgetItem('Seed')
             item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
             self.aspectlist.setItem(0, 0, item)
@@ -1529,21 +1530,26 @@ class Ui_Neuroptimus(object):
             self.aspectlist.setItem(2, 0, item)
             item2 = QTableWidgetItem('100')
             self.aspectlist.setItem(2, 1, item2)
-            item = QTableWidgetItem('Number of Islands')
+            item = QTableWidgetItem('Number of CPU')
             item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
             self.aspectlist.setItem(3, 0, item)
             item2 = QTableWidgetItem('1')   
             self.aspectlist.setItem(3, 1, item2)
+            item = QTableWidgetItem('Number of Islands')
+            item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
+            self.aspectlist.setItem(4, 0, item)
+            item2 = QTableWidgetItem('1')   
+            self.aspectlist.setItem(4, 1, item2)
             for index, (key, value) in enumerate(aspects.items()):
                 item = QTableWidgetItem(key)
                 item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
-                self.aspectlist.setItem(index+4, 0, item)     
+                self.aspectlist.setItem(index+5, 0, item)     
                 item2 = QTableWidgetItem(str(value))
                 if str(value)=='True' or str(value)=='False':
                     item2 = QTableWidgetItem()
                     item2.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
                     item2.setCheckState(QtCore.Qt.Unchecked)    
-                self.aspectlist.setItem(index+4, 1, item2)
+                self.aspectlist.setItem(index+5, 1, item2)
         except:
             print('Algorithm selection error')
 
@@ -1685,15 +1691,15 @@ class Ui_Neuroptimus(object):
                 self.tabwidget.setTabEnabled(5,True)
                 self.tabwidget.setTabEnabled(6,True)
                 self.tabwidget.setCurrentIndex(5)
-                self.eval_tab_plot()
+                self.results_tab_plot()
                 if not singlerun:
-                    self.plot_tab_fun()
+                    self.stat_tab_fun()
             except:
                popup("Evaluation step error")
 
 
 
-    def eval_tab_plot(self):
+    def results_tab_plot(self):
         """
         First writes out all the fitnesses for the parameters in a scrollable text area.
         Plots the experimental and result traces, sets tight layout not to crop the sides.
@@ -1714,8 +1720,8 @@ class Ui_Neuroptimus(object):
                         text += "\n" + param[0] + ": " + param[-1] + "\n" + "\t" + str(k)
         #text += "\n" + "fitness:\n" + "\t" + str(self.core.Neuroptimus.final_pop[0].fitnes)
         text += "\n" + "fitness:\n" + "\t" + str(self.core.last_fitness)
-        for tabs in [self.eval_tab,self.plot_tab]:
-            label = QtWidgets.QLabel(tabs)
+        for curr_tab in [self.results_tab,self.stat_tab]:
+            label = QtWidgets.QLabel(curr_tab)
             label.setGeometry(QtCore.QRect(10, 70, 170, 206))
             font = QtGui.QFont()
             font.setFamily("Ubuntu")
@@ -1725,29 +1731,29 @@ class Ui_Neuroptimus(object):
             label.setFont(font)
             label.setObjectName("label")
             label.setText(QtCore.QCoreApplication.translate("Neuroptimus", text))
-            scroll_area = QtWidgets.QScrollArea(tabs)
+            scroll_area = QtWidgets.QScrollArea(curr_tab)
             scroll_area.setGeometry(QtCore.QRect(10, 100, 170, 256))
             scroll_area.setWidget(label)
             scroll_area.setWidgetResizable(True)
-            label = QtWidgets.QLabel(self.plot_tab)
-        label.setGeometry(QtCore.QRect(300, 80, 250, 146))
-        font = QtGui.QFont()
-        font.setFamily("Ubuntu")
-        font.setPointSize(10)
-        font.setBold(False)
-        font.setWeight(50)
-        label.setFont(font)
-        label.setObjectName("label")
-        label.setText(QtCore.QCoreApplication.translate("Neuroptimus", text))
-        scroll_area = QtWidgets.QScrollArea(self.plot_tab)
-        scroll_area.setGeometry(QtCore.QRect(300,80, 350, 100))
-        scroll_area.setWidget(label)
-        scroll_area.setWidgetResizable(True)
+            label = QtWidgets.QLabel(curr_tab)
+            label.setGeometry(QtCore.QRect(300, 80, 250, 146))
+            font = QtGui.QFont()
+            font.setFamily("Ubuntu")
+            font.setPointSize(10)
+            font.setBold(False)
+            font.setWeight(50)
+            label.setFont(font)
+            label.setObjectName("label")
+            label.setText(QtCore.QCoreApplication.translate("Neuroptimus", text))
+            scroll_area = QtWidgets.QScrollArea(curr_tab)
+            scroll_area.setGeometry(QtCore.QRect(300,80, 350, 100))
+            scroll_area.setWidget(label)
+            scroll_area.setWidgetResizable(True)
 
         exp_data = []
         model_data = []
-        axes = self.figure2.add_subplot(1,1,1)
-        axes.cla()
+        
+        self.results_tab_axes.cla()
         if self.core.option_handler.type[-1]!="features":
             for n in range(self.core.data_handler.number_of_traces()):
                 exp_data.extend(self.core.data_handler.data.GetTrace(n))
@@ -1756,15 +1762,15 @@ class Ui_Neuroptimus(object):
             t = self.core.option_handler.input_length
             step = self.core.option_handler.run_controll_dt
 
-            axes.set_xlabel("time [ms]")
+            self.results_tab_axes.set_xlabel("time [ms]")
             _type=self.core.data_handler.data.type
             unit="mV" if _type=="voltage" else "nA" if _type=="current" else ""
-            axes.set_ylabel(_type+" [" + unit + "]")
-            axes.set_xticks([n for n in range(0, int((t * no_traces) / (step)), int((t * no_traces) / (step) / 5.0)) ])
-            axes.set_xticklabels([str(n) for n in range(0, int(t * no_traces), int((t * no_traces) / 5))])
-            axes.plot(list(range(0, len(exp_data))), exp_data)
-            axes.plot(list(range(0, len(model_data))), model_data, 'r')
-            axes.legend(["target", "model"])
+            self.results_tab_axes.set_ylabel(_type+" [" + unit + "]")
+            self.results_tab_axes.set_xticks([n for n in range(0, int((t * no_traces) / (step)), int((t * no_traces) / (step) / 5.0)) ])
+            self.results_tab_axes.set_xticklabels([str(n) for n in range(0, int(t * no_traces), int((t * no_traces) / 5))])
+            self.results_tab_axes.plot(list(range(0, len(exp_data))), exp_data)
+            self.results_tab_axes.plot(list(range(0, len(model_data))), model_data, 'r')
+            self.results_tab_axes.legend(["target", "model"])
             self.figure2.savefig("result_trace.png", dpi=300, facecolor='w', edgecolor='w',
             orientation='portrait', papertype=None, format=None,
             transparent=False, bbox_inches=None, pad_inches=0.1)
@@ -1772,7 +1778,7 @@ class Ui_Neuroptimus(object):
             self.figure2.savefig("result_trace.svg", dpi=300, facecolor='w', edgecolor='w')
             self.canvas2.draw()
             plt.tight_layout()
-            
+            plt.close()
 
         else:
             for n in range(len(self.core.data_handler.features_data["stim_amp"])):
@@ -1780,15 +1786,15 @@ class Ui_Neuroptimus(object):
             no_traces=len(self.core.data_handler.features_data["stim_amp"])
             t = int(self.core.option_handler.run_controll_tstop)         # instead of input_length
             step = self.core.option_handler.run_controll_dt
-            axes.set_xlabel("time [ms]")
+            self.results_tab_axes.set_xlabel("time [ms]")
             _type=str(self.kwargs["runparam"][2])       #parameter to record
             _type_ = "Voltage" if _type =="v" else "Current" if _type=="c" else ""
             unit="mV" if _type=="v" else "nA" if _type=="c" else ""
-            axes.set_ylabel(_type_+" [" + unit + "]")
-            axes.set_xticks([n for n in range(0, int((t * no_traces) / (step)), int((t * no_traces) / (step) / 5.0)) ])
-            axes.set_xticklabels([str(n) for n in range(0, int(t * no_traces), int((t * no_traces) / 5))])
-            axes.plot(list(range(0, len(model_data))),model_data, 'r')
-            axes.legend(["model"])
+            self.results_tab_axes.set_ylabel(_type_+" [" + unit + "]")
+            self.results_tab_axes.set_xticks([n for n in range(0, int((t * no_traces) / (step)), int((t * no_traces) / (step) / 5.0)) ])
+            self.results_tab_axes.set_xticklabels([str(n) for n in range(0, int(t * no_traces), int((t * no_traces) / 5))])
+            self.results_tab_axes.plot(list(range(0, len(model_data))),model_data, 'r')
+            self.results_tab_axes.legend(["model"])
             self.figure2.savefig("result_trace.png", dpi=300, facecolor='w', edgecolor='w',
             orientation='portrait', papertype=None, format=None,
             transparent=False, bbox_inches=None, pad_inches=0.1)
@@ -1814,7 +1820,7 @@ class Ui_Neuroptimus(object):
             popup("Couldn't save the parameters." + str(e))
 
 
-    def plot_tab_fun(self):
+    def stat_tab_fun(self):
         """
         Writes out the same fitnesses for parameters as in the previous tab.
         """
@@ -1824,7 +1830,7 @@ class Ui_Neuroptimus(object):
         except AttributeError:
             stats={'best' : "unkown",'worst' : "unkown",'mean' : "unkown",'median' : "unkown", 'std' : "unkown"}
         string = "Best: " + str(stats['best']) + "\nWorst: " + str(stats['worst']) + "\nMean: " + str(stats['mean']) + "\nMedian: " + str(stats['median']) + "\nStd:" + str(stats['std'])
-        label = QtWidgets.QLabel(self.plot_tab)
+        label = QtWidgets.QLabel(self.stat_tab)
         label.setGeometry(QtCore.QRect(300, 80, 250, 146))
         font = QtGui.QFont()
         font.setFamily("Ubuntu")
@@ -1834,7 +1840,7 @@ class Ui_Neuroptimus(object):
         label.setFont(font)
         label.setObjectName("label")
         label.setText(QtCore.QCoreApplication.translate("Neuroptimus", string))
-        scroll_area = QtWidgets.QScrollArea(self.plot_tab)
+        scroll_area = QtWidgets.QScrollArea(self.stat_tab)
         scroll_area.setGeometry(QtCore.QRect(300,80, 350, 100))
         scroll_area.setWidget(label)
         scroll_area.setWidgetResizable(True)

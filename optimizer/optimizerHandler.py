@@ -151,8 +151,8 @@ class SINGLERUN():
 			self.ffun=self.fit_obj.fun_dict["Combinations"]
 		except KeyError:
 			sys.exit("Unknown fitness function!")
-		
-		if option_obj.type[-1]!='features':
+
+		if option_obj.type[-1] != 'features':
 			try:
 				option_obj.feats=[self.fit_obj.calc_dict[x] for x in option_obj.feats]
 			except KeyError:
@@ -175,15 +175,15 @@ class oldBaseOptimizer():
 		"""
 
 		try:
-			self.ffun=self.fit_obj.fun_dict["Combinations"]
-			self.mfun=self.fit_obj.fun_dict["Multiobj"]
-			self.deapfun=self.fit_obj.fun_dict["Deapwrapper"]
+			self.ffun = self.fit_obj.fun_dict["Combinations"]
+			self.mfun = self.fit_obj.fun_dict["Multiobj"]
+			self.deapfun = self.fit_obj.fun_dict["Deapwrapper"]
 		except KeyError:
 			sys.exit("Unknown fitness function!")
 
-		if option_obj.type[-1]!='features':
+		if option_obj.type[-1]!= 'features':
 			try:
-				option_obj.feats=[self.fit_obj.calc_dict[x] for x in option_obj.feats]
+				option_obj.feats = [self.fit_obj.calc_dict[x] for x in option_obj.feats]
 			except KeyError:
 				print("error with fitness function: ",option_obj.feats," not in: ",list(self.fit_obj.calc_dict.keys()))
 
@@ -202,14 +202,14 @@ class baseOptimizer():
 		self.rand.seed(self.seed)
 		self.directory = option_obj.base_dir
 		self.num_params = option_obj.num_params
-		if option_obj.type[-1]!="features":
-			self.number_of_traces=reader_obj.number_of_traces()
+		if option_obj.type[-1]!= "features":
+			self.number_of_traces = reader_obj.number_of_traces()
 		else:
-			self.number_of_traces=len(reader_obj.features_data["stim_amp"])
-		self.num_obj=self.num_params*int(self.number_of_traces)
-		self.number_of_cpu=option_obj.number_of_cpu
-		self.min_max=option_obj.boundaries
-		self.bounder=SetBoundaries(option_obj.boundaries)
+			self.number_of_traces = len(reader_obj.features_data["stim_amp"])
+		self.num_obj = self.num_params*int(self.number_of_traces)
+		self.number_of_cpu = option_obj.number_of_cpu
+		self.min_max = option_obj.boundaries
+		self.bounder = SetBoundaries(option_obj.boundaries)
 
 	def SetFFun(self,option_obj):
 		"""
@@ -220,15 +220,15 @@ class baseOptimizer():
 		"""
 
 		try:
-			self.ffun=self.fit_obj.fun_dict["Combinations"]
-			self.mfun=self.fit_obj.fun_dict["Multiobj"]
-			self.deapfun=self.fit_obj.fun_dict["Deapwrapper"]
+			self.ffun = self.fit_obj.fun_dict["Combinations"]
+			self.mfun = self.fit_obj.fun_dict["Multiobj"]
+			self.deapfun = self.fit_obj.fun_dict["Deapwrapper"]
 		except KeyError:
 			sys.exit("Unknown fitness function!")
 		
-		if option_obj.type[-1]!='features':
+		if option_obj.type[-1]!= 'features':
 			try:
-				option_obj.feats=[self.fit_obj.calc_dict[x] for x in option_obj.feats]
+				option_obj.feats = [self.fit_obj.calc_dict[x] for x in option_obj.feats]
 			except KeyError:
 				print("error with fitness function: ",option_obj.feats," not in: ",list(self.fit_obj.calc_dict.keys()))
 
@@ -332,7 +332,7 @@ class CMAES_CMAES(baseOptimizer):
 			self.starting_points = None"""
 		if option_obj.output_level == "1":
 			print("starting points: ", self.starting_points)
-
+		print(self.algo_params)
 		from cmaes import CMA
 		self.cmaoptimizer = CMA(mean=(np.ones(len(self.min_max[0]))*0.5), **self.algo_params, seed=1234, population_size=int(self.pop_size), bounds=np.array([[0,1]]*len(self.min_max[0])))
 		
@@ -524,8 +524,6 @@ class SinglePygmoAlgorithmBasis(baseOptimizer):
 
 		self.algorithm.set_verbosity(1)
 		self.evolved_pop = self.algorithm.evolve(self.population)
-		print(self.population)
-		print(self.evolved_pop)
 		pickle.dump(self.evolved_pop,open('pygmo_save.pkl', 'wb'))
 
 		
@@ -565,7 +563,7 @@ class SDE_PYGMO(SinglePygmoAlgorithmBasis):
 	def __init__(self, reader_obj,  option_obj):
 
 		SinglePygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.max_evaluation=int(option_obj.max_evaluation)
+		self.max_evaluation = int(option_obj.max_evaluation)
 		self.algo_params =  option_obj.algorithm_parameters
 		self.pop_kwargs['size'] = int(option_obj.pop_size)
 
@@ -627,12 +625,6 @@ class SA_INSPYRED(InspyredAlgorithmBasis):
 	"""
 	def __init__(self, reader_obj,  option_obj):
 		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-
-		self.kwargs['mutation_rate'] = option_obj.mutation_rate
-		self.kwargs['gaussian_mean'] = option_obj.m_gauss
-		self.kwargs['gaussian_stdev'] = option_obj.std_gauss
-		self.kwargs['temperature'] = option_obj.init_temp
-		self.kwargs['cooling_rate'] = option_obj.cooling_rate
 		self.kwargs['max_evaluations'] = self.max_evaluation
 
 		self.evo_strat=ec.SA(self.rand)
@@ -642,7 +634,7 @@ class SA_INSPYRED(InspyredAlgorithmBasis):
 		else:
 			self.evo_strat.observer=[observers.file_observer]
 
-class Praxis_PYGMO(PygmoAlgorithmBasis):
+class PRAXIS_PYGMO(PygmoAlgorithmBasis):
 	def __init__(self, reader_obj,  option_obj):
 		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
 		
@@ -833,19 +825,6 @@ class PSO_INSPYRED(InspyredAlgorithmBasis):
 			self.evo_strat.observer=[observers.file_observer]
 
 
-		#PSO attributes
-		self.kwargs["inertia"] = option_obj.inertia
-		self.kwargs["cognitive_rate"] = option_obj.cognitive_rate
-		self.kwargs["social_rate"] = option_obj.social_rate
-		'''
-		if (self.topology == "Star"):
-			self.evo_strat.topology = inspyred.swarm.topologies.star_topology
-		elif (self.topology == "Ring"):
-			self.evo_strat.topology = inspyred.swarm.topologies.ring_topology
-		#self.neighborhood_size=int(round(option_obj.neighborhood_size))
-		'''
-		self.kwargs["topology"] = inspyred.swarm.topologies.star_topology
-
 class BH_SCIPY(ScipyAlgorithmBasis):
 	"""
 	Implements the ``Basinhopping`` algorithm for minimization from the ``scipy`` package.
@@ -862,13 +841,9 @@ class BH_SCIPY(ScipyAlgorithmBasis):
 	"""
 	def __init__(self, reader_obj,  option_obj):
 		ScipyAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.algo_params =  option_obj.algorithm_parameters
 
-		self.temp=option_obj.temperature
-		self.num_iter=option_obj.num_iter
-		self.num_repet=option_obj.num_repet
-		self.step_size=option_obj.step_size
-		self.freq=option_obj.update_freq
-		
+	
 
 	def logger(self,x,f,accepted):
 		self.log_file.write(np.array_str(x))
@@ -891,9 +866,9 @@ class BH_SCIPY(ScipyAlgorithmBasis):
 		:return: the return value of the fitness function
 
 		"""
-		tmp=ndarray.tolist(candidates)
-		ec_bounder=ec.Bounder([0]*len(self.min_max[0]),[1]*len(self.min_max[1]))
-		candidates=ec_bounder(tmp,args)
+		tmp = ndarray.tolist(candidates)
+		ec_bounder = ec.Bounder([0]*len(self.min_max[0]),[1]*len(self.min_max[1]))
+		candidates = ec_bounder(tmp,args)
 		return self.ffun([candidates],args)[0]
 
 
@@ -904,15 +879,13 @@ class BH_SCIPY(ScipyAlgorithmBasis):
 		"""
 
 		self.log_file=open(self.directory + "/basinhopping.log","w")
-		list_of_results=[0]*int(self.num_repet)
-		for points in range(int(self.num_repet)):
+		list_of_results=[0]*int(self.max_evaluation)
+		for points in range(int(self.max_evaluation)):
 			self.log_file.write(str(points+1)+". starting point: ["+", ".join(map(str,self.starting_points))+"]")
 			self.log_file.write("\n")
 			list_of_results[points]=optimize.basinhopping(self.wrapper,
 						 x0=ndarray((self.num_params,),buffer=array(self.starting_points),offset=0,dtype=float),
-						 niter=int(self.num_iter),
-						 T=self.temp,
-						 stepsize=self.step_size,
+						 niter=int(self.size_of_pop),
 						 minimizer_kwargs={"method":"L-BFGS-B",
 										   "jac":False,
 										   "args":[[]],
@@ -923,19 +896,19 @@ class BH_SCIPY(ScipyAlgorithmBasis):
 													   "iprint": 2,
 													   "pgtol": 1e-06,
 													   "maxfun" : 100}},
-						 take_step=None,
-						 accept_test=self.bounder,
-						 callback=self.logger,
-						 interval=int(self.freq),
-						 disp=False,
-						 niter_success=None)
-			self.starting_points=uniform(self.rand,{"num_params" : self.num_params,"self": self})
+						 take_step = None,
+						 accept_test = self.bounder,
+						 callback = self.logger,
+						 niter_success = None,
+						 **self.algo_params
+						 )
+			self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
 			self.log_file.write("".join(["-"]*200))
 		self.log_file.close()
 
-		self.result=min(list_of_results,key=lambda x:x.fun)
+		self.result = min(list_of_results,key = lambda x:x.fun)
 		#print self.result.x
-		self.final_pop=[my_candidate(self.result.x,self.result.fun)]
+		self.final_pop = [my_candidate(self.result.x,self.result.fun)]
 
 	
 
@@ -956,25 +929,22 @@ class NM_SCIPY(ScipyAlgorithmBasis):
 	"""
 	def __init__(self, reader_obj,  option_obj):
 		ScipyAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.fit_obj=fF(reader_obj,option_obj)
+		self.fit_obj = fF(reader_obj,option_obj)
 		self.SetFFun(option_obj)
-		self.rand=random
-		self.seed=option_obj.seed
+		self.algo_params =  option_obj.algorithm_parameters
+		self.rand = random
+		self.seed = option_obj.seed
 		self.rand.seed(self.seed)
-		self.xtol=option_obj.x_tol
-		self.ftol=option_obj.f_tol
-		self.num_iter=option_obj.num_iter
-		self.num_repet=option_obj.num_repet
-		self.max_evaluation=option_obj.max_evaluation
-		self.num_params=option_obj.num_params
-		self.bounder=SetBoundaries(option_obj.boundaries)
+		self.max_evaluation = option_obj.max_evaluation
+		self.num_params = option_obj.num_params
+		self.bounder = SetBoundaries(option_obj.boundaries)
 		try:
 			if isinstance(option_obj.starting_points[0],list):
 				raise TypeError
 			else:
-				self.starting_points=[normalize(option_obj.starting_points,self)]
+				self.starting_points = [normalize(option_obj.starting_points,self)]
 		except TypeError:
-			self.starting_points=uniform(self.rand,{"num_params" : self.num_params,"self": self})
+			self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
 		if option_obj.output_level=="1":
 			print("starting points: ",self.starting_points)
 
@@ -996,10 +966,10 @@ class NM_SCIPY(ScipyAlgorithmBasis):
 		:return: the return value of the fitness function
 
 		"""
-		tmp=ndarray.tolist(candidates)
-		ec_bounder=ec.Bounder([0]*len(self.min_max[0]),[1]*len(self.min_max[1]))
-		candidates=ec_bounder(tmp,args)
-		fit=self.ffun([candidates],args)[0]
+		tmp = ndarray.tolist(candidates)
+		ec_bounder = ec.Bounder([0]*len(self.min_max[0]),[1]*len(self.min_max[1]))
+		candidates = ec_bounder(tmp,args)
+		fit = self.ffun([candidates],args)[0]
 		self.logger(fit)
 		return fit
 
@@ -1010,34 +980,30 @@ class NM_SCIPY(ScipyAlgorithmBasis):
 		"""
 		Performs the optimization.
 		"""
-		self.log_file=open(self.directory + "/nelder.log","w")
+		self.log_file = open(self.directory + "/nelder.log","w")
 		
-		list_of_results=[0]*int(self.num_repet)
-		for points in range(int(self.num_repet)):
+		list_of_results = [0]*int(self.max_evaluation)
+		for points in range(int(self.max_evaluation)):
 			
 			
-			list_of_results[points]=optimize.minimize(self.wrapper,x0=ndarray((self.num_params,),
-						buffer=array(self.starting_points),offset=0,dtype=float),
-#                                      x0=ndarray( (self.num_params,1) ,buffer=array([0.784318808, 4.540607953, -11.919391073,-100]),dtype=float),
-#                                      args=[[]]
-									  args=((),),
-									  method="Nelder-Mead",
-									  callback=self.logger,
-									  options={"maxiter":self.max_evaluation,
-										  "xtol": self.xtol,
-										  "ftol": self.ftol,
-										  "return_all":True}
+			list_of_results[points] = optimize.minimize(self.wrapper,x0 = ndarray((self.num_params,),
+						buffer = array(self.starting_points),offset = 0,dtype = float),
+									  args = ((),),
+									  method = "Nelder-Mead",
+									  callback = self.logger,
+									  options = {"maxiter":self.size_of_pop,
+										  "return_all":True} | self.algo_params
 									  )
 			#self.log_file.write(str(points+1)+" "+str(self.starting_points)+" ("+str(list_of_results)+") \n")
 			
-			self.starting_points=uniform(self.rand,{"num_params" : self.num_params,"self": self})
-		self.stat_file=open(self.directory + "/ind_file.txt","w")
+			self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
+		self.stat_file = open(self.directory + "/ind_file.txt","w")
 		self.stat_file.write(str(list_of_results))	
 		self.log_file.close()
 		self.stat_file.close()
-		self.result=min(list_of_results,key=lambda x:x.fun)
+		self.result = min(list_of_results,key = lambda x:x.fun)
 		#print self.result.x
-		self.final_pop=[my_candidate(self.result.x,self.result.fun)]
+		self.final_pop = [my_candidate(self.result.x,self.result.fun)]
 
 	
 
@@ -1058,25 +1024,25 @@ class L_BFGS_B_SCIPY(baseOptimizer):
 
 	"""
 	def __init__(self, reader_obj,  option_obj):
-		self.fit_obj=fF(reader_obj,option_obj)
+		self.fit_obj = fF(reader_obj,option_obj)
 		self.SetFFun(option_obj)
-		self.rand=random
-		self.seed=option_obj.seed
+		self.rand = random
+		self.seed = option_obj.seed
 		self.rand.seed(self.seed)  #ez mi?
-		self.max_evaluation=option_obj.max_evaluation
-		self.accuracy=option_obj.acc
-		self.num_params=option_obj.num_params
-		self.min_max=option_obj.boundaries
-		self.bounder=SetBoundaries(option_obj.boundaries)
+		self.max_evaluation = option_obj.max_evaluation
+		self.algo_params =  option_obj.algorithm_parameters
+		self.num_params = option_obj.num_params
+		self.min_max = option_obj.boundaries
+		self.bounder = SetBoundaries(option_obj.boundaries)
 		try:
 			if isinstance(option_obj.starting_points[0],list):
 				raise TypeError
 			else:
-				self.starting_points=[normalize(option_obj.starting_points,self)]
+				self.starting_points = [normalize(option_obj.starting_points,self)]
 		except TypeError:
-			self.starting_points=uniform(self.rand,{"num_params" : self.num_params,"self": self})
+			self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
 
-		if option_obj.output_level=="1":
+		if option_obj.output_level == "1":
 			print("starting points: ",self.starting_points)
 
 
@@ -1090,8 +1056,8 @@ class L_BFGS_B_SCIPY(baseOptimizer):
 		:return: the return value of the fitness function
 
 		"""
-		tmp=ndarray.tolist(candidates)
-		candidates=self.bounder(tmp,args)
+		tmp = ndarray.tolist(candidates)
+		candidates = self.bounder(tmp,args)
 		return self.ffun([candidates],args)[0]
 
 
@@ -1101,17 +1067,15 @@ class L_BFGS_B_SCIPY(baseOptimizer):
 		"""
 		Performs the optimization.
 		"""
-		self.result=optimize.fmin_l_bfgs_b(self.wrapper,
-									  x0=ndarray((self.num_params,),buffer=array(self.starting_points),offset=0,dtype=float),
-#                                      x0=ndarray( (self.num_params,1) ,buffer=array([0.784318808, 4.540607953, -11.919391073,-100]),dtype=float),
+		self.result = optimize.fmin_l_bfgs_b(self.wrapper,
+									  x0 = ndarray((self.num_params,),buffer = array(self.starting_points),offset = 0,dtype=float),
 									  args=[[]],
 									  bounds= [(0,1)]*len(self.min_max[0]),
 									  maxfun= self.max_evaluation,
 									  fprime= None,
 									  approx_grad= True,
-									  factr= self.accuracy, #1e7 moderate acc, 10.0 ext high acc
+									  **self.algo_params,
 									  iprint= 2, #>1 creates log file
-									  pgtol= 1e-06
 									  )
 		print(self.result[-1]['warnflag'])
 		self.final_pop=[my_candidate(self.result[0],self.result[1])]
@@ -1233,10 +1197,6 @@ class DE_INSPYRED(InspyredAlgorithmBasis):
 	def __init__(self, reader_obj,  option_obj):
 
 		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.kwargs["tournament_size"] = int(self.pop_size)
-		self.kwargs["num_selected"] = int(self.pop_size/10)
-		self.kwargs["mutation_rate"] = option_obj.mutation_rate
-		self.kwargs["crossover_rate"] = option_obj.crossover_rate
 
 		self.evo_strat=ec.DEA(self.rand)
 		self.evo_strat.terminator=terminators.generation_termination
@@ -1284,8 +1244,8 @@ class RANDOM_SEARCH(baseOptimizer):
 		"""
 		with Pool(processes=int(self.number_of_cpu),maxtasksperchild=1) as pool:
 			init_candidate=uniform(self.rand, {"self":self,"num_params":self.num_params})
-			self.act_min=pool.apply(self.ffun,([init_candidate],))
-			
+			init_fitness=pool.apply(self.ffun,([init_candidate],))
+			self.act_min=my_candidate(array(init_candidate),init_fitness)
 			for i in range(int(self.max_evaluation)):
 				act_candidate=[]
 				act_fitess=[]
@@ -1307,6 +1267,7 @@ class RANDOM_SEARCH(baseOptimizer):
 
 		with open(self.directory+"/ind_file.txt","w") as f:
 			for x in self.gen_min:
+				print(x)
 				f.write(str(x.candidate))
 				f.write("\t")
 				f.write(str(x.fitness))
@@ -1495,6 +1456,7 @@ class IBEA_BLUEPYOPT(oldBaseOptimizer):
 		self.number_of_cpu=option_obj.number_of_cpu
 		self.min_max=option_obj.boundaries
 		self.bounder=SetBoundaries(option_obj.boundaries)
+		self.algo_params =  option_obj.algorithm_parameters
 		self.param_names=self.option_obj.GetObjTOOpt()
 		if self.option_obj.type[-1]!="features":
 			self.number_of_traces=reader_obj.number_of_traces()
@@ -1518,7 +1480,7 @@ class IBEA_BLUEPYOPT(oldBaseOptimizer):
 		view = c.load_balanced_view()
 		view.map_sync(os.chdir, [str(os.path.dirname(os.path.realpath(__file__)))]*int(self.number_of_cpu))
 		map_function=view.map_sync
-		optimisation = bpop.optimisations.DEAPOptimisation(evaluator=DeapEvaluator(self.params,self.deapfun,self.feats_and_weights,self.min_max,self.number_of_traces),seed=self.seed,offspring_size = int(self.pop_size),map_function=map_function,selector_name='IBEA')
+		optimisation = bpop.optimisations.DEAPOptimisation(evaluator=DeapEvaluator(self.params,self.deapfun,self.feats_and_weights,self.min_max,self.number_of_traces),seed=self.seed,offspring_size = int(self.pop_size),map_function=map_function,selector_name='IBEA', **self.algo_params)
 		self.final_pop, self.hall_of_fame, self.logs, self.hist = optimisation.run(int(self.max_evaluation),cp_frequency=int(self.max_evaluation))
 		os.system("ipcluster stop")
 		#except Exception:
@@ -1529,7 +1491,7 @@ class IBEA_BLUEPYOPT(oldBaseOptimizer):
 		
 		view.map_sync(os.chdir, [str(os.path.dirname(os.path.realpath(__file__)))]*int(self.number_of_cpu))
 		map_function=view.map_sync
-		optimisation = bpop.optimisations.DEAPOptimisation(evaluator=DeapEvaluator(self.params,self.deapfun,self.feats_and_weights,self.min_max,self.number_of_traces),seed=self.seed,offspring_size = int(self.pop_size),map_function=map_function,selector_name='IBEA')
+		optimisation = bpop.optimisations.DEAPOptimisation(evaluator=DeapEvaluator(self.params,self.deapfun,self.feats_and_weights,self.min_max,self.number_of_traces),seed=self.seed,offspring_size = int(self.pop_size),map_function=map_function,selector_name='IBEA', **self.algo_params)
 		self.final_pop, self.hall_of_fame, self.logs, self.hist = optimisation.run(int(self.max_evaluation),cp_frequency=int(self.max_evaluation))
 		os.system("ipcluster stop")
 		#except Exception:
@@ -1575,6 +1537,7 @@ class NSGA2_BLUEPYOPT(oldBaseOptimizer):
 		self.number_of_cpu=option_obj.number_of_cpu
 		self.min_max=option_obj.boundaries
 		self.bounder=SetBoundaries(option_obj.boundaries)
+		self.algo_params =  option_obj.algorithm_parameters
 		self.param_names=self.option_obj.GetObjTOOpt()
 		if self.option_obj.type[-1]!="features":
 			self.number_of_traces=reader_obj.number_of_traces()
@@ -1597,7 +1560,7 @@ class NSGA2_BLUEPYOPT(oldBaseOptimizer):
 		view = c.load_balanced_view()
 		view.map_sync(os.chdir, [str(os.path.dirname(os.path.realpath(__file__)))]*int(self.number_of_cpu))
 		map_function=view.map_sync
-		optimisation = bpop.optimisations.DEAPOptimisation(evaluator=DeapEvaluator(self.params,self.deapfun,self.feats_and_weights,self.min_max,self.number_of_traces),seed=self.seed,offspring_size = int(self.pop_size),map_function=map_function,selector_name='NSGA2')
+		optimisation = bpop.optimisations.DEAPOptimisation(evaluator=DeapEvaluator(self.params,self.deapfun,self.feats_and_weights,self.min_max,self.number_of_traces),seed=self.seed,offspring_size = int(self.pop_size),map_function=map_function,selector_name='NSGA2', **self.algo_params)
 		self.final_pop, self.hall_of_fame, self.logs, self.hist = optimisation.run(int(self.max_evaluation),cp_filename = 'checkpoint.pkl',cp_frequency=int(self.max_evaluation))
 		os.system("ipcluster stop")
 		#except Exception:

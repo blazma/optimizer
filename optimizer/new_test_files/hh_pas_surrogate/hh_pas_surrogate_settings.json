@@ -22,19 +22,13 @@
         "cognitive_rate": null,
         "cooling_rate": null,
         "crossover_rate": null,
-        "current_algorithm": {
-            "CES_Inspyred": {
-                "epsilon": 0.0001,
-                "tau": null,
-                "tau_prime": null
-            }
-        },
+        "current_algorithm": "PSO - Inspyred",
         "f_tol": null,
         "feats": [
             "MSE",
             "Spike count"
         ],
-        "force_bounds": true,
+        "force_bounds": false,
         "inertia": null,
         "init_temp": null,
         "input_cont_t": true,
@@ -44,7 +38,7 @@
         "input_scale": "mV",
         "input_size": 1,
         "m_gauss": null,
-        "max_evaluation": 10.0,
+        "max_evaluation": 6.0,
         "model_path": "/home/mohacsi/Desktop/optimizer/optimizer/new_test_files/hh_pas_surrogate/hh_pas.hoc",
         "model_spec_dir": null,
         "mutation_rate": null,
@@ -53,13 +47,13 @@
         "num_iter": null,
         "num_params": 3,
         "num_repet": null,
-        "number_of_cpu": 4,
+        "number_of_cpu": 3.0,
         "param_vals": [
             0,
             0,
             0
         ],
-        "pop_size": 10.0,
+        "pop_size": 6.0,
         "run_controll_dt": 0.025,
         "run_controll_pos": 0.5,
         "run_controll_record": "v",
@@ -72,7 +66,7 @@
         "social_rate": null,
         "spike_thres": 0.0,
         "spike_window": 40.0,
-        "start_time_stamp": 1650568276.6480458,
+        "start_time_stamp": 1655932825.8573112,
         "starting_points": [],
         "std_gauss": null,
         "step_size": null,
@@ -86,7 +80,6 @@
         "stim_type": "IClamp",
         "temperature": null,
         "type": [
-            "voltage",
             "voltage"
         ],
         "u_fun_string": "",
@@ -98,20 +91,31 @@
         "x_tol": null
     },
     "selectable_algorithms": {
-        "ABC_Pygmo": {
+        "ABC_PYGMO": {
             "limit": 1
         },
-        "ACO_Inspyred": {
+        "ACO_INSPYRED": {
             "evaporation_rate": 0.1,
             "initial_pheromone": 0,
             "learning_rate": 0.1
         },
-        "CES_Inspyred": {
+        "BH_SCIPY": {
+            "T": 1.0,
+            "disp": false,
+            "interval": 50,
+            "stepsize": 0.5,
+            "stepwise_factor": 0.9,
+            "target_accept_rate": 0.5
+        },
+        "CES_INSPYRED": {
             "epsilon": 1e-05,
             "tau": null,
             "tau_prime": null
         },
-        "CMAES_Pygmo": {
+        "CMAES_CMAES": {
+            "sigma": 1.3
+        },
+        "CMAES_PYGMO": {
             "c1": -1,
             "cc": -1,
             "cmu": -1,
@@ -122,7 +126,7 @@
             "sigma0": 0.5,
             "x_tol": 1e-06
         },
-        "DE1220_Pygmo": {
+        "DE1220_PYGMO": {
             "allowed_variants": [
                 2,
                 3,
@@ -138,7 +142,7 @@
             "variant_adptv": 1,
             "x_tol": 1e-06
         },
-        "DEA_Inspyred": {
+        "DEA_INSPYRED": {
             "crossover_rate": 1,
             "gaussian_mean": 0,
             "gaussian_stdev": 1,
@@ -146,19 +150,19 @@
             "num_selected": 2,
             "tournament_size": 2
         },
-        "DE_Pygmo": {
+        "DE_PYGMO": {
             "CR": 0.9,
             "F": 0.8,
             "f_tol": 1e-06,
             "variant": 2,
             "x_tol": 1e-06
         },
-        "EDA_Inspyred": {
+        "EDA_INSPYRED": {
             "num_elites": 0,
             "num_offspring": null,
             "num_selected": 2
         },
-        "GACO_Pygmo": {
+        "GACO_PYGMO": {
             "acc": 0.01,
             "evalstop": 100000,
             "focus": 0.0,
@@ -170,14 +174,24 @@
             "q": 1.0,
             "threshold": 1
         },
-        "GA_Inspyred": {
+        "GA_INSPYRED": {
             "crossover_rate": 1,
             "mutation_rate": 1,
             "num_crossover_points": 1,
             "num_elites": 0,
             "num_selected": null
         },
-        "MACO_Pygmo": {
+        "IBEA_BLUEPYOPT": {
+            "cxpb": 1.0,
+            "mutpb": 1.0
+        },
+        "L_BFGS_B_SCIPY": {
+            "eps": 1e-08,
+            "ftol": 2.220446049250313e-09,
+            "gtol": 1e-05,
+            "maxcor": 10
+        },
+        "MACO_PYGMO": {
             "evalstop": 100000,
             "focus": 0.0,
             "ker": 63,
@@ -186,23 +200,34 @@
             "q": 1.0,
             "threshold": 1
         },
-        "NSGA_Pygmo": {
+        "NM_PYGMO": {},
+        "NM_SCIPY": {
+            "adaptive": false,
+            "disp": false,
+            "fatol": 0.0001,
+            "xatol": 0.0001
+        },
+        "NSGA2_BLUEPYOPT": {
+            "cxpb": 1.0,
+            "mutpb": 1.0
+        },
+        "NSGA_PYGMO": {
             "cr": 0.95,
             "eta_c": 10.0,
             "eta_m": 50.0,
             "m": 0.01
         },
-        "NSPSO_Pygmo": {
+        "NSPSO_PYGMO": {
             "c1": 0.01,
             "c2": 0.5,
             "chi": 0.5,
-            "diversity_mechanism": "crowding distance",
             "leader_selection_range": 2,
             "memory": false,
             "omega": 0.6,
             "v_coeff": 0.5
         },
-        "PSOG_Pygmo": {
+        "PRAXIS_PYGMO": {},
+        "PSOG_PYGMO": {
             "eta1": 2.05,
             "eta2": 2.05,
             "max_vel": 0.5,
@@ -212,12 +237,12 @@
             "omega": 0.7298,
             "variant": 5
         },
-        "PSO_Inspyred": {
+        "PSO_INSPYRED": {
             "cognitive_rate": 2.1,
             "inertia": 0.5,
             "social_rate": 2.1
         },
-        "PSO_Pygmo": {
+        "PSO_PYGMO": {
             "eta1": 2.05,
             "eta2": 2.05,
             "max_vel": 0.5,
@@ -227,31 +252,29 @@
             "omega": 0.7298,
             "variant": 5
         },
-        "SADE_Pygmo": {
+        "RANDOM_SEARCH": {},
+        "SADE_PYGMO": {
             "f_tol": 1e-06,
             "memory": false,
             "variant": 2,
             "variant_adptv": 1,
             "x_tol": 1e-06
         },
-        "SA_Inspyred": {
+        "SA_INSPYRED": {
             "cooling_rate": null,
             "gaussian_mean": 0,
             "gaussian_stdev": 1,
             "mutation_rate": null,
             "temperature": null
         },
-        "SGA_Pygmo": {
+        "SGA_PYGMO": {
             "cr": 0.9,
-            "crossover": "exponential",
             "eta_c": 1.0,
             "m": 0.02,
-            "mutation": "polynomial",
             "param_m": 1.0,
-            "param_s": 2,
-            "selection": "tournament"
+            "param_s": 2
         },
-        "XNES_Pygmo": {
+        "XNES_PYGMO": {
             "eta_b": -1,
             "eta_mu": -1,
             "eta_sigma": -1,
