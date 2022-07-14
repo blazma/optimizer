@@ -160,7 +160,12 @@ class coreModul():
 		else:
 			self.model_handler=externalHandler(self.option_handler.GetSimParam()[1])
 			self.model_handler.SetNParams(self.option_handler)
-			self.option_handler.SetModelStimParam([[0]*self.data_handler.number_of_traces(),0,0])
+			if self.option_handler.type[-1]!= 'features':
+				k_range=self.data_handler.number_of_traces()
+			else:
+				k_range=len(self.data_handler.features_data["stim_amp"])
+			self.option_handler.SetModelStimParam([[0]*k_range,0,0])
+	
 	def ReturnSections(self):
 		"""
 
@@ -416,18 +421,14 @@ class coreModul():
 			if self.option_handler.algorithm_name.split("_")[-1] == "BLUEPYOPT":
 				self.cands=[list(normalize(hof,self.optimizer)) for hof in self.optimizer.hall_of_fame]
 				self.fits=[x.fitness.values for x in self.optimizer.hall_of_fame]
-				popsize=int(self.option_handler.pop_size)
+				popsize=int(self.option_handler.algorithm_parameters["size_of_population"])
 				self.allfits=[self.optimizer.hist.genealogy_history[x].fitness.values for x in self.optimizer.hist.genealogy_history]
 				self.allpop=[self.optimizer.hist.genealogy_history[x] for x in self.optimizer.hist.genealogy_history]
 				if self.option_handler.type[-1]!="features":
 					number_of_traces=self.data_handler.number_of_traces()
 				else:
 					number_of_traces=len(self.data_handler.features_data["stim_amp"])
-				allgens=[]
-				minfits=[]
-				maxfits=[]
-				medfits=[]
-				cumminfits=[]
+				cumminfits = []
 				with open(self.option_handler.base_dir + "/bpopt_stats.txt" , "w") as out_handler:
 					out_handler.write("Gen \t Min \t \t Max \t \t Median \t  Cumulative Min \n")
 					for idx in range(0,int(self.option_handler.max_evaluation*2),2):
@@ -436,9 +437,6 @@ class coreModul():
 						min_e=numpy.min(weighted_sum)
 						max_e=numpy.max(weighted_sum)
 						med_e=numpy.median(weighted_sum)
-						minfits.append(min_e)
-						maxfits.append(max_e)
-						medfits.append(med_e)
 						if cumminfits:
 							cumminfits.append(cumminfits[-1]) if min_e>cumminfits[-1] else cumminfits.append(min_e)
 						else:
@@ -452,39 +450,47 @@ class coreModul():
 						current_gen=self.allpop[idx*popsize:(idx+1)*popsize]
 						for gen,fit in zip(current_gen,current_fits):
 							out_handler.write(str(int(idx/2+1))+":"+str(gen)+":"+str(fit)+"\n")
+				self.best_cand = self.cands[0]
+				self.best_fit = self.fits[0]
 			elif(self.option_handler.algorithm_name.split("_")[-1] == "PYGMO"):
 				self.cands = [self.optimizer.best]
 				self.fits = [self.optimizer.best_fitness]
+				self.best_cand = self.cands[0]
+				self.best_fit = self.fits[0]
 			elif(self.option_handler.algorithm_name.split("_")[-1] == "CMAES"):
 				all_solutions = dict(sorted(self.optimizer.all_solutions.items(), key=lambda item: item[1]))
 				self.cands = list(all_solutions.keys())
 				self.fits = list(all_solutions.values())
+				popsize=int(self.option_handler.algorithm_parameters["size_of_population"])
 				with open("ind_file.txt",'w') as ind_file:
 					gen = 0
 					for idx,(k,v) in enumerate(self.optimizer.all_solutions.items()):
-						if idx % self.option_handler.pop_size == 0:
+						if idx % popsize == 0:
 							gen += 1
-						ind_file.write("{0}, {1}, {2}, {3} \n".format(gen,
-						int(idx % self.option_handler.pop_size)+1, v, k))
+						ind_file.write("{0}, {1}, {2}, {3} \n".format(gen,int(idx % popsize+1), v, k))
 				with open("stat_file.txt",'w') as stat_file:
 					for idx,fitness in enumerate(self.optimizer.gen_fits):
 						stat_file.write("{0}, {1}, {2}, {3}, {4}, {5}, {6} \n".format(
-							idx+1, int(self.option_handler.pop_size), np.max(fitness),
+							idx+1, int(popsize), np.max(fitness),
 							 np.min(fitness), np.median(fitness), np.mean(fitness), np.std(fitness)))
+				self.best_cand = self.cands[0]
+				self.best_fit = self.fits[0]
 			elif(self.option_handler.algorithm_name.split("_")[-1] == "INSPYRED"):
 				self.optimizer.final_pop.sort(reverse=True)
 				for i in range(len(self.optimizer.final_pop)):
 					self.cands.append(self.optimizer.final_pop[i].candidate[0:len(self.option_handler.adjusted_params)])
 					self.fits.append(self.optimizer.final_pop[i].fitness)
+				self.best_cand = self.cands[0]
+				self.best_fit = self.fits[0]
 			else:
-				self.cands = [x.candidate[0] for x in reversed(self.optimizer.final_pop)]
-				self.fits = [x.fitness[0] for x in reversed(self.optimizer.final_pop)]
-			print((self.cands[0], "CANDS"))
-			print((self.fits[0], "FITS"))
+				self.best_cand = min(self.optimizer.final_pop,key=self.optimizer.final_pop.get)
+				self.best_fit = self.optimizer.final_pop[self.best_cand]
+			print((self.best_cand, "CANDS"))
+			print((self.best_fit, "FITS"))
 			print(("Optimization lasted for ", stop_time-start_time, " s"))	
-			self.normed_params=self.cands[0]
+			self.normed_params = self.best_cand
 		else:
-			self.normed_params=normalize(self.optimal_params,self.optimizer)
+			self.normed_params = normalize(self.optimal_params,self.optimizer)
 		
 		
 

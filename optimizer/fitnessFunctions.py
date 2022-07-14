@@ -1182,8 +1182,7 @@ class fF(object):
                         temp_fit.append(0)
 
             
-            self.fitnes.append(ec.emo.Pareto(tuple(temp_fit)))
-            
+            self.fitnes.append(ec.emo.Pareto(tuple(temp_fit),maximize=False))
             if self.option.output_level == "1":
                 print("current fitness: ",temp_fit)
             del temp_fit[:] 
@@ -1221,7 +1220,6 @@ class fF(object):
             pass
 
         section = self.option.GetObjTOOpt()
-        
 
         if self.option.type[-1]!= 'features':
             k_range=self.reader.number_of_traces()

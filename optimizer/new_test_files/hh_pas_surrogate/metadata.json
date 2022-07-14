@@ -2,12 +2,12 @@
     "model": "hh_pas",
     "optimization": {
         "final_fitness": [
-            0.024607972268256346
+            0.0206395428995896
         ],
         "optimal_params": [
-            0.4373799271694082,
-            0.08571316777389806,
-            0.0004554650687973832
+            0.5527004972174653,
+            0.10808087475475678,
+            0.000719090260648029
         ]
     },
     "parameters": [
@@ -15,27 +15,27 @@
             "name": "soma 0 hh gnabar_hh",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.4373799271694082"
+            "optimum": "0.5527004972174653"
         },
         {
             "name": "soma 0 hh gkbar_hh",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.08571316777389806"
+            "optimum": "0.10808087475475678"
         },
         {
             "name": "soma 0 hh gl_hh",
             "min_boundary": "1e-05",
             "max_boundary": "0.001",
-            "optimum": "0.0004554650687973832"
+            "optimum": "0.000719090260648029"
         }
     ],
     "error_function": [
         {
             "name": "MSE",
-            "value": "0.04921594453651269",
+            "value": "0.0412790857991792",
             "weight": "0.5",
-            "weighted_value": "0.024607972268256346"
+            "weighted_value": "0.0206395428995896"
         },
         {
             "name": "Spike count",

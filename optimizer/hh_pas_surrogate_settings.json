@@ -22,11 +22,7 @@
         "cognitive_rate": null,
         "cooling_rate": null,
         "crossover_rate": null,
-        "current_algorithm": {"CES_Inspyred": {
-            "epsilon": 1e-04,
-            "tau": null,
-            "tau_prime": null
-        }},
+        "current_algorithm": "CMAES_PYGMO",
         "f_tol": null,
         "feats": [
             "MSE",
@@ -51,7 +47,7 @@
         "num_iter": null,
         "num_params": 3,
         "num_repet": null,
-        "number_of_cpu": 4,
+        "number_of_cpu": 1,
         "param_vals": [
             0,
             0,

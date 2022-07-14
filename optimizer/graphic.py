@@ -1,16 +1,13 @@
 import sys
 from traceHandler import sizeError
 try:
-	import matplotlib.pyplot as plt
-	from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-	from matplotlib.figure import Figure
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+    from matplotlib.figure import Figure
 except RuntimeError as re:
     print(re)
     sys.exit()
-#from inspyred.ec import analysis
 from inspyred.ec.analysis import generation_plot
-import inspyred
-import matplotlib.pyplot as plt
 import os
 from copy import copy
 import Core
@@ -27,10 +24,10 @@ from matplotlib.figure import Figure
 
 def popup(message):
     """
-	Implements modal message dialog from the PyQT package.
+    Implements modal message dialog from the PyQT package.
 
     :param message: the string displayed in the window 
-	"""
+    """
     msg = QtWidgets.QMessageBox()
     msg.setIcon(QtWidgets.QMessageBox.Warning)
     msg.setText(message)
@@ -473,9 +470,9 @@ class Ui_Neuroptimus(object):
         self.algolist = QtWidgets.QTableWidget(self.runtab)
         self.algolist.setGeometry(QtCore.QRect(10, 120, 441, 321))
         self.algolist.setObjectName("algolist")
-        self.aspectlist = QtWidgets.QTableWidget(self.runtab)
-        self.aspectlist.setGeometry(QtCore.QRect(470, 90, 241, 351))
-        self.aspectlist.setObjectName("aspectlist")
+        self.algorithm_parameter_list = QtWidgets.QTableWidget(self.runtab)
+        self.algorithm_parameter_list.setGeometry(QtCore.QRect(470, 90, 241, 351))
+        self.algorithm_parameter_list.setObjectName("algorithm_parameter_list")
         self.label_60 = QtWidgets.QLabel(self.runtab)
         self.label_60.setGeometry(QtCore.QRect(470, 70, 200, 16))
         font = QtGui.QFont()
@@ -623,7 +620,7 @@ class Ui_Neuroptimus(object):
         self.label_4.setText(_translate("Neuroptimus", "Length of traces (ms)"))
         self.label_5.setText(_translate("Neuroptimus", "Number of traces"))
         self.label_7.setText(_translate("Neuroptimus", "Units"))
-        self.pushButton_3.setText(_translate("Neuroptimus", "Load trace"))
+        self.pushButton_3.setText(_translate("Neuroptimus", "Load data"))
         self.pushButton_3.setEnabled(False)
         self.pushButton_3.clicked.connect(self.Load)
         self.label_2.setText(_translate("Neuroptimus", "Data file"))
@@ -742,10 +739,10 @@ class Ui_Neuroptimus(object):
         self.algolist.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.algolist.setColumnWidth(0,440)
         self.algolist.setHorizontalHeaderLabels(['Algorithms'])
-        self.aspectlist.setColumnCount(2)
-        self.aspectlist.horizontalHeader().setStretchLastSection(True)
-        self.aspectlist.setHorizontalHeaderLabels(["Option","Value"])
-        self.aspectlist.cellChanged.connect(self.aspect_changed)
+        self.algorithm_parameter_list.setColumnCount(2)
+        self.algorithm_parameter_list.horizontalHeader().setStretchLastSection(True)
+        self.algorithm_parameter_list.setHorizontalHeaderLabels(["Option","Value"])
+        self.algorithm_parameter_list.cellChanged.connect(self.aspect_changed)
         self.seed = []
         self.resolution=0
         self.Recom=["Classical Evolution Strategy (CES) - Inspyred","Covariance Matrix Adaptation ES (CMAES) - Cmaes", "Covariance Matrix Adaptation ES (CMAES) - Pygmo",
@@ -772,75 +769,12 @@ class Ui_Neuroptimus(object):
         self.algolist.setRowCount(len(self.Recom))
         for index,item in enumerate(self.Recom): 
             self.algolist.setItem(index, 0, QTableWidgetItem(item))  
-
-
-        descr19 = {'Size of Population:':100}
-        descr20 = {'Number of Generations:':100}
-        descr21 = {'Mutation Rate:':0.25}
-        descr22 = {'Cooling Rate:':0.5}
-        descr23 = {'Mean of Gaussian:':0}
-        descr24 = {'Std. Deviation of Gaussian:':1}
-        descr26 = {'Initial Temperature:':1.2}
-        descr28 = {'Accuracy:':1e-06}
-        descr25 = {'Update Frequency:':50}
-        descr27 = {'Temperature:':0.1}
-        descr29 = {'Step Size:':0.1}
-        descr32 = {'Number of Iterations:':100}
-        descr33 = {'Number of Repetition:':100}
-        descr30 = {'Error Tolerance for x:':0.0001}
-        descr31 = {'Error Tolerance for f:':0.0001}
-        descr34 = {'Inertia:': 0.5}
-        descr35 = {'Cognitive Rate:': 2.1}
-        descr36 = {'Social Rate:':2.1}
-        descr37 = {'Neighborhood Size:': 5}
-        descr38 = {'Topology:':0}
-        descr39 = {'Crossover Rate:':1}
-        descr40 = {'Number of CPU:':1}
-        descr41 = {'Number of Islands:':1}
-        descr42 = {'Force bounds:' : False}   #extend options  
-
-
-        self.algo_dict={
-            "Classical Evolution Strategy (CES) - Inspyred": [descr19.copy(),descr20.copy(),descr21.copy(),descr40],
-            "Simulated Annealing (SA) - Inspyred": [descr20.copy(),descr21.copy(),descr22.copy(),descr23.copy(),descr24.copy(),descr26.copy(),descr40],
-            "Particle Swarm (PSO) - Inspyred" : [descr19.copy(),descr20.copy(),descr34.copy(),descr35.copy(),descr36.copy(),descr40],
-            "Basinhopping (BH) - Scipy": [descr32.copy(),descr33.copy(),descr25.copy(),descr27.copy(),descr29],
-            "Nelder-Mead (NM) - Scipy": [descr20.copy(),descr30.copy(),descr31],
-            "L-BFGS-B - Scipy": [descr20.copy(),descr28],
-            "Differential Evolution (DE) - Inspyred": [descr19.copy(),descr20.copy(),descr21.copy(),descr39.copy(),descr40],
-            "Random - Search": [descr19.copy(),descr40],
-            "Nondominated Sorted GA (NSGA2) - Inspyred": [descr19.copy(),descr20.copy(),descr21.copy(),descr40],
-            "Pareto Archived ES (PAES) - Inspyred": [descr19.copy(),descr20.copy(),descr40],
-            "Nondominated Sorted GA (NSGA2) - Bluepyopt": [descr19.copy(),descr20.copy(),descr21.copy(),descr40],
-            "Indicator Based (IBEA) - Bluepyopt": [descr19.copy(),descr20.copy(),descr21.copy(),descr40],
-            "Differential Evolution (DE) - Pygmo":[descr19.copy(),descr20.copy(),descr41],
-            "Self-Adaptive DE (SADE) - Pygmo":[descr19.copy(),descr20.copy(),descr41],
-            "Exponential Natural ES (XNES) - Pygmo":[descr19.copy(),descr20.copy(),descr42,descr41],
-            "Simple Genetic Algorithm (SGA) - Pygmo":[descr19.copy(),descr20.copy(),descr41],
-            "Particle Swarm (PSO) - Pygmo":[descr19.copy(),descr20.copy(),descr35.copy(),descr36.copy(),descr41],
-            "Particle Swarm Gen (PSOG) - Pygmo":[descr19.copy(),descr20.copy(),descr35.copy(),descr36.copy(),descr40,descr41],
-            "Nondominated Sorted Particle Swarm (NSPSO) - Pygmo":[descr19.copy(),descr20.copy(),descr35.copy(),descr36.copy(),descr40,descr41],
-            "Nondominated Sorted GA (NSGA2) - Pygmo":[descr19.copy(),descr20.copy(),descr21.copy(),descr40,descr41],
-            "Extended Ant Colony (GACO) - Pygmo":[descr19.copy(),descr20.copy(),descr40,descr41],
-            "Multi-Objective Ant Colony (MACO) - Pygmo":[descr19.copy(),descr20.copy(),descr40,descr41],
-            "Covariance Matrix Adaptation ES (CMAES) - Pygmo":[descr19.copy(),descr20.copy(),descr42,descr41],
-            "Single Differential Evolution (SDE) - Pygmo":[descr19.copy(),descr20.copy(),descr41],
-            "Differential Evolution (DE1220) - Pygmo":[descr19.copy(),descr20.copy(),descr41],
-            "Bee Colony (ABC) - Pygmo":[descr19.copy(),descr20.copy(),descr41],
-            "FullGrid - Pygmo":[descr19.copy(),descr20.copy(),descr41],
-            "Praxis - Pygmo":[descr19.copy(),descr20.copy(),descr41],
-            "Nelder-Mead (NM) - Pygmo":[descr19.copy(),descr20.copy(),descr41],
-            "Covariance Matrix Adaptation ES (CMAES) - Cmaes":[descr19.copy(),descr20.copy(),descr40],
-                #NM,prax 
-            }
         
         self.algo_dict=self.core.option_handler.algorithm_parameters_dict.copy()
 
         self.tabwidget.setTabText(self.tabwidget.indexOf(self.results_tab), _translate("Neuroptimus", "Results"))
         self.label_72.setText(_translate("Neuroptimus", "Final Result"))
-        #plt.tight_layout()
         self.figure2 = plt.figure(figsize=(4,2), dpi=130)
-        # self.figure2.gcf().subplots_adjust()
         self.canvas2 = FigureCanvas(self.figure2)
         self.canvas2.setParent(self.plot_widget)
         self.results_tab_axes = self.figure2.add_subplot(1,1,1)
@@ -852,8 +786,6 @@ class Ui_Neuroptimus(object):
         self.label_74.setText(_translate("Neuroptimus", "Analysis"))
         self.pushButton_35.setText(_translate("Neuroptimus", "Generation Plot"))
         self.pushButton_35.clicked.connect(self.PlotGen)
-        #self.pushButton_36.setText(_translate("Neuroptimus", "Grid Plot"))
-        #self.pushButton_36.clicked.connect(self.PlotGrid)
         self.pushButton_37.setText(_translate("Neuroptimus", "Error Details"))
         self.pushButton_37.clicked.connect(self.ShowErrorDialog)
         self.errorlist.setColumnCount(4)
@@ -1033,12 +965,7 @@ class Ui_Neuroptimus(object):
             f = self.core.option_handler.input_freq
             t = self.core.option_handler.input_length
             no_traces=self.core.option_handler.input_size
-            #self.graphicsView.set_xticks([n for n in range(0, int((t*no_traces)/(1000.0/f)), int((t*no_traces)/(1000.0/f)/5.0)) ])
-            #self.graphicsView.set_xticklabels([str(n) for n in range(0, t*no_traces, (t*no_traces)/5)])
-            #self.graphicsView.set_xlabel("time [ms]")
             _type="voltage" if self.type_selector.currentIndex==0 else "current" if self.type_selector.currentIndex==1 else "unkown"
-            #unit="V" if self.type_selector.GetSelection()==0 else "A" if self.type_selector.GetSelection()==1 else ""
-            #self.graphicsView.set_ylabel(_type+" [" + self.core.option_handler.input_scale + "]")
             exp_data = []
             
             freq=float(self.freq_ctrl.text())
@@ -1054,13 +981,11 @@ class Ui_Neuroptimus(object):
                 ax.plot(exp_data)
             self.canvas.draw()
             plt.tight_layout()
-            #self.graphicsView.set_title('PyQt Matplotlib Example')
             
             
             
             for k in range(self.core.data_handler.number_of_traces()):
                 exp_data.extend(self.core.data_handler.data.GetTrace(k))
-            #axes.plot(list(range(0, len(exp_data))), exp_data)
             self.model.insertRow(0)
             if self.type_selector.currentIndex()==0:
                 for n in [x for x in enumerate(self.loaded_input_types) if x[1]!=None and x[0]!=2]:
@@ -1068,15 +993,12 @@ class Ui_Neuroptimus(object):
                 input_string="Voltage trace \n" 
                 self.loaded_input_types[0]=self.tvoltage
                 
-                #self.model.setData(self.model.index(0), self.tvoltage,self.input_file_controll.GetValue().split("/")[-1])
                 input_string+=str(str(self.lineEdit_file.text()).split("/")[-1])+"\n"
             elif self.type_selector.currentIndex()==1:
                 for n in [x for x in enumerate(self.loaded_input_types) if x[1]!=None and x[0]!=2]:
-                    #self.input_tree.Delete(n[1])
                     self.loaded_input_types[n[0]]=None
                 input_string="Current trace"
                 self.loaded_input_types[1]=self.tcurrent
-                #self.model.setData(self.model.index(0),self.tcurrent,self.input_file_controll.GetValue().split("/")[-1])
                 input_string+=str(str(self.lineEdit_file.text()).split("/")[-1])+"\n"
 
             '''
@@ -1091,10 +1013,8 @@ class Ui_Neuroptimus(object):
 
         elif self.type_selector.currentIndex()==2:
             for n in [x for x in enumerate(self.loaded_input_types) if x[1]!=None and x[0]!=2]:
-                #self.input_tree.Delete(n[1])
                 self.loaded_input_types[n[0]]=None
             input_string="Features"
-            #self.loaded_input_types[2]=self.tfeatures
             input_string+=str(str(self.lineEdit_file.text()).split("/")[-1])+"\n"
             input_string+=self.add_data_dict(self.core.data_handler.features_dict)
 
@@ -1102,7 +1022,6 @@ class Ui_Neuroptimus(object):
             pass
         
         self.input_label.setText(QtCore.QCoreApplication.translate("Neuroptimus", input_string))
-        print(self.core.option_handler.__dict__)
         if self.core.option_handler.type[-1]!="features":
                 self.my_list = copy(self.core.ffun_calc_list)
                
@@ -1114,11 +1033,11 @@ class Ui_Neuroptimus(object):
             self.param_list[1] = [("Spike detection thres. (mV)",0.0), ("Spike Window (ms)",1.0)]
         else:
             self.param_list[0] = [("Spike detection thres. (mV)",0.0)]
-	
+
         if self.core.option_handler.type[-1]=="features":
             for l in range(len(self.core.data_handler.features_data["stim_amp"])):
                 self.container.append(float(self.core.data_handler.features_data["stim_amp"][l]))
-	
+
         self.fitlist.setRowCount(len(self.my_list))
         for index,elems in enumerate(self.my_list):  
             item = QTableWidgetItem(elems)
@@ -1155,7 +1074,6 @@ class Ui_Neuroptimus(object):
             self.lineEdit_delay.setText(str(self.core.data_handler.features_data["stim_delay"]))
             self.lineEdit_duration.setText(str(self.core.data_handler.features_data["stim_duration"]))    
 
-        #self.fitlist.cellChanged.connect(self.fitchanged)
 
         
         
@@ -1167,13 +1085,10 @@ class Ui_Neuroptimus(object):
         Loop through every selected line.
         """
         items = self.modellist.selectionModel().selectedRows()
-        print(items)
         self.remover.setEnabled(True)
         for item_selected in items:
-                #try to use the table for selection
                 selected_row=item_selected.row()
                 section = str(self.modellist.item(selected_row, 0).text())
-                #
                 segment = str(self.modellist.item(selected_row, 1).text())
                 chan = str(self.modellist.item(selected_row, 2).text())
                 morph=""
@@ -1222,10 +1137,8 @@ class Ui_Neuroptimus(object):
         """
         items = self.modellist.selectionModel().selectedRows()
         for item_selected in items:
-                #try to use the table for selection
                 selected_row=item_selected.row()
                 section = str(self.modellist.item(selected_row, 0).text())
-                    #
                 segment = str(self.modellist.item(selected_row, 1).text())
                 chan = str(self.modellist.item(selected_row, 2).text())
                 morph=""
@@ -1259,36 +1172,36 @@ class Ui_Neuroptimus(object):
         Called when simulation platform changed, locks unnecessary widgets and swap Label of Load button.
         """
         if self.dd_type.currentIndex()==1:
-            self.sim_path.show()#setEnabled(True)
+            self.sim_path.show()
             self.sim_param.show()
             self.pushButton_13.setText(QtCore.QCoreApplication.translate("Neuroptimus", "Set"))
             self.pushButton_12.show()
-            self.pushButton_14.hide()#setEnabled(False)
-            self.pushButton_15.hide()#setEnabled(False)
-            self.pushButton_16.hide()#setEnabled(False)
-            self.setter.hide()#setEnabled(False)
-            self.remover.hide()#setEnabled(False)
-            self.modellist.hide()#setEnabled(False)
-            self.lineEdit_file2.hide()#setEnabled(False)
-            self.lineEdit_folder2.hide()#setEnabled(False)
+            self.pushButton_14.hide()
+            self.pushButton_15.hide()
+            self.pushButton_16.hide()
+            self.setter.hide()
+            self.remover.hide()
+            self.modellist.hide()
+            self.lineEdit_file2.hide()
+            self.lineEdit_folder2.hide()
             self.label_23.hide()
             self.label_24.hide()
             self.label_26.show()
             self.label_27.show()
             self.load_mods_checkbox.hide()
         elif self.dd_type.currentIndex()==2:        
-            self.sim_path.show()#setEnabled(True)
+            self.sim_path.show()
             self.sim_param.show()
             self.pushButton_13.setText(QtCore.QCoreApplication.translate("Neuroptimus", "Set"))
             self.pushButton_12.hide()
-            self.pushButton_14.hide()#setEnabled(False)
-            self.pushButton_15.hide()#setEnabled(False)
-            self.pushButton_16.hide()#setEnabled(False)
-            self.setter.hide()#setEnabled(False)
-            self.remover.hide()#setEnabled(False)
-            self.modellist.hide()#setEnabled(False)
-            self.lineEdit_file2.hide()#setEnabled(False)
-            self.lineEdit_folder2.hide()#setEnabled(False)
+            self.pushButton_14.hide()
+            self.pushButton_15.hide()
+            self.pushButton_16.hide()
+            self.setter.hide()
+            self.remover.hide()
+            self.modellist.hide()
+            self.lineEdit_file2.hide()
+            self.lineEdit_folder2.hide()
             self.label_23.hide()
             self.label_24.hide()
             self.label_26.show()
@@ -1296,17 +1209,17 @@ class Ui_Neuroptimus(object):
             self.load_mods_checkbox.hide()
         else:
             self.pushButton_13.setText(QtCore.QCoreApplication.translate("Neuroptimus", "Load"))
-            self.sim_path.hide()#setEnabled(False)
+            self.sim_path.hide()
             self.sim_param.hide()
             self.pushButton_12.hide()
-            self.pushButton_14.show()#setEnabled(True)
-            self.pushButton_15.show()#setEnabled(True)
-            self.pushButton_16.show()#setEnabled(True)
-            self.setter.show()#setEnabled(True)
-            self.remover.show()#setEnabled(True)
-            self.modellist.show()#setEnabled(True)
-            self.lineEdit_file2.show()#setEnabled(True)
-            self.lineEdit_folder2.show()#setEnabled(True)
+            self.pushButton_14.show()
+            self.pushButton_15.show()
+            self.pushButton_16.show()
+            self.setter.show()
+            self.remover.show()
+            self.modellist.show()
+            self.lineEdit_file2.show()
+            self.lineEdit_folder2.show()
             self.label_23.show()
             self.label_24.show()
             self.label_26.hide()
@@ -1337,7 +1250,7 @@ class Ui_Neuroptimus(object):
         try:
             self.core.LoadModel({"model" : [self.model_file, self.spec_file],
                                  "simulator" : self.dd_type.currentText(),
-                                 "sim_command" : self.sim_path.text() if not self.dd_type else self.sim_path.text()+" "+self.sim_param.text()}) # path + param for external
+                                 "sim_command" : self.sim_path.text() if not self.dd_type else self.sim_path.text()+" "+self.sim_param.text()})
             temp = self.core.model_handler.GetParameters()
             if temp!=None:
                 out = open("model.txt", 'w')
@@ -1514,44 +1427,26 @@ class Ui_Neuroptimus(object):
             selected_algo = self.algolist.selectionModel().selectedRows()[0].row()
             algo_name = str(self.algolist.item(selected_algo, 0).text()).upper()
             aspects = self.algo_dict[algo_name[algo_name.find("(")+1:].replace(")","").replace(" - ","_").replace("-","_").replace(" ","_")]
-            self.aspectlist.setRowCount(len(aspects)+5)
+            self.algorithm_parameter_list.setRowCount(len(aspects)+1)
             item = QTableWidgetItem('Seed')
             item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
-            self.aspectlist.setItem(0, 0, item)
+            self.algorithm_parameter_list.setItem(0, 0, item)
             item2 = QTableWidgetItem('1234')   
-            self.aspectlist.setItem(0, 1, item2)
-            item = QTableWidgetItem('Size of Population')
-            item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
-            self.aspectlist.setItem(1, 0, item)
-            item2 = QTableWidgetItem('100')   
-            self.aspectlist.setItem(1, 1, item2)
-            item = QTableWidgetItem('Number of Generations')
-            item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
-            self.aspectlist.setItem(2, 0, item)
-            item2 = QTableWidgetItem('100')
-            self.aspectlist.setItem(2, 1, item2)
-            item = QTableWidgetItem('Number of CPU')
-            item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
-            self.aspectlist.setItem(3, 0, item)
-            item2 = QTableWidgetItem('1')   
-            self.aspectlist.setItem(3, 1, item2)
-            item = QTableWidgetItem('Number of Islands')
-            item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
-            self.aspectlist.setItem(4, 0, item)
-            item2 = QTableWidgetItem('1')   
-            self.aspectlist.setItem(4, 1, item2)
+            self.algorithm_parameter_list.setItem(0, 1, item2)
             for index, (key, value) in enumerate(aspects.items()):
                 item = QTableWidgetItem(key)
                 item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
-                self.aspectlist.setItem(index+5, 0, item)     
+                self.algorithm_parameter_list.setItem(index+1, 0, item)     
                 item2 = QTableWidgetItem(str(value))
                 if str(value)=='True' or str(value)=='False':
                     item2 = QTableWidgetItem()
                     item2.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
                     item2.setCheckState(QtCore.Qt.Unchecked)    
-                self.aspectlist.setItem(index+5, 1, item2)
-        except:
-            print('Algorithm selection error')
+                self.algorithm_parameter_list.setItem(index+1, 1, item2)
+            self.algorithm_parameter_list.resizeColumnsToContents() #setSectionResizeMode(0,QtWidgets.QHeaderView.ResizeToContents)
+        except Exception as e:
+            print('Algorithm parameter error')
+            print(e)
 
 
     def aspect_changed(self):
@@ -1562,10 +1457,10 @@ class Ui_Neuroptimus(object):
         """
         try:
             selected_algo = self.algolist.selectionModel().selectedRows()
-            selected_asp = self.aspectlist.selectionModel().selectedIndexes()
+            selected_asp = self.algorithm_parameter_list.selectionModel().selectedIndexes()
             if selected_asp[0].row():
-                self.algo_dict[str(self.algolist.item(selected_algo[0].row(), 0).text())][selected_asp[0].row()-1][str(self.aspectlist.item(selected_asp[0].row(), 0).text())]=float(self.aspectlist.item(selected_asp[0].row(), 1).text())
-                self.aspectlist.clearSelection()
+                self.algo_dict[str(self.algolist.item(selected_algo[0].row(), 0).text())][selected_asp[0].row()-1][str(self.algorithm_parameter_list.item(selected_asp[0].row(), 0).text())]=float(self.algorithm_parameter_list.item(selected_asp[0].row(), 1).text())
+                self.algorithm_parameter_list.clearSelection()
         except:
             "ok"
 
@@ -1581,7 +1476,6 @@ class Ui_Neuroptimus(object):
         """
         err=[]
         errpop=[]
-
         if not self.dd_type.currentIndex():
             try:
                 self.core.SecondStep({"stim" : [str(self.stimprot.currentText()), float(self.lineEdit_pos.text()), str(self.section_rec.currentText())],
@@ -1642,18 +1536,20 @@ class Ui_Neuroptimus(object):
                 selected_algo = self.algolist.selectionModel().selectedRows()
                 algo_name=str(self.algolist.item(selected_algo[0].row(), 0).text())
                 algo_str=algo_name[algo_name.find("(")+1:].replace(")","")
-                tmp = {"seed" : int(self.aspectlist.item(0,1).text()),
+                tmp = {"seed" : int(self.algorithm_parameter_list.item(0,1).text()),
                     "current_algorithm" : str(algo_str)
                     }
-                #for n in self.algo_param:
-                    #tmp.update({str(n[1]) : float(n[0].GetValue())})
-                allRows = self.aspectlist.rowCount()
+                allRows = self.algorithm_parameter_list.rowCount()
                 for row in range(1,allRows):
-                    aspect=str(self.aspectlist.item(row,0).text())
-                    if self.aspectlist.item(row,1).text():
-                        value=float(self.aspectlist.item(row,1).text())
+                    aspect=str(self.algorithm_parameter_list.item(row,0).text())
+                    if self.algorithm_parameter_list.item(row,1).text():
+                        try:
+                            value=float(self.algorithm_parameter_list.item(row,1).text())
+                        except ValueError:
+                            pass
+                            #value=self.algorithm_parameter_list.item(row,1).text()
                     else:
-                        value=bool(self.aspectlist.item(row,1).checkState())
+                        value=bool(self.algorithm_parameter_list.item(row,1).checkState())
                     tmp.update({aspect:value})
             tmp.update({
                 "num_params" : len(self.core.option_handler.GetObjTOOpt()),
@@ -2041,7 +1937,7 @@ class StimuliWindow(QtWidgets.QMainWindow):
             self.amplit_edit.setText(str(len(self.parent.container)))
             self.stim_table.setRowCount(len(self.parent.container))
             for idx,n in enumerate(self.parent.container):
-            	self.stim_table.setItem(idx, 0, QTableWidgetItem(str(n)))
+                self.stim_table.setItem(idx, 0, QTableWidgetItem(str(n)))
 
         
         try:
@@ -2063,9 +1959,9 @@ class StimuliWindow(QtWidgets.QMainWindow):
         self.parent.container=[]
         try:
             for n in range(self.stim_table.rowCount()):
-            	self.parent.container.append(float(self.stim_table.item(n, 0).text()))
+                self.parent.container.append(float(self.stim_table.item(n, 0).text()))
         except:
-            	print("Stimuli values are missing or incorrect")   
+                print("Stimuli values are missing or incorrect")
         self.close()
 
     
@@ -2216,7 +2112,7 @@ class Startingpoints(QtWidgets.QMainWindow):
             ctrl.setGeometry(QtCore.QRect(hstep, voffset + n * vstep, 61, 22))
             ctrl.setObjectName("ctrl")
             if self.parent.seed:
-            	ctrl.setText(str(self.parent.seed[n]))
+                ctrl.setText(str(self.parent.seed[n]))
             lbl.show()
             ctrl.show()
             self.container.append(ctrl)

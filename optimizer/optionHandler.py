@@ -171,36 +171,39 @@ class optionHandler(object):
 		self.weights=[]
 		post=dir(self)
 		self.class_content=list(OrderedSet(post)-OrderedSet(prev))
-
-		self.algorithm_parameters_dict={"GA_INSPYRED":{"num_selected":self.pop_size,"crossover_rate":1,"num_crossover_points":1,"mutation_rate":1,"num_elites":0},
-		"CES_INSPYRED":{"tau":None,"tau_prime":None,"epsilon":0.00001},
-		"EDA_INSPYRED":{"num_selected":2,"num_offspring":self.pop_size,"num_elites":0},
-		"DEA_INSPYRED":{"num_selected":2,"tournament_size":2,"crossover_rate":1,"mutation_rate":0.1,"gaussian_mean":0,"gaussian_stdev":1},
-		"SA_INSPYRED":{"temperature":None,"cooling_rate":None,"mutation_rate":None,"gaussian_mean":0,"gaussian_stdev":1},
-		"ACO_INSPYRED":{"initial_pheromone":0,"evaporation_rate":0.1,"learning_rate":0.1},
-		"PSO_INSPYRED":{"inertia":0.5,"cognitive_rate":2.1,"social_rate":2.1},
-		"GACO_PYGMO":{"ker":63,"q":1.0,"oracle":0.,"acc":0.01,"threshold":1,"n_gen_mark":7,"impstop":100000,"evalstop":100000,"focus":0.,"memory":False},
-		"DE_PYGMO":{"F":0.8,"CR":0.9,"variant":2,"f_tol":1e-6,"x_tol":1e-6},
-		"SADE_PYGMO":{"variant":2, "variant_adptv":1, "f_tol":1e-06, "x_tol":1e-06, "memory":False},
-		"DE1220_PYGMO":{"allowed_variants":[2, 3, 7, 10, 13, 14, 15, 16], "variant_adptv":1, "f_tol":1e-06, "x_tol":1e-06, "memory":False},
-		"PSO_PYGMO":{"omega":0.7298, "eta1":2.05, "eta2":2.05, "max_vel":0.5, "variant":5, "neighb_type":2, "neighb_param":4, "memory":False},
-		"PSOG_PYGMO":{"omega":0.7298, "eta1":2.05, "eta2":2.05, "max_vel":0.5, "variant":5, "neighb_type":2, "neighb_param":4, "memory":False},
-		"SGA_PYGMO":{"cr":0.9, "eta_c":1.0, "m":0.02, "param_m":1.0, "param_s":2},
-		"ABC_PYGMO":{"limit":1},
-		"CMAES_PYGMO":{"cc":- 1, "cs":- 1, "c1":- 1, "cmu":- 1, "sigma0":0.5, "f_tol":1e-06, "x_tol":1e-06, "memory":False, "force_bounds":False},
-		"XNES_PYGMO":{"eta_mu":- 1, "eta_sigma":- 1, "eta_b":- 1, "sigma0":- 1, "f_tol":1e-06, "x_tol":1e-06, "memory":False, "force_bounds":False},
-		"NSGA_PYGMO":{"cr":0.95, "eta_c":10.0, "m":0.01, "eta_m":50.0},
-		"MACO_PYGMO":{"ker":63, "q":1.0, "threshold":1, "n_gen_mark":7, "evalstop":100000, "focus":0.0, "memory":False},
-		"NSPSO_PYGMO":{"omega":0.6, "c1":0.01, "c2":0.5, "chi":0.5, "v_coeff":0.5, "leader_selection_range":2, "memory":False},
-		"CMAES_CMAES":{"sigma":1.3},
-		"PRAXIS_PYGMO":{},
-		"NM_PYGMO":{},
-		"BH_SCIPY":{"T":1.0, "stepsize":0.5, "interval":50, "disp":False,"target_accept_rate":0.5, "stepwise_factor":0.9},
-		"NM_SCIPY":{'disp': False, 'xatol': 0.0001, 'fatol': 0.0001, 'adaptive': False},
+			#Number of Islands hiányzik
+			
+		self.algorithm_parameters_dict={"GA_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"crossover_rate":1,"num_crossover_points":1,"mutation_rate":1,"num_elites":0},
+		"CES_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"tau":None,"tau_prime":None,"epsilon":0.00001},
+		"EDA_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"num_selected":2,"num_offspring":self.pop_size,"num_elites":0},
+		"DE_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"num_selected":2,"tournament_size":2,"crossover_rate":1,"mutation_rate":0.1,"gaussian_mean":0,"gaussian_stdev":1},
+		"SA_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"temperature":None,"cooling_rate":None,"mutation_rate":None,"gaussian_mean":0,"gaussian_stdev":1},
+		"ACO_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"initial_pheromone":0,"evaporation_rate":0.1,"learning_rate":0.1},
+		"PSO_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"inertia":0.5,"cognitive_rate":2.1,"social_rate":2.1},
+		"PAES_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1},
+		"NSGA2_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1},
+		"GACO_PYGMO":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"ker":63,"q":1.0,"oracle":0.,"acc":0.01,"threshold":1,"n_gen_mark":7,"impstop":100000,"evalstop":100000,"focus":0.,"memory":False},
+		"DE_PYGMO":{"number_of_generations":10,"size_of_population":10,"F":0.8,"CR":0.9,"variant":2,"f_tol":1e-6,"x_tol":1e-6,"number_of_islands":1},
+		"SADE_PYGMO":{"number_of_generations":10,"size_of_population":10,"variant":2, "variant_adptv":1, "f_tol":1e-06, "x_tol":1e-06, "memory":False,"number_of_islands":1},
+		"DE1220_PYGMO":{"number_of_generations":10,"size_of_population":10,"allowed_variants":[2, 3, 7, 10, 13, 14, 15, 16], "variant_adptv":1, "f_tol":1e-06, "x_tol":1e-06, "memory":False,"number_of_islands":1},
+		"PSO_PYGMO":{"number_of_generations":10,"size_of_population":10,"omega":0.7298, "eta1":2.05, "eta2":2.05, "max_vel":0.5, "variant":5, "neighb_type":2, "neighb_param":4, "memory":False,"number_of_islands":1},
+		"PSOG_PYGMO":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"omega":0.7298, "eta1":2.05, "eta2":2.05, "max_vel":0.5, "variant":5, "neighb_type":2, "neighb_param":4, "memory":False},
+		"SGA_PYGMO":{"number_of_generations":10,"size_of_population":10,"cr":0.9, "eta_c":1.0, "m":0.02, "param_m":1.0, "param_s":2,"number_of_islands":1},
+		"ABC_PYGMO":{"number_of_generations":10,"limit":1,"number_of_islands":1},
+		"CMAES_PYGMO":{"number_of_generations":10,"size_of_population":10,"cc":- 1, "cs":- 1, "c1":- 1, "cmu":- 1, "sigma0":0.5, "ftol":1e-06, "xtol":1e-06, "memory":False, "force_bounds":False,"number_of_islands":1},
+		"XNES_PYGMO":{"number_of_generations":10,"size_of_population":10,"eta_mu":- 1, "eta_sigma":- 1, "eta_b":- 1, "sigma0":- 1, "ftol":1e-06, "xtol":1e-06, "memory":False, "force_bounds":False,"number_of_islands":1},
+		"NSGA_PYGMO":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"cr":0.95, "eta_c":10.0, "m":0.01, "eta_m":50.0},
+		"MACO_PYGMO":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"ker":63, "q":1.0, "threshold":1, "n_gen_mark":7, "evalstop":100000, "focus":0.0, "memory":False},
+		"NSPSO_PYGMO":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"omega":0.6, "c1":0.01, "c2":0.5, "chi":0.5, "v_coeff":0.5, "leader_selection_range":2, "memory":False},
+		"CMAES_CMAES":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"sigma":1.3},
+		"PRAXIS_PYGMO":{"number_of_generations":10,"size_of_population":10,"number_of_islands":1},
+		"NM_PYGMO":{"number_of_generations":10,"size_of_population":10},
+		"BH_SCIPY":{"number_of_generations":10,"T":1.0, "stepsize":0.5, "interval":50, "target_accept_rate":0.5, "stepwise_factor":0.9},
+		"NM_SCIPY":{'xatol': 0.0001, 'fatol': 0.0001, 'adaptive': False},
 		"L_BFGS_B_SCIPY":{'maxcor': 10, 'ftol': 2.220446049250313e-09, 'gtol': 1e-05, 'eps': 1e-08},
-		"RANDOM_SEARCH":{},
-		"NSGA2_BLUEPYOPT":{'mutpb':1.0, 'cxpb':1.0},
-		"IBEA_BLUEPYOPT":{'mutpb':1.0, 'cxpb':1.0},
+		"RANDOM_SEARCH":{"size_of_population":10,"number_of_cpu":1},
+		"NSGA2_BLUEPYOPT":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,'mutpb':1.0, 'cxpb':1.0},
+		"IBEA_BLUEPYOPT":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,'mutpb':1.0, 'cxpb':1.0},
 		}
 
 	"""def dump(self,f_mapper):
@@ -251,7 +254,7 @@ class optionHandler(object):
 			self.__setattr__(key,value)
 		if isinstance(self.current_algorithm, str):
 			self.algorithm_name=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", self.current_algorithm).replace("-","_").replace(" ","_")).upper()
-			self.algorithm_parameters={}
+			self.algorithm_parameters=self.algorithm_parameters_dict[self.algorithm_name]
 		else:
 			self.algorithm_name=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", list(self.current_algorithm.keys())[0]).replace("-","_").replace(" ","_")).upper()
 			self.algorithm_parameters=list(self.current_algorithm.values())[0]
@@ -456,7 +459,6 @@ class optionHandler(object):
 		"""
 		if self.adjusted_params.count(options)==0:
 			self.adjusted_params.append(options)#string list, one row contains the section, the channel, and the parameter name
-			#print options
 		else:
 			print("already selected\n")
 		#self.adjusted_params=list(set(self.adjusted_params))
@@ -543,32 +545,10 @@ class optionHandler(object):
 		"""
 		return {"seed" : self.seed,
 				"current_algorithm" : self.current_algorithm,
-				"Size of Population" : self.pop_size,
-				"Number of Islands" : self.num_islands,
-				"Number of Generations" : self.max_evaluation,
-				"Force bounds" : self.force_bounds,
-				"Mutation Rate" : self.mutation_rate,
-				"Crossover Rate" : self.crossover_rate,
-				"Cooling Rate" : self.cooling_rate,
-				"Mean of Gaussian" : self.m_gauss,
-				"Std. Deviation of Gaussian" : self.std_gauss,
-				"Initial Temperature" : self.init_temp,
-				"Step Size" : self.step_size,
-				"Temperature" : self.temperature,
-				"Update Frequency" : self.update_freq,
-				"Number of Iterations" : self.num_iter,
-				"Number of Repetition" : self.num_repet,
-				"Error Tolerance for x" : self.x_tol,
-				"Error Tolerance for f" : self.f_tol,
 				"num_params" : self.num_params,
 				"boundaries" : self.boundaries,
 				"starting_points" : self.starting_points,
-				"Inertia" :self.inertia,
-				"Cognitive Rate" : self.cognitive_rate,
-				"Social Rate" : self.social_rate,
-				"Neighborhood Size" : self.neighborhood_size,
-				"Number of CPU" : self.number_of_cpu
-		#"Topology:" : self.topology
+				"algorithm_parameters" : self.algorithm_parameters
 				}
 
 	# sets the optimizer settings (which optimizer, fitness function, generator settings, etc)
@@ -579,42 +559,14 @@ class optionHandler(object):
 		:param options: a ``dictionary`` containing the parameters
 
 		"""
-		self.seed=options.get("seed",1234)
-		self.current_algorithm=options.get("current_algorithm")
+		self.seed=options.pop("seed",1234)
+		self.current_algorithm=options.pop("current_algorithm")
 		self.algorithm_name=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", self.current_algorithm).replace("-","_").replace(" ","_")).upper()
-		self.algorithm_parameters={}
-		self.pop_size=options.get("Size of Population",None)
-		self.num_islands=options.get("Number of Islands", None)
-		self.max_evaluation=options.get("Number of Generations",None)
-		self.mutation_rate=options.get("Mutation Rate",None)
-		self.crossover_rate=options.get("Crossover Rate:",None)
-		self.force_bounds=options.get("Force bounds",False)
-		self.cooling_rate=options.get("Cooling Rate",None)
+		self.num_params=options.pop("num_params")
+		self.boundaries=options.pop("boundaries")
+		self.starting_points=options.pop("starting_points",None)
+		self.algorithm_parameters=options
 
-		self.m_gauss=options.get("Mean of Gaussian",None)
-		self.std_gauss=options.get("Std. Deviation of Gaussian",None)
-		self.init_temp=options.get("Initial Temperature",None)
-		self.step_size=options.get("Step Size",None)
-		self.temperature=options.get("Temperature",None)
-
-		self.acc=options.get("Accuracy",None)
-		self.update_freq=options.get("Update Frequency",None)
-		self.num_iter=options.get('Number of Iterations',None)
-		self.num_repet=options.get('Number of Repetition',None)
-
-		self.x_tol=options.get("Error Tolerance for x",None)
-		self.f_tol=options.get("Error Tolerance for f",None)
-
-		self.num_params=options.get("num_params")
-		self.boundaries=options.get("boundaries")
-		self.starting_points=options.get("starting_points",None)
-
-		self.inertia=options.get("Inertia",None)
-		self.cognitive_rate=options.get("Cognitive Rate",None)
-		self.social_rate=options.get("Social Rate",None)
-		self.neighborhood_size=options.get("Neighborhood Size",None)
-
-		self.number_of_cpu=options.get("Number of CPU",None)
 	#self.topology=options.GetCurrentSelection("Topology:")
 
 
