@@ -199,9 +199,9 @@ class optionHandler(object):
 		"PRAXIS_PYGMO":{"number_of_generations":10,"size_of_population":10,"number_of_islands":1},
 		"NM_PYGMO":{"number_of_generations":10,"size_of_population":10},
 		"BH_SCIPY":{"number_of_generations":10,"T":1.0, "stepsize":0.5, "interval":50, "target_accept_rate":0.5, "stepwise_factor":0.9},
-		"NM_SCIPY":{'xatol': 0.0001, 'fatol': 0.0001, 'adaptive': False},
+		"NM_SCIPY":{"number_of_generations":10,'xatol': 0.0001, 'fatol': 0.0001, 'adaptive': False},
 		"L_BFGS_B_SCIPY":{'maxcor': 10, 'ftol': 2.220446049250313e-09, 'gtol': 1e-05, 'eps': 1e-08},
-		"RANDOM_SEARCH":{"size_of_population":10,"number_of_cpu":1},
+		"RANDOM_SEARCH":{"size_of_population":100,"number_of_cpu":1},
 		"NSGA2_BLUEPYOPT":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,'mutpb':1.0, 'cxpb':1.0},
 		"IBEA_BLUEPYOPT":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,'mutpb':1.0, 'cxpb':1.0},
 		}

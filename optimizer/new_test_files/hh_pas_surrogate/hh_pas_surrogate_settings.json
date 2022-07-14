@@ -22,13 +22,13 @@
         "cognitive_rate": null,
         "cooling_rate": null,
         "crossover_rate": null,
-        "current_algorithm": "PSO - Inspyred",
+        "current_algorithm": "CMAES_cmaes",
         "f_tol": null,
         "feats": [
             "MSE",
             "Spike count"
         ],
-        "force_bounds": null,
+        "force_bounds": true,
         "inertia": null,
         "init_temp": null,
         "input_cont_t": true,
@@ -38,22 +38,22 @@
         "input_scale": "mV",
         "input_size": 1,
         "m_gauss": null,
-        "max_evaluation": null,
+        "max_evaluation": 10.0,
         "model_path": "/home/mohacsi/Desktop/optimizer/optimizer/new_test_files/hh_pas_surrogate/hh_pas.hoc",
         "model_spec_dir": null,
         "mutation_rate": null,
         "neighborhood_size": null,
-        "num_islands": null,
+        "num_islands": 1.0,
         "num_iter": null,
         "num_params": 3,
         "num_repet": null,
-        "number_of_cpu": null,
+        "number_of_cpu": 1,
         "param_vals": [
             0,
             0,
             0
         ],
-        "pop_size": null,
+        "pop_size": 10.0,
         "run_controll_dt": 0.025,
         "run_controll_pos": 0.5,
         "run_controll_record": "v",
@@ -66,8 +66,8 @@
         "social_rate": null,
         "spike_thres": 0.0,
         "spike_window": 40.0,
-        "start_time_stamp": 1657826737.476417,
-        "starting_points": null,
+        "start_time_stamp": 1650568276.6480458,
+        "starting_points": [],
         "std_gauss": null,
         "step_size": null,
         "stim_amp": [
@@ -80,6 +80,7 @@
         "stim_type": "IClamp",
         "temperature": null,
         "type": [
+            "voltage",
             "voltage"
         ],
         "u_fun_string": "",
@@ -244,6 +245,7 @@
         "NM_SCIPY": {
             "adaptive": false,
             "fatol": 0.0001,
+            "number_of_generations": 10,
             "xatol": 0.0001
         },
         "NSGA2_BLUEPYOPT": {
@@ -325,7 +327,7 @@
         },
         "RANDOM_SEARCH": {
             "number_of_cpu": 1,
-            "size_of_population": 10
+            "size_of_population": 100
         },
         "SADE_PYGMO": {
             "f_tol": 1e-06,

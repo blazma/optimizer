@@ -2,12 +2,12 @@
     "model": "hh_pas",
     "optimization": {
         "final_fitness": [
-            0.0206395428995896
+            0.01191948559410786
         ],
         "optimal_params": [
-            0.5527004972174653,
-            0.10808087475475678,
-            0.000719090260648029
+            0.33458418233879117,
+            0.07256736933055997,
+            0.0003689453978081012
         ]
     },
     "parameters": [
@@ -15,27 +15,27 @@
             "name": "soma 0 hh gnabar_hh",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.5527004972174653"
+            "optimum": "0.33458418233879117"
         },
         {
             "name": "soma 0 hh gkbar_hh",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.10808087475475678"
+            "optimum": "0.07256736933055997"
         },
         {
             "name": "soma 0 hh gl_hh",
             "min_boundary": "1e-05",
             "max_boundary": "0.001",
-            "optimum": "0.000719090260648029"
+            "optimum": "0.0003689453978081012"
         }
     ],
     "error_function": [
         {
             "name": "MSE",
-            "value": "0.0412790857991792",
+            "value": "0.02383897118821572",
             "weight": "0.5",
-            "weighted_value": "0.0206395428995896"
+            "weighted_value": "0.01191948559410786"
         },
         {
             "name": "Spike count",
@@ -44,7 +44,7 @@
             "weighted_value": "0.0"
         }
     ],
-    "algorithm": "PSO - Inspyred",
+    "algorithm": "CMAES_cmaes",
     "target_data": {
         "data_type": "voltage",
         "file_name": "input_data2.dat",

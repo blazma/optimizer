@@ -320,7 +320,7 @@ class CMAES_CMAES(baseOptimizer):
 		self.number_of_cpu = int(self.algo_params.pop("number_of_cpu",1))
 		self.stat_file = open(self.directory + "/stat_file.txt", "w")
 		self.ind_file = open(self.directory + "/ind_file.txt", "w")
-		self.all_solutions, self.gen_fits = {}, []
+		self.final_pop, self.gen_fits = {}, []
 		"""try:
 			if isinstance(option_obj.starting_points[0], list):
 				self.starting_points = option_obj.starting_points
@@ -348,7 +348,19 @@ class CMAES_CMAES(baseOptimizer):
 					solutions=[(pop[0], fit[0]) for pop,fit in zip(population,fitness)]
 					self.cmaoptimizer.tell(solutions)
 					self.gen_fits.append(fitness)
-					self.all_solutions.update({tuple(pop):fit for pop,fit in solutions})
+					self.final_pop.update({tuple(pop):fit for pop,fit in solutions})
+			
+			with open("ind_file.txt",'w') as ind_file:
+				gen = 0
+				for idx,(k,v) in enumerate(self.final_pop.items()):
+					if idx % self.size_of_population == 0:
+						gen += 1
+					ind_file.write("{0}, {1}, {2}, {3} \n".format(gen,int(idx % self.size_of_population+1), v, k))
+			with open("stat_file.txt",'w') as stat_file:
+				for idx,fitness in enumerate(self.gen_fits):
+					stat_file.write("{0}, {1}, {2}, {3}, {4}, {5}, {6} \n".format(
+						idx+1, int(self.size_of_population), np.max(fitness),
+							np.min(fitness), np.median(fitness), np.mean(fitness), np.std(fitness)))
 
 
 class PygmoAlgorithmBasis(baseOptimizer):
@@ -1194,7 +1206,7 @@ class RANDOM_SEARCH(baseOptimizer):
 			except (OSError, RuntimeError) as e:
 				raise
 
-		self.final_pop={str(c):f for c,f in zip(candidate,fitness)}
+		self.final_pop={tuple(c[0]):f for c,f in zip(candidate,fitness)}
 					
 		with open(self.directory+"/ind_file.txt","w") as f:
 			for idx,(cand,fit) in enumerate(self.final_pop.items()):

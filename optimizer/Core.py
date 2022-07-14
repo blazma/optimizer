@@ -457,24 +457,6 @@ class coreModul():
 				self.fits = [self.optimizer.best_fitness]
 				self.best_cand = self.cands[0]
 				self.best_fit = self.fits[0]
-			elif(self.option_handler.algorithm_name.split("_")[-1] == "CMAES"):
-				all_solutions = dict(sorted(self.optimizer.all_solutions.items(), key=lambda item: item[1]))
-				self.cands = list(all_solutions.keys())
-				self.fits = list(all_solutions.values())
-				popsize=int(self.option_handler.algorithm_parameters["size_of_population"])
-				with open("ind_file.txt",'w') as ind_file:
-					gen = 0
-					for idx,(k,v) in enumerate(self.optimizer.all_solutions.items()):
-						if idx % popsize == 0:
-							gen += 1
-						ind_file.write("{0}, {1}, {2}, {3} \n".format(gen,int(idx % popsize+1), v, k))
-				with open("stat_file.txt",'w') as stat_file:
-					for idx,fitness in enumerate(self.optimizer.gen_fits):
-						stat_file.write("{0}, {1}, {2}, {3}, {4}, {5}, {6} \n".format(
-							idx+1, int(popsize), np.max(fitness),
-							 np.min(fitness), np.median(fitness), np.mean(fitness), np.std(fitness)))
-				self.best_cand = self.cands[0]
-				self.best_fit = self.fits[0]
 			elif(self.option_handler.algorithm_name.split("_")[-1] == "INSPYRED"):
 				self.optimizer.final_pop.sort(reverse=True)
 				for i in range(len(self.optimizer.final_pop)):
