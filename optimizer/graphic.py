@@ -1582,16 +1582,16 @@ class Ui_Neuroptimus(object):
                 popup(errpop[0])
             self.tabwidget.setCurrentIndex(int(min(err)))
         else:
-            #try:
-            self.core.FourthStep()
-            self.tabwidget.setTabEnabled(5,True)
-            self.tabwidget.setTabEnabled(6,True)
-            self.tabwidget.setCurrentIndex(5)
-            self.results_tab_plot()
-            if not singlerun:
-                self.stat_tab_fun()
-            """except:
-               popup("Evaluation step error")"""
+            try:
+                self.core.FourthStep()
+                self.tabwidget.setTabEnabled(5,True)
+                self.tabwidget.setTabEnabled(6,True)
+                self.tabwidget.setCurrentIndex(5)
+                self.results_tab_plot()
+                if not singlerun:
+                    self.stat_tab_fun()
+            except:
+               popup("Evaluation step error")
 
 
 
