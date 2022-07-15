@@ -22,7 +22,12 @@
         "cognitive_rate": null,
         "cooling_rate": null,
         "crossover_rate": null,
-        "current_algorithm": "CMAES_cmaes",
+        "current_algorithm": {
+            "RANDOM_SEARCH": {
+                "number_of_cpu": 1,
+                "size_of_population": 10
+            }
+        },
         "f_tol": null,
         "feats": [
             "MSE",

@@ -465,6 +465,8 @@ class coreModul():
 				self.best_cand = self.cands[0]
 				self.best_fit = self.fits[0]
 			else:
+				self.cands = list(self.optimizer.final_pop.keys())
+				self.fits = list(self.optimizer.final_pop.values())
 				self.best_cand = min(self.optimizer.final_pop,key=self.optimizer.final_pop.get)
 				self.best_fit = self.optimizer.final_pop[self.best_cand]
 			print((self.best_cand, "CANDS"))
