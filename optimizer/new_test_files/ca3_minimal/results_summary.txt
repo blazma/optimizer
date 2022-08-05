@@ -1,0 +1,56 @@
+results_1-7: old Neuroptimus (220114)
+results_8: new Neuroptimus (220624) GUI, Inspyred CES 10x10, 10 CPUs - OK
+results_9: new Neuroptimus CL, Inspyred CES 10x10, 10 CPUs - OK (and same as results_8)
+results_10: new Neuroptimus CL, Inspyred CES 10x10, 2 CPUs - failed! (although it seems to be identical to Luca's test_25 that ran OK...)
+results_11: new Neuroptimus GUI, Random search 10x10, 10 CPUs - OK
+results_12: new Neuroptimus CL, Random search 100x1, 10 CPUs set but only 1 used - OK (and same as results_11 !)
+results_13: new Neuroptimus CL, Random search 1x100, 10 CPUs - failed!
+results_14: new Neuroptimus CL, Random search 1x10, 2 CPUs - failed!
+results_15: same as results_14 - failed, but results identical
+results_16: same as results_10 (Inspyred CES 10x10, 2 CPUs) - now it seems OK, but it is different from results_10, and also from Luca's test_25
+results_17: same as results_16 and results_10: seems OK, but different from the others
+results_18: same as results_17, results_16 and results_10 - failed, but the final result (though not everything in the ind_file) seems identical to results_10!
+results_19: new Neuroptimus CL, Random search 10x10, 10 CPUs - OK (and same as results_11)
+results_20: new Neuroptimus GUI, Pygmo PSOG 10x10, 10 CPUs - failed (but error in code was discovered)
+results_21: new Neuroptimus GUI, Pygmo PSOG 10x10, 10 CPUs (error corrected) - small discrepancy between HTML and ind_file.txt
+results_22: same as results_21 - same final result, different ind_file (some individuals are the same, some are different) - identical parameters and fitness values in Generation 0 (although in a different order), but the same parameters sometimes result in different fitness values already in Generation 1
+results_23: same as results_21 and results_22, but with new debugging output - same final result
+results_24: same as results_23 - different final result, but, more importantly, where the same parameters lead to different fitness values in Generation 1, the traces are different; the output of psection() at the beginning is essentially the same (except for 'hoc_internal_name'), but different at the end of the simulation
+results_25: same as results_14 and results_15 (Random Search 1x10, 2 CPUs), with new debugging output - same results for both html and ind_file (single value due to bug) as previous runs
+results_26: same as results_25 - same results, different traces for optimization run and final run with the same parameters
+results_27: same as results_25 and results_26, but process number printed - same (failed) result, some process numbers seem to repeat twice
+results_28: same as results_27, except that map() was changed to imap() in Random Search (optimizerHandler.py) - it now seems to work properly!
+results_29: same as results_28, debugging output on processes added to hash log file - works fine, each process runs exactly one model
+results_30: same as results_27 with info on processes (same as results_29 but with map instead of imap) - fails; results (including traces) are the same as in results_29 when this is the first model run by that process, and different when a second model is run by the same process
+results_31: same as results_30 (with map), but now explicitly setting chunksize=1 - it works correctly
+results_32: now with imap and explicitly setting chunksize=2 - it fails as expected
+results_33: repeated results_32, but with corrected user function (getting much nicer traces) - now the error is hidden because the final trace is from a model that was run first in its process during optimization, and so the results match...
+results_34: same as results_33, but with the default imap chunksize=1 - the final results are the same, but it is now clear that traces are still different (presumably incorrect in results_33) when a model is run on a process that was previously in use
+results_35: same as results_10,16,17,18 (Inspyred CES 10x10, 2 CPUs) with more debugging output - it seems to work (html matches best in ind_file), but this is probably because, by chance, the best model was evaluated first by its process during optimization (overall, the 110 candidates were evaluated by 22 worker processes, uses apply_async in multiprocessing pool to evaluate each generation)
+results_36: same as results_21,22,23,24 (Pygmo PSOG 10x10, 10 CPUs) with more debugging output - it fails, very different fitness for "best" individual in html and ind_file, different traces for these parameters during optimization and in final evaluation; uses SpawnPoolWorkers rather than ForkPoolWorkers, and each worker process is used 11 times to evaluate different models (one in every generation)!
+results_37: same as results_36, but modified Pygmo and the call to Pygmo such that maxtasksperchild=1 in the pool, and chunksize=1 in the map_async call - it now works!
+results_38: same as results_35 (Inspyred CES 10x10, 2 CPUs), but modified Inspyred such that maxtasksperchild=1 in the pool - it now works!
+
+(Tried to run CMAES - CMAES, but it gave an error - it was missing sigma)
+(Tried to run BluePyOpt IBEA, but it gave a complicated error - TypeError in evaluate method)
+
+hh/results_1: HH use case, Random Search 1x10 (using imap), 2 CPUs, from GUI - works fine
+hh/results_2: same as hh/results_1, from CL - same result
+hh/results_3: same as hh/results_2, but using map (default settings) rather than imap - seems to work well although now two models are evaluated by each process
+
+ca1_simplified/results_1: Simplified CA1 PC use case, Random Search 1x10 (using imap), 2 CPUs, from GUI - works fine
+ca1_simplified/results_2: same as simplified/results_1, but using map (default settings) rather than imap - seems to work well, and same model traces for all parameter sets as in results_1; same results in the final evaluation and during optimization even though that model was evaluated second in its process!
+
+ca3_minimal_1current: same as ca3_minimal, but with only one stimulus (0.25 nA)
+(Note: several "not thread safe" warnings during translation of MOD files!)
+results_1: Random Search 1x10 (using map with default settings), 2 CPUs, from GUI - fails; small difference in html fitness and best fitness in ind_file; different traces in final evaluation and in corresponding run during optimization (second run in that process)
+results_2: same as results_1 after removing all the unnecessary MOD files (no more warnings about thread safety) - fails, and identical to results_1
+results_3: same as results_2, but using imap rather than map - it works fine
+
+Switched to new Neuroptimus version (220715) - several changes including option handling, and the exact implementation of Random Search!
+results_4: same as results_1, but using the new Neuroptimus - seems to work (because the best individual was evaluated first in its process)
+results_5: first attempt to run the same optimization (as results_4) in the new Neuroptimus CL - ends up being a Random Search 1x100 run with 1 CPU rather than a 1x10 run with 2 CPUs due to a bug (parameters not saved properly to JSON from GUI) - and it clearly fails
+results_6: successful run of Random Search 1x10 with 2 CPUs using the new Neuroptimus CL - same as results_4
+results_7: same as results_6 with explicitly setting chunksize=1 - now it seems to work, individual traces differ from results_6 where a model was run second in its process in results_6
+(Note: using imap instead of map does not work anymore - it hangs!)
+

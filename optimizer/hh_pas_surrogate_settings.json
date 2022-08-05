@@ -22,7 +22,7 @@
         "cognitive_rate": null,
         "cooling_rate": null,
         "crossover_rate": null,
-        "current_algorithm": {"RANDOM_SEARCH":{"size_of_population":10,"number_of_cpu":1}},
+        "current_algorithm":"Cmaes_cmaes",
         "f_tol": null,
         "feats": [
             "MSE",
@@ -38,7 +38,7 @@
         "input_scale": "mV",
         "input_size": 1,
         "m_gauss": null,
-        "max_evaluation": 10.0,
+        "max_evaluation": 2.0,
         "model_path": "/home/mohacsi/Desktop/optimizer/optimizer/new_test_files/hh_pas_surrogate/hh_pas.hoc",
         "model_spec_dir": null,
         "mutation_rate": null,
@@ -53,7 +53,7 @@
             0,
             0
         ],
-        "pop_size": 10.0,
+        "pop_size": 5.0,
         "run_controll_dt": 0.025,
         "run_controll_pos": 0.5,
         "run_controll_record": "v",
@@ -80,6 +80,7 @@
         "stim_type": "IClamp",
         "temperature": null,
         "type": [
+            "voltage",
             "voltage"
         ],
         "u_fun_string": "",
@@ -91,31 +92,56 @@
         "x_tol": null
     },
     "selectable_algorithms": {
-        "ABC_Pygmo": {
-            "limit": 1
+        "ABC_PYGMO": {
+            "limit": 1,
+            "number_of_generations": 10,
+            "number_of_islands": 1
         },
-        "ACO_Inspyred": {
+        "ACO_INSPYRED": {
             "evaporation_rate": 0.1,
             "initial_pheromone": 0,
-            "learning_rate": 0.1
+            "learning_rate": 0.1,
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
+            "size_of_population": 10
         },
-        "CES_Inspyred": {
+        "BH_SCIPY": {
+            "T": 1.0,
+            "interval": 50,
+            "number_of_generations": 10,
+            "stepsize": 0.5,
+            "stepwise_factor": 0.9,
+            "target_accept_rate": 0.5
+        },
+        "CES_INSPYRED": {
             "epsilon": 1e-05,
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
+            "size_of_population": 10,
             "tau": null,
             "tau_prime": null
         },
-        "CMAES_Pygmo": {
+        "CMAES_CMAES": {
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
+            "sigma": 1.3,
+            "size_of_population": 10
+        },
+        "CMAES_PYGMO": {
             "c1": -1,
             "cc": -1,
             "cmu": -1,
             "cs": -1,
-            "f_tol": 1e-06,
             "force_bounds": false,
+            "ftol": 1e-06,
             "memory": false,
+            "number_of_generations": 10,
+            "number_of_islands": 1,
             "sigma0": 0.5,
-            "x_tol": 1e-06
+            "size_of_population": 10,
+            "xtol": 1e-06
         },
-        "DE1220_Pygmo": {
+        "DE1220_PYGMO": {
             "allowed_variants": [
                 2,
                 3,
@@ -128,30 +154,42 @@
             ],
             "f_tol": 1e-06,
             "memory": false,
+            "number_of_generations": 10,
+            "number_of_islands": 1,
+            "size_of_population": 10,
             "variant_adptv": 1,
             "x_tol": 1e-06
         },
-        "DEA_Inspyred": {
+        "DE_INSPYRED": {
             "crossover_rate": 1,
             "gaussian_mean": 0,
             "gaussian_stdev": 1,
             "mutation_rate": 0.1,
             "num_selected": 2,
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
+            "size_of_population": 10,
             "tournament_size": 2
         },
-        "DE_Pygmo": {
+        "DE_PYGMO": {
             "CR": 0.9,
             "F": 0.8,
             "f_tol": 1e-06,
+            "number_of_generations": 10,
+            "number_of_islands": 1,
+            "size_of_population": 10,
             "variant": 2,
             "x_tol": 1e-06
         },
-        "EDA_Inspyred": {
+        "EDA_INSPYRED": {
             "num_elites": 0,
-            "num_offspring": 10.0,
-            "num_selected": 5.0
+            "num_offspring": null,
+            "num_selected": 2,
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
+            "size_of_population": 10
         },
-        "GACO_Pygmo": {
+        "GACO_PYGMO": {
             "acc": 0.01,
             "evalstop": 100000,
             "focus": 0.0,
@@ -159,100 +197,180 @@
             "ker": 63,
             "memory": false,
             "n_gen_mark": 7,
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
             "oracle": 0.0,
             "q": 1.0,
+            "size_of_population": 10,
             "threshold": 1
         },
-        "GA_Inspyred": {
+        "GA_INSPYRED": {
             "crossover_rate": 1,
             "mutation_rate": 1,
             "num_crossover_points": 1,
             "num_elites": 0,
-            "num_selected": 10.0
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
+            "size_of_population": 10
         },
-        "MACO_Pygmo": {
+        "IBEA_BLUEPYOPT": {
+            "cxpb": 1.0,
+            "mutpb": 1.0,
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
+            "size_of_population": 10
+        },
+        "L_BFGS_B_SCIPY": {
+            "eps": 1e-08,
+            "ftol": 2.220446049250313e-09,
+            "gtol": 1e-05,
+            "maxcor": 10
+        },
+        "MACO_PYGMO": {
             "evalstop": 100000,
             "focus": 0.0,
             "ker": 63,
             "memory": false,
             "n_gen_mark": 7,
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
             "q": 1.0,
+            "size_of_population": 10,
             "threshold": 1
         },
-        "NSGA_Pygmo": {
+        "NM_PYGMO": {
+            "number_of_generations": 10,
+            "size_of_population": 10
+        },
+        "NM_SCIPY": {
+            "adaptive": false,
+            "fatol": 0.0001,
+            "number_of_generations": 10,
+            "xatol": 0.0001
+        },
+        "NSGA2_BLUEPYOPT": {
+            "cxpb": 1.0,
+            "mutpb": 1.0,
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
+            "size_of_population": 10
+        },
+        "NSGA2_INSPYRED": {
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
+            "size_of_population": 10
+        },
+        "NSGA_PYGMO": {
             "cr": 0.95,
             "eta_c": 10.0,
             "eta_m": 50.0,
-            "m": 0.01
+            "m": 0.01,
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
+            "size_of_population": 10
         },
-        "NSPSO_Pygmo": {
+        "NSPSO_PYGMO": {
             "c1": 0.01,
             "c2": 0.5,
             "chi": 0.5,
-            "diversity_mechanism": "crowding distance",
-            "inertia": 0.6,
             "leader_selection_range": 2,
             "memory": false,
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
+            "omega": 0.6,
+            "size_of_population": 10,
             "v_coeff": 0.5
         },
-        "PSOG_Pygmo": {
-            "cognitive_rate": 2.05,
-            "inertia": 0.7298,
+        "PAES_INSPYRED": {
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
+            "size_of_population": 10
+        },
+        "PRAXIS_PYGMO": {
+            "number_of_generations": 10,
+            "number_of_islands": 1,
+            "size_of_population": 10
+        },
+        "PSOG_PYGMO": {
+            "eta1": 2.05,
+            "eta2": 2.05,
             "max_vel": 0.5,
             "memory": false,
             "neighb_param": 4,
             "neighb_type": 2,
-            "social_rate": 2.05,
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
+            "omega": 0.7298,
+            "size_of_population": 10,
             "variant": 5
         },
-        "PSO_Inspyred": {
+        "PSO_INSPYRED": {
             "cognitive_rate": 2.1,
             "inertia": 0.5,
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
+            "size_of_population": 10,
             "social_rate": 2.1
         },
-        "PSO_Pygmo": {
-            "cognitive_rate": 2.05,
-            "inertia": 0.7298,
+        "PSO_PYGMO": {
+            "eta1": 2.05,
+            "eta2": 2.05,
             "max_vel": 0.5,
             "memory": false,
             "neighb_param": 4,
             "neighb_type": 2,
-            "social_rate": 2.05,
+            "number_of_generations": 10,
+            "number_of_islands": 1,
+            "omega": 0.7298,
+            "size_of_population": 10,
             "variant": 5
         },
-        "SADE_Pygmo": {
+        "RANDOM_SEARCH": {
+            "number_of_cpu": 1,
+            "size_of_population": 100
+        },
+        "SADE_PYGMO": {
             "f_tol": 1e-06,
             "memory": false,
+            "number_of_generations": 10,
+            "number_of_islands": 1,
+            "size_of_population": 10,
             "variant": 2,
             "variant_adptv": 1,
             "x_tol": 1e-06
         },
-        "SA_Inspyred": {
+        "SA_INSPYRED": {
             "cooling_rate": null,
             "gaussian_mean": 0,
             "gaussian_stdev": 1,
             "mutation_rate": null,
+            "number_of_cpu": 1,
+            "number_of_generations": 10,
+            "size_of_population": 10,
             "temperature": null
         },
-        "SGA_Pygmo": {
+        "SGA_PYGMO": {
             "cr": 0.9,
-            "crossover": "exponential",
             "eta_c": 1.0,
             "m": 0.02,
-            "mutation": "polynomial",
+            "number_of_generations": 10,
+            "number_of_islands": 1,
             "param_m": 1.0,
             "param_s": 2,
-            "selection": "tournament"
+            "size_of_population": 10
         },
-        "XNES_Pygmo": {
+        "XNES_PYGMO": {
             "eta_b": -1,
             "eta_mu": -1,
             "eta_sigma": -1,
-            "f_tol": 1e-06,
             "force_bounds": false,
+            "ftol": 1e-06,
             "memory": false,
+            "number_of_generations": 10,
+            "number_of_islands": 1,
             "sigma0": -1,
-            "x_tol": 1e-06
+            "size_of_population": 10,
+            "xtol": 1e-06
         }
     }
 }

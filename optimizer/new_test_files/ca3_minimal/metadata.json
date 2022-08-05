@@ -1,0 +1,577 @@
+{
+    "model": "ca3_minimum_model",
+    "optimization": {
+        "final_fitness": [
+            392.0944824730866
+        ],
+        "optimal_params": [
+            5.24975e-08,
+            -2525.5160543111783,
+            0.00036763708623876236,
+            0.30000000000000004,
+            138.86485794548295,
+            54.169926339944055,
+            -930.0,
+            -100.0,
+            140960.19622955457,
+            0.00023835154970494788,
+            0.00477270243773408,
+            -1212.3284303057733,
+            -6621.295643107861
+        ]
+    },
+    "parameters": [
+        {
+            "name": "gmax_Leak_pyr",
+            "min_boundary": "5e-08",
+            "max_boundary": "5e-05",
+            "optimum": "5.24975e-08"
+        },
+        {
+            "name": "e_leak_pyr",
+            "min_boundary": "-90.0",
+            "max_boundary": "-50.0",
+            "optimum": "-2525.5160543111783"
+        },
+        {
+            "name": "gmax_CaL_pool2_inact_params_minimal_eca",
+            "min_boundary": "0.0002",
+            "max_boundary": "0.2",
+            "optimum": "0.00036763708623876236"
+        },
+        {
+            "name": "A_alpha_X_CaL_pool2_inact_params",
+            "min_boundary": "0.1",
+            "max_boundary": "0.5",
+            "optimum": "0.30000000000000004"
+        },
+        {
+            "name": "B_alpha_X_CaL_pool2_inact_params",
+            "min_boundary": "10.0",
+            "max_boundary": "20.0",
+            "optimum": "138.86485794548295"
+        },
+        {
+            "name": "Vhalf_alpha_X_CaL_pool2_inact_params",
+            "min_boundary": "-10.0",
+            "max_boundary": "10.0",
+            "optimum": "54.169926339944055"
+        },
+        {
+            "name": "Y_v0_CaL_pool2_inact_params",
+            "min_boundary": "-30.0",
+            "max_boundary": "0.0",
+            "optimum": "-930.0"
+        },
+        {
+            "name": "Y_k0_CaL_pool2_inact_params",
+            "min_boundary": "-10.0",
+            "max_boundary": "-1.0",
+            "optimum": "-100.0"
+        },
+        {
+            "name": "Y_tau0_CaL_pool2_inact_params",
+            "min_boundary": "100.0",
+            "max_boundary": "600.0",
+            "optimum": "140960.19622955457"
+        },
+        {
+            "name": "gmax_K_DRS4_params_voltage_dep",
+            "min_boundary": "0.0001",
+            "max_boundary": "0.1",
+            "optimum": "0.00023835154970494788"
+        },
+        {
+            "name": "gkd_kd_params3",
+            "min_boundary": "1e-05",
+            "max_boundary": "0.1",
+            "optimum": "0.00477270243773408"
+        },
+        {
+            "name": "theta_a_kd_params3",
+            "min_boundary": "-70.0",
+            "max_boundary": "-50.0",
+            "optimum": "-1212.3284303057733"
+        },
+        {
+            "name": "theta_b_kd_params3",
+            "min_boundary": "-120.0",
+            "max_boundary": "-60.0",
+            "optimum": "-6621.295643107861"
+        }
+    ],
+    "error_function": [
+        {
+            "name": "Spikecount",
+            "value": "15.418001373793313",
+            "weight": "0.05",
+            "weighted_value": "0.7709000686896658"
+        },
+        {
+            "name": "inv_first_ISI",
+            "value": "10.726663788346777",
+            "weight": "0.05",
+            "weighted_value": "0.5363331894173388"
+        },
+        {
+            "name": "inv_last_ISI",
+            "value": "13.461326204445147",
+            "weight": "0.05",
+            "weighted_value": "0.6730663102222574"
+        },
+        {
+            "name": "inv_time_to_first_spike",
+            "value": "22.287574324290823",
+            "weight": "0.05",
+            "weighted_value": "1.114378716214541"
+        },
+        {
+            "name": "steady_state_voltage",
+            "value": "585.7357640810555",
+            "weight": "0.05",
+            "weighted_value": "29.286788204052783"
+        },
+        {
+            "name": "voltage_base",
+            "value": "183.18176801782218",
+            "weight": "0.05",
+            "weighted_value": "9.15908840089111"
+        },
+        {
+            "name": "voltage_deflection",
+            "value": "118.6487731262161",
+            "weight": "0.05",
+            "weighted_value": "5.932438656310805"
+        },
+        {
+            "name": "voltage_deflection_begin",
+            "value": "8.799888327797053",
+            "weight": "0.05",
+            "weighted_value": "0.43999441638985265"
+        },
+        {
+            "name": "AHP_depth_abs",
+            "value": "750",
+            "weight": "0.05",
+            "weighted_value": "37.5"
+        },
+        {
+            "name": "AHP_time_from_peak",
+            "value": "750",
+            "weight": "0.05",
+            "weighted_value": "37.5"
+        },
+        {
+            "name": "AP2_amp",
+            "value": "750",
+            "weight": "0.05",
+            "weighted_value": "37.5"
+        },
+        {
+            "name": "AP_amplitude",
+            "value": "750",
+            "weight": "0.05",
+            "weighted_value": "37.5"
+        },
+        {
+            "name": "AP_begin_voltage",
+            "value": "750",
+            "weight": "0.05",
+            "weighted_value": "37.5"
+        },
+        {
+            "name": "AP_duration_half_width",
+            "value": "750",
+            "weight": "0.05",
+            "weighted_value": "37.5"
+        },
+        {
+            "name": "AP_fall_time",
+            "value": "750",
+            "weight": "0.05",
+            "weighted_value": "37.5"
+        },
+        {
+            "name": "AP_rise_time",
+            "value": "750",
+            "weight": "0.05",
+            "weighted_value": "37.5"
+        },
+        {
+            "name": "APlast_amp",
+            "value": "750",
+            "weight": "0.05",
+            "weighted_value": "37.5"
+        },
+        {
+            "name": "time_to_last_spike",
+            "value": "115.26091599071633",
+            "weight": "0.05",
+            "weighted_value": "5.763045799535816"
+        },
+        {
+            "name": "sag_amplitude",
+            "value": "13.397011435022348",
+            "weight": "0.05",
+            "weighted_value": "0.6698505717511174"
+        },
+        {
+            "name": "sag_ratio1",
+            "value": "4.971962792225612",
+            "weight": "0.05",
+            "weighted_value": "0.2485981396112806"
+        }
+    ],
+    "algorithm": "PSO - Pygmo",
+    "target_data": {
+        "data_type": "features",
+        "file_name": "opt_data_JMakara_OUR_features_selected_stim.json",
+        "number_of_traces": 6,
+        "stim_delay": 200.0,
+        "stim_duration": 300.0,
+        "stim_amp": {
+            "-0.25": [
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ]
+            ],
+            "0.05": [
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ]
+            ],
+            "0.1": [
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ]
+            ],
+            "0.15": [
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ]
+            ],
+            "0.2": [
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ]
+            ],
+            "0.25": [
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ],
+                [
+                    "Feature",
+                    "Mean",
+                    "Std"
+                ]
+            ]
+        }
+    }
+}

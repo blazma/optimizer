@@ -1,0 +1,32 @@
+def usr_fun(self,v):
+#13
+#gmax_Leak_pyr
+#e_leak_pyr
+#gmax_CaL_pool2_inact_params_minimal_eca
+#A_alpha_X_CaL_pool2_inact_params
+#B_alpha_X_CaL_pool2_inact_params
+#Vhalf_alpha_X_CaL_pool2_inact_params
+#Y_v0_CaL_pool2_inact_params
+#Y_k0_CaL_pool2_inact_params
+#Y_tau0_CaL_pool2_inact_params
+#gmax_K_DRS4_params_voltage_dep
+#gkd_kd_params3
+#theta_a_kd_params3
+#theta_b_kd_params3
+    for sec in h.soma:
+        sec.gmax_Leak_pyr = v[0]
+        sec.e_Leak_pyr = v[1]
+        sec.gmax_CaL_pool2_inact_params_minimal_eca = v[2]
+        sec.A_alpha_X_CaL_pool2_inact_params_minimal_eca = v[3]
+        sec.A_beta_X_CaL_pool2_inact_params_minimal_eca = v[3]
+        sec.B_alpha_X_CaL_pool2_inact_params_minimal_eca = v[4]
+        sec.B_beta_X_CaL_pool2_inact_params_minimal_eca = -v[4]
+        sec.Vhalf_alpha_X_CaL_pool2_inact_params_minimal_eca = v[5]
+        sec.Vhalf_beta_X_CaL_pool2_inact_params_minimal_eca = v[5]
+        sec.Y_v0_CaL_pool2_inact_params_minimal_eca = v[6]
+        sec.Y_k0_CaL_pool2_inact_params_minimal_eca = v[7]
+        sec.Y_tau0_CaL_pool2_inact_params_minimal_eca = v[8]
+        sec.gmax_K_DRS4_params_voltage_dep = v[9]
+        sec.gkd_kd_params3 = v[10]
+        sec.theta_a_kd_params3 = v[11]
+        sec.theta_b_kd_params3 = v[12]

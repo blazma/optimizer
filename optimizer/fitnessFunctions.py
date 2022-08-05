@@ -112,15 +112,11 @@ class fF(object):
         self.fitnes = []
         self.model_trace = [] 
         self.thres = option_object.spike_thres
-        #self.d_spike=[]
-        #self.m_spike=[]
-        self.model=None
+        self.model = None
         self.option = option_object
         self.reader = reader_object
-        #self.current_pop=0
-        self.fun_dict = {"Combinations": self.combineFeatures,
-                        "Multiobj": self.MooFeatures,
-                        "Deapwrapper": self.DEAP_wrapper}
+        self.fun_dict = {"single_objective": self.single_objective_fitness,
+                        "multi_objective": self.multi_objective_fitness}
         self.calc_dict = {"MSE": self.calc_ase,
                         "MSE (excl. spikes)": self.calc_spike_ase,
                         "Spike count": self.calc_spike,
@@ -131,7 +127,6 @@ class fF(object):
                         "AHP depth": self.AHP_depth,
                         "AP width": self.AP_width,
                         "Derivative difference" : self.calc_grad_dif}
-                        #"PPTD" : self.pyelectro_pptd
         
         
 
@@ -190,8 +185,6 @@ class fF(object):
             print('PID ', pid, ' ************')
             
             with open(self.option.base_dir + "/params" + unique_ID + ".param" , "w") as out_handler:
-                print("CANDIDATES")
-                print(candidates)
                 for c in candidates:
                     out_handler.write(str(c) + "\n")
                 out_handler.write(str(act_trace_idx))
@@ -949,7 +942,7 @@ class fF(object):
 
         return temp_fit
 
-    def combineFeatures(self, candidates, args={}, delete_model=True):
+    def single_objective_fitness(self, candidates, args={}, delete_model=True):
         """
         Creates the weighted combination of fitness functions and calculates the combined fitness for every
         set of parameters created during the optimization proccess by seting the model parameters,
@@ -1055,9 +1048,6 @@ class fF(object):
             if self.option.output_level == "1":
                 print("current fitness: ",temp_fit)
             temp_fit = 0
-        if(self.option.simulator == 'Neuron') and delete_model:
-            "Deletes the reference of the instance"
-            del self.model
         return self.fitnes
 
     def getErrorComponents(self, index_of_trace, model_output):
@@ -1093,7 +1083,7 @@ class fF(object):
         return fit_list
 
 
-    def MooFeatures(self, candidates, args={}, delete_model=True):
+    def multi_objective_fitness(self, candidates, args={}, delete_model=True):
         """
         Creates the combination of fitness functions and calculates the  fitness for every
         set of parameters created during the optimization proccess by seting the model parameters,
@@ -1182,101 +1172,11 @@ class fF(object):
                         temp_fit.append(0)
 
             
-            self.fitnes.append(ec.emo.Pareto(tuple(temp_fit),maximize=False))
+            self.fitnes.append(temp_fit)
             if self.option.output_level == "1":
                 print("current fitness: ",temp_fit)
             del temp_fit[:] 
         if(self.option.simulator == 'Neuron') and delete_model:
             "Deletes the reference of the instance"
             del self.model
-        print(self.fitnes)
         return self.fitnes
-
-
-    def DEAP_wrapper(self,candidates,args={}, delete_model=True):
-        self.fitnes = []
-        features = self.option.feats
-        weigths = self.option.weights
-        temp_fit = []
-        if self.option.type[-1]!= 'features':
-            window = int(self.option.spike_window)
-        else:
-            window=None
-        if(self.option.simulator == 'Neuron'):
-            "Instantiate a model class"
-            self.model=modelHandler.modelHandlerNeuron(self.option.model_path,self.option.model_spec_dir,self.option.base_dir)
-            self.model.hoc_obj.dt=self.option.GetModelRun()[1]
-
-        try:
-            s = self.option.GetUFunString()
-            s = str.replace(s, "h.", "self.model.hoc_obj.")
-            exec(compile(str.replace(s, "h(", "self.model.hoc_obj("), '<string>', 'exec'))
-            self.usr_fun_name = self.option.GetUFunString().split("\n")[4][self.option.GetUFunString().split("\n")[4].find(" ") + 1:self.option.GetUFunString().split("\n")[4].find("(")]
-            global usr_fun
-            usr_fun = locals()[self.usr_fun_name]
-        except SyntaxError:
-            print("Your function contained syntax errors!! Please fix them!")
-        except IndexError:
-            pass
-
-        section = self.option.GetObjTOOpt()
-
-        if self.option.type[-1]!= 'features':
-            k_range=self.reader.number_of_traces()
-        else:
-            k_range=len(self.reader.features_data["stim_amp"])
-
-
-        for l in candidates:
-            if self.option.output_level == "1":
-                print(l)
-            l = self.ReNormalize(l)
-            self.setParameters(section, l)
-            self.model.CreateStimuli(self.option.GetModelStim())
-            if self.option.output_level == "1":
-                print(l)
-            for k in range(k_range):     #for k in range(self.reader.number_of_traces()):
-                try:
-                    add_data = [spike_frame(n - window, self.thres, n, 1, n + window, self.thres) for n in self.reader.additional_data.get(k)]
-                except AttributeError:
-                    add_data = None
-                args = {}
-                args["add_data"] = add_data
-                param = self.option.GetModelStimParam()
-                parameter = param
-                parameter[0] = param[0][k]
-                if isinstance(parameter[0], str):
-                    self.model.SetCustStimuli(parameter)
-                else:
-                    extra_param = self.option.GetModelRun()
-                    self.model.SetStimuli(parameter, extra_param)
-                if (not self.modelRunner(l,k)):
-                    if self.option.output_level == "1":
-                        print(features, weigths)
-                    if (self.option.type[-1]!='features'):
-                        for f, w in zip(features, weigths):
-                            if abs(len(self.model.record[0])-len(self.reader.data.GetTrace(k)))>1:
-                                raise sizeError("model: " + str(len(self.model.record[0])) + ", target: " + str(len(self.reader.data.GetTrace(k))))
-                            temp_fit.append((f(self.model.record[0],
-                                                              self.reader.data.GetTrace(k), args)))
-
-                    else:
-                        for f, w in zip(features, weigths):
-                            temp_fit.append(self.FFun_for_Features(self.model.record[0],
-                                                                self.reader.features_data, f, k, args))
-            else:
-                temp_fit.append(0)
-
-        
-            self.fitnes.append(list(temp_fit))
-                      
-            if self.option.output_level == "1":
-                print("current fitness: ",temp_fit)
-            del temp_fit[:] 
-            
-        if(self.option.simulator == 'Neuron') and delete_model:
-            "Deletes the reference of the instance"
-            del self.model
-
-        return sum(self.fitnes,[])
-

@@ -500,7 +500,7 @@ class Ui_Neuroptimus(object):
         self.stat_tab = QtWidgets.QWidget()
         self.stat_tab.setObjectName("stat_tab")
         self.plot_widget = QtWidgets.QWidget(self.results_tab)
-        self.plot_widget.setGeometry(QtCore.QRect(200, 80, 630, 400))
+        self.plot_widget.setGeometry(QtCore.QRect(180, 80, 700, 500))
         self.plot_widget.setObjectName("plot_widget")
         self.pushButton_34 = QtWidgets.QPushButton(self.results_tab)
         self.pushButton_34.setGeometry(QtCore.QRect(30, 400, 111, 22))
@@ -774,7 +774,7 @@ class Ui_Neuroptimus(object):
 
         self.tabwidget.setTabText(self.tabwidget.indexOf(self.results_tab), _translate("Neuroptimus", "Results"))
         self.label_72.setText(_translate("Neuroptimus", "Final Result"))
-        self.figure2 = plt.figure(figsize=(4,2), dpi=130)
+        self.figure2 = plt.figure(figsize=(4,2), dpi=150)
         self.canvas2 = FigureCanvas(self.figure2)
         self.canvas2.setParent(self.plot_widget)
         self.results_tab_axes = self.figure2.add_subplot(1,1,1)
@@ -802,6 +802,22 @@ class Ui_Neuroptimus(object):
         self.tabwidget.setTabEnabled(4,False)
         self.tabwidget.setTabEnabled(5,False)
         self.tabwidget.setTabEnabled(6,False)
+        self.result_labels = []
+
+        for curr_tab in [self.results_tab,self.stat_tab]:
+            label = QtWidgets.QLabel()
+            font = QtGui.QFont()
+            font.setFamily("Ubuntu")
+            font.setPointSize(10)
+            font.setBold(False)
+            font.setWeight(50)
+            label.setFont(font)
+            label.setObjectName("label")
+            self.result_labels.append(label)
+            scroll_area = QtWidgets.QScrollArea(curr_tab)
+            scroll_area.setGeometry(QtCore.QRect(10, 100, 170, 256))
+            scroll_area.setWidget(label)
+            scroll_area.setWidgetResizable(True)
     
 
     def unlocktabs(self): 
@@ -1561,22 +1577,11 @@ class Ui_Neuroptimus(object):
             err.append(4)
             print(e)
             errpop.append("Please select an algorithm")
-        try:
-            self.seed = None
-            self.core.ThirdStep(self.kwargs)
-            if self.core.option_handler.output_level=="1":
-                self.core.Print()
-        except TypeError:
-            self.core.ThirdStep(self.kwargs)
-            if self.core.option_handler.output_level=="1":
-                self.core.Print()
-        except sizeError as sE:
-            err.append(4)
-            errpop.append("There was an error during the optimization: "+sE.m)
-        except Exception as e:
-            err.append(4)
-            print(e)
-            errpop.append("There was an error")
+        #try:
+        self.seed = None
+        self.core.ThirdStep(self.kwargs)
+        if self.core.option_handler.output_level=="1":
+            self.core.Print()
         if err:
             if not errpop[0]=="Normalize":
                 popup(errpop[0])
@@ -1591,7 +1596,7 @@ class Ui_Neuroptimus(object):
                 if not singlerun:
                     self.stat_tab_fun()
             except:
-               popup("Evaluation step error")
+                popup("Evaluation step error")
 
 
 
@@ -1616,36 +1621,9 @@ class Ui_Neuroptimus(object):
                         text += "\n" + param[0] + ": " + param[-1] + "\n" + "\t" + str(k)
         #text += "\n" + "fitness:\n" + "\t" + str(self.core.Neuroptimus.final_pop[0].fitnes)
         text += "\n" + "fitness:\n" + "\t" + str(self.core.last_fitness)
-        for curr_tab in [self.results_tab,self.stat_tab]:
-            label = QtWidgets.QLabel(curr_tab)
-            label.setGeometry(QtCore.QRect(10, 70, 170, 206))
-            font = QtGui.QFont()
-            font.setFamily("Ubuntu")
-            font.setPointSize(10)
-            font.setBold(False)
-            font.setWeight(50)
-            label.setFont(font)
-            label.setObjectName("label")
-            label.setText(QtCore.QCoreApplication.translate("Neuroptimus", text))
-            scroll_area = QtWidgets.QScrollArea(curr_tab)
-            scroll_area.setGeometry(QtCore.QRect(10, 100, 170, 256))
-            scroll_area.setWidget(label)
-            scroll_area.setWidgetResizable(True)
-            label = QtWidgets.QLabel(curr_tab)
-            label.setGeometry(QtCore.QRect(300, 80, 250, 146))
-            font = QtGui.QFont()
-            font.setFamily("Ubuntu")
-            font.setPointSize(10)
-            font.setBold(False)
-            font.setWeight(50)
-            label.setFont(font)
-            label.setObjectName("label")
-            label.setText(QtCore.QCoreApplication.translate("Neuroptimus", text))
-            scroll_area = QtWidgets.QScrollArea(curr_tab)
-            scroll_area.setGeometry(QtCore.QRect(300,80, 350, 100))
-            scroll_area.setWidget(label)
-            scroll_area.setWidgetResizable(True)
-
+        for curr_label in self.result_labels:
+            curr_label.setText(QtCore.QCoreApplication.translate("Neuroptimus", text))
+            
         exp_data = []
         model_data = []
         

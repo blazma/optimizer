@@ -1,0 +1,57 @@
+create soma
+access soma
+
+soma {
+
+    nseg =1
+    diam = 106
+    L = 106
+    Ra = 100
+    cm = 1
+
+//Here comes the channels
+
+
+    insert cacum
+        depth_cacum = (diam/2)*1000
+        tau_cacum = 1.33
+        cai0_cacum = 5e-05
+
+
+    insert Leak_pyr
+        gmax_Leak_pyr = 5e-07
+        e_Leak_pyr = -66.53782911406257
+
+
+    insert CaL_pool2_inact_params_minimal_eca
+        gmax_CaL_pool2_inact_params_minimal_eca = 0.00021
+        A_alpha_X_CaL_pool2_inact_params_minimal_eca = 0.3
+        B_alpha_X_CaL_pool2_inact_params_minimal_eca = 17
+        Vhalf_alpha_X_CaL_pool2_inact_params_minimal_eca = 6.5
+        //A_beta_X_CaL_pool2_inact_params_minimal_eca = A_alpha_X_CaL_pool2_inact_params_minimal_eca
+        //B_beta_X_CaL_pool2_inact_params_minimal_eca = -B_alpha_X_CaL_pool2_inact_params_minimal_eca
+        //Vhalf_beta_X_CaL_pool2_inact_params_minimal_eca = Vhalf_alpha_X_CaL_pool2_inact_params_minimal_eca
+        //ki_CaL_pool2_inact_params_minimal_eca = 0.001
+        //Y_v0_CaL_pool2_inact_params_minimal_eca = -8.4
+        //Y_k0_CaL_pool2_inact_params_minimal_eca = - 5.7 
+        //Y_tau0_CaL_pool2_inact_params_minimal_eca = 484
+
+    insert K_DRS4_params_voltage_dep
+        gmax_K_DRS4_params_voltage_dep = 0.0090
+        X_tau0_K_DRS4_params_voltage_dep = 2 
+        X_v0_K_DRS4_params_voltage_dep = -20.0 
+        X_k0_K_DRS4_params_voltage_dep = 9 
+        X_gamma_K_DRS4_params_voltage_dep= 0.9
+        X_kt_K_DRS4_params_voltage_dep= 0.05
+
+    insert kd_params3
+        gkd_kd_params3=0.0001
+        theta_a_kd_params3 = -65
+        theta_b_kd_params3 = -100
+        sigma_a_kd_params3 = 10
+        sigma_b_kd_params3 = -10
+        tau_a_kd_params3 = 2
+        tau0_b_kd_params3 = 1 
+
+
+}

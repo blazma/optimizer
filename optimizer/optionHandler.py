@@ -102,9 +102,7 @@ class optionHandler(object):
 		#model file settings
 		self.model_path="" # path to the model file (.hoc)
 		self.model_spec_dir="" #path to the channel files
-
 		self.u_fun_string=""#string of the user defined function waiting for compilation
-
 		self.simulator=""
 		self.sim_command=""
 
@@ -132,50 +130,22 @@ class optionHandler(object):
 		self.seed=None
 		self.current_algorithm=None
 
-		self.pop_size=None
-		self.number_of_cpu=None
-		self.num_islands=None
-		self.max_evaluation=None
-		self.mutation_rate=None
-		self.crossover_rate=None
-		self.force_bounds=None
-
-		self.cooling_rate=None
-		self.m_gauss=None
-		self.std_gauss=None
-		self.step_size=None
-		self.init_temp=None
-		self.temperature=None
-		self.acc=None
-		self.update_freq=None
-		self.num_iter=None
-		self.num_repet=None
-
-		self.x_tol=None
-		self.f_tol=None
-
-		self.inertia=None
-		self.cognitive_rate=None
-		self.social_rate=None
-		self.neighborhood_size=None
-		#self.topology=None
-
 		self.num_params=None
 		self.boundaries=[[],[]]
 		self.starting_points=None
 
 		self.spike_thres=0
 		self.spike_window=50
-		#self.ffunction=None #other parameters might be necessary
+
 		self.feats=[]
+		self.feat_str=[]
 		self.weights=[]
 		post=dir(self)
 		self.class_content=list(OrderedSet(post)-OrderedSet(prev))
-			#Number of Islands hiányzik
 			
 		self.algorithm_parameters_dict={"GA_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"crossover_rate":1,"num_crossover_points":1,"mutation_rate":1,"num_elites":0},
 		"CES_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"tau":None,"tau_prime":None,"epsilon":0.00001},
-		"EDA_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"num_selected":2,"num_offspring":self.pop_size,"num_elites":0},
+		"EDA_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"num_selected":2,"num_offspring":10,"num_elites":0},
 		"DE_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"num_selected":2,"tournament_size":2,"crossover_rate":1,"mutation_rate":0.1,"gaussian_mean":0,"gaussian_stdev":1},
 		"SA_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"temperature":None,"cooling_rate":None,"mutation_rate":None,"gaussian_mean":0,"gaussian_stdev":1},
 		"ACO_INSPYRED":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"initial_pheromone":0,"evaporation_rate":0.1,"learning_rate":0.1},
@@ -198,41 +168,14 @@ class optionHandler(object):
 		"CMAES_CMAES":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,"sigma":1.3},
 		"PRAXIS_PYGMO":{"number_of_generations":10,"size_of_population":10,"number_of_islands":1},
 		"NM_PYGMO":{"number_of_generations":10,"size_of_population":10},
-		"BH_SCIPY":{"number_of_generations":10,"T":1.0, "stepsize":0.5, "interval":50, "target_accept_rate":0.5, "stepwise_factor":0.9},
+		"BH_PYGMO":{"number_of_generations":10,"size_of_population":10},
+		"BH_SCIPY":{"niter":10,"T":1.0, "stepsize":0.5, "interval":50, "target_accept_rate":0.5, "stepwise_factor":0.9,'maxcor': 10, 'ftol': 2.220446049250313e-09, 'gtol': 1e-05, 'eps': 1e-08, 'maxfun': 15000, 'maxiter': 10, 'maxls': 20},
 		"NM_SCIPY":{"number_of_generations":10,'xatol': 0.0001, 'fatol': 0.0001, 'adaptive': False},
 		"L_BFGS_B_SCIPY":{'maxcor': 10, 'ftol': 2.220446049250313e-09, 'gtol': 1e-05, 'eps': 1e-08},
 		"RANDOM_SEARCH":{"size_of_population":100,"number_of_cpu":1},
 		"NSGA2_BLUEPYOPT":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,'mutpb':1.0, 'cxpb':1.0},
 		"IBEA_BLUEPYOPT":{"number_of_generations":10,"size_of_population":10,"number_of_cpu":1,'mutpb':1.0, 'cxpb':1.0},
 		}
-
-	"""def dump(self,f_mapper):
-		
-		Dumps the content of the class into a string.
-
-		:param f_mapper: a ``dictionary`` that maps the fitness function objects to their names (used in the GUI)
-
-		:return: the content of the class as ``string``
-
-		
-
-		root=e("settings")
-		for m in self.class_content:
-			child=se(root,m)
-			try:
-				if m=="feats":
-					if self.type[-1]!='features':
-						child.text=", ".join([f_mapper[x.__name__] for x in self.__getattribute__(m)])
-					else:
-						child.text=", ".join(self.feats)
-				else:
-					child.text=str(self.__getattribute__(m).__str__())
-					if child.text=='':
-						child.text="\"\""
-			except TypeError:
-				child.text="None"
-		
-		return prettify(root)"""
 
 
 	def create_dict_for_json(self,f_mapper):
@@ -560,14 +503,13 @@ class optionHandler(object):
 
 		"""
 		self.seed=options.pop("seed",1234)
-		self.current_algorithm=options.pop("current_algorithm")
-		self.algorithm_name=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", self.current_algorithm).replace("-","_").replace(" ","_")).upper()
+		current_algorithm=options.pop("current_algorithm")
+		self.algorithm_name=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", current_algorithm).replace("-","_").replace(" ","_")).upper()
 		self.num_params=options.pop("num_params")
 		self.boundaries=options.pop("boundaries")
 		self.starting_points=options.pop("starting_points",None)
 		self.algorithm_parameters=options
-
-	#self.topology=options.GetCurrentSelection("Topology:")
+		self.current_algorithm={current_algorithm:options}
 
 
 	def GetFitnessParam(self):
