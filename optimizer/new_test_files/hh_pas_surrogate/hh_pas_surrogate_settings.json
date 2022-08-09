@@ -18,12 +18,7 @@
                 0.001
             ]
         ],
-        "current_algorithm": {
-            "random_search": {
-                "number_of_generations": 3,
-                "size_of_population": 7
-            }
-        },
+        "current_algorithm": "bh_scipy",
         "feat_str": "MSE, Spike count",
         "feats": [
             "MSE",
@@ -248,7 +243,8 @@
         "NM_SCIPY": {
             "adaptive": false,
             "fatol": 0.0001,
-            "number_of_generations": 10000,
+            "number_of_generations": 100,
+            "size_of_population": 100,
             "xatol": 0.0001
         },
         "NSGA2_BLUEPYOPT": {

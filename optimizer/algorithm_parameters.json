@@ -283,7 +283,8 @@
         "eps": 1e-08
     },
     "NM_SCIPY": {
-        "number_of_generations": 10000,
+        "size_of_population": 100,
+        "number_of_generations": 100,
         "xatol": 0.0001,
         "fatol": 0.0001,
         "adaptive": false

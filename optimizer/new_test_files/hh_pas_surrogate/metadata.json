@@ -2,12 +2,12 @@
     "model": "hh_pas",
     "optimization": {
         "final_fitness": [
-            0.02082698813981418
+            0.035781975028201636
         ],
         "optimal_params": [
-            0.6722200260884905,
-            0.08576943432163664,
-            1.076112796222924e-05
+            0.15871531039183628,
+            0.037426795784112,
+            0.000895002988739111
         ]
     },
     "parameters": [
@@ -15,39 +15,39 @@
             "name": "soma 0 hh gnabar_hh",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.6722200260884905"
+            "optimum": "0.15871531039183628"
         },
         {
             "name": "soma 0 hh gkbar_hh",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.08576943432163664"
+            "optimum": "0.037426795784112"
         },
         {
             "name": "soma 0 hh gl_hh",
             "min_boundary": "1e-05",
             "max_boundary": "0.001",
-            "optimum": "1.076112796222924e-05"
+            "optimum": "0.000895002988739111"
         }
     ],
     "error_function": [
         {
             "name": "MSE",
-            "value": "0.04165397627962836",
+            "value": "0.04339493597189623",
             "weight": "0.5",
-            "weighted_value": "0.02082698813981418"
+            "weighted_value": "0.021697467985948116"
         },
         {
             "name": "Spike count",
-            "value": "0.0",
+            "value": "0.028169014084507043",
             "weight": "0.5",
-            "weighted_value": "0.0"
+            "weighted_value": "0.014084507042253521"
         }
     ],
     "algorithm": {
-        "random_search": {
-            "number_of_generations": 3,
-            "size_of_population": 7
+        "nm_scipy": {
+            "number_of_generations": 5,
+            "size_of_population": 5
         }
     },
     "target_data": {

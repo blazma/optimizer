@@ -1,6 +1,5 @@
 from fitnessFunctions import fF,frange
 from optionHandler import optionHandler
-#import Core
 import sys
 import logging
 import numpy as np
@@ -56,7 +55,7 @@ def normalize(values,args):
 	Normalizes the values of the given ``list`` using the defined boundaries.
 
 	:param v: the ``list`` of values
-	:param args: an object which has a ``min_max`` attribute which consists of two ``lists``
+	:param args: an object which has a ``boundaries`` attribute which consists of two ``lists``
 		each with the same number of values as the given list
 
 	:return: the ``list`` of normalized values
@@ -64,7 +63,7 @@ def normalize(values,args):
 	"""
 	copied_values = copy.copy(values)
 	for i in range(len(values)):
-		copied_values[i]=(values[i]-args.min_max[0][i])/(args.min_max[1][i]-args.min_max[0][i])
+		copied_values[i]=(values[i]-args.boundaries[0][i])/(args.boundaries[1][i]-args.boundaries[0][i])
 	return copied_values
 
 
@@ -79,10 +78,10 @@ def uniform(random,args):
 
 	"""
 	size=args.get("num_params")
-	bounds=args.get("self").min_max
+	#bounds=args.get("self").boundaries
 	candidate=[]
 	for i in range(int(size)):
-		candidate.append(random.uniform(bounds[0][i],bounds[1][i]))
+		candidate.append(random.uniform(0,1))
 	return candidate
 
 class my_candidate():
@@ -165,7 +164,7 @@ class baseOptimizer():
 		else:
 			self.number_of_traces = len(reader_obj.features_data["stim_amp"])
 		self.num_obj = self.num_params*int(self.number_of_traces)
-		self.min_max = option_obj.boundaries
+		self.boundaries = option_obj.boundaries
 
 	def SetFFun(self,option_obj):
 		"""
@@ -220,7 +219,6 @@ class InspyredAlgorithmBasis(baseOptimizer):
 						   num_params=self.num_params,
 						   maximize=False,
 						   bounder=self.bounder,
-						   boundaries=self.min_max,
 						   statistics_file=self.stat_file,
 						   individuals_file=self.ind_file)
 
@@ -252,12 +250,15 @@ class InspyredAlgorithmBasis(baseOptimizer):
 			if hasattr(self.evo_strat, "archive"):
 				self.final_archive = self.evo_strat.archive
 	
+	
 
 class ScipyAlgorithmBasis(baseOptimizer):
 
 	def __init__(self, reader_obj,  option_obj):
 		baseOptimizer.__init__(self, reader_obj,  option_obj)
-
+		import scipy
+		self.scipy = scipy
+		self.solutions = []
 		"""try:
 			if isinstance(option_obj.starting_points[0], list):
 				raise TypeError
@@ -275,9 +276,9 @@ class ScipyAlgorithmBasis(baseOptimizer):
 		:param args: optional parameters to be passed to the fitness function
 		:return: the return value of the fitness function
 		"""
-		tmp = ndarray.tolist(candidates)
-		candidates = self.bounder(tmp, args)
-		return self.ffun([candidates], args)[0]		
+		fitness = self.ffun([candidates], args)[0]
+		self.solutions.append(my_candidate(candidates,fitness))
+		return fitness
 			
 
 class PygmoAlgorithmBasis(baseOptimizer):
@@ -411,7 +412,6 @@ class BluepyoptAlgorithmBasis(baseOptimizer):
 		self.number_of_generations = self.algo_params.pop("number_of_generations")
 		self.num_params = option_obj.num_params
 		self.number_of_cpu = int(self.algo_params.pop("number_of_cpu",1))
-		self.min_max = option_obj.boundaries
 		self.param_names = self.option_obj.GetObjTOOpt()
 		self.solutions = []
 		if self.option_obj.type[-1]!= "features":
@@ -455,17 +455,17 @@ class BluepyoptAlgorithmBasis(baseOptimizer):
 class SingleProblem:
 	def __init__(self, fitnes_fun, bounds):
 		self.bounds = bounds
-		self.min_max = bounds
+		self.boundaries = bounds
 		self.fitnes_fun = fitnes_fun
 
 	def __getstate__(self):
 		bounds = self.bounds
-		min_max = self.min_max
+		boundaries = self.boundaries
 		f_f = self.fitnes_fun
-		return (bounds, min_max, f_f)
+		return (bounds, boundaries, f_f)
 
 	def __setstate__(self, state):
-		self.bounds, self.min_max, self.fitnes_fun = state
+		self.bounds, self.boundaries, self.fitnes_fun = state
 
 
 	def fitness(self, x):
@@ -600,6 +600,7 @@ class PSOG_PYGMO(PygmoAlgorithmBasis):
 	def __init__(self, reader_obj,  option_obj):
 		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
 		self.multiprocessing=True
+		print(self.algo_params)
 		self.algorithm = self.pg.pso_gen(gen=self.number_of_generations, **self.algo_params)
 
 class SADE_PYGMO(PygmoAlgorithmBasis):
@@ -722,13 +723,6 @@ class BH_SCIPY(ScipyAlgorithmBasis):
 	def __init__(self, reader_obj,  option_obj):
 		ScipyAlgorithmBasis.__init__(self, reader_obj,  option_obj)
 		self.algo_params =  copy.copy(option_obj.algorithm_parameters)
-		self.maxcor=self.algo_params.pop('maxcor')
-		self.ftol=self.algo_params.pop('ftol')
-		self.gtol=self.algo_params.pop('gtol')
-		self.eps=self.algo_params.pop('eps')
-		self.maxfun=self.algo_params.pop('maxfun')
-		self.maxiter=self.algo_params.pop('maxiter')
-		self.maxls=self.algo_params.pop('maxls')
 
 
 
@@ -737,12 +731,12 @@ class BH_SCIPY(ScipyAlgorithmBasis):
 		"""
 		Performs the optimization.
 		"""
-		self.result=optimize.basinhopping(self.ffun,
-						x0=ndarray((self.num_params,),buffer=array(self.starting_points),offset=0,dtype=float),
+		self.scipy.optimize.basinhopping(self.wrapper,
+						x0=self.scipy.ndarray((self.num_params,),buffer=self.scipy.array(self.starting_points),offset=0,dtype=float),
 						minimizer_kwargs={"method":"L-BFGS-B",
 										"jac":False,
 										"args":[[]],
-										"bounds": [(0,1)]*len(self.min_max[0]),
+										"bounds": [(0,1)]*len(self.boundaries[0]),
 										"options": {'maxcor': self.maxcor, 
 													'ftol': self.ftol, 
 													'gtol': self.gtol, 
@@ -757,10 +751,6 @@ class BH_SCIPY(ScipyAlgorithmBasis):
 						**self.algo_params
 						)
 		self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
-		#print self.result.x
-		self.solutions = [my_candidate(self.result.x,self.result.fun)]
-
-	
 
 
 class NM_SCIPY(ScipyAlgorithmBasis):
@@ -775,54 +765,39 @@ class NM_SCIPY(ScipyAlgorithmBasis):
 	"""
 	def __init__(self, reader_obj,  option_obj):
 		ScipyAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.fit_obj = fF(reader_obj,option_obj)
-		self.SetFFun(option_obj)
 		self.algo_params =  copy.copy(option_obj.algorithm_parameters)
 		self.rand = random
 		self.seed = option_obj.seed
 		self.rand.seed(self.seed)
 		self.number_of_generations = self.algo_params.pop("number_of_generations")
+		self.size_of_population = self.algo_params.pop("size_of_population")
 		self.num_params = option_obj.num_params
-		self.bounder = SetBoundaries(option_obj.boundaries)
-		try:
+		"""try:
 			if isinstance(option_obj.starting_points[0],list):
 				raise TypeError
 			else:
 				self.starting_points = [normalize(option_obj.starting_points,self)]
-		except TypeError:
-			self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
+		except TypeError:"""
+		self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
 		if option_obj.output_level=="1":
 			print("starting points: ",self.starting_points)
 
-
-	def logger(self,x):
-		self.log_file.write(str(x))
-		self.log_file.write("\n")
-		self.log_file.flush()
-		
 
 	def Optimize(self):
 		"""
 		Performs the optimization.
 		"""
-	
-		list_of_results = [0]*int(self.number_of_generations)
-		for points in range(int(self.number_of_generations)):
-			list_of_results[points] = optimize.minimize(self.ffun,x0 = ndarray((self.num_params,),
-						buffer = array(self.starting_points),offset = 0,dtype = float),
+		list_of_results = []
+		for points in range(int(self.size_of_population)):
+			self.scipy.optimize.minimize(self.wrapper,x0 = self.scipy.ndarray((self.num_params,),
+						buffer = self.scipy.array(self.starting_points),offset = 0,dtype = float),
 									  args = ((),),
 									  method = "Nelder-Mead",
-									  callback = self.logger,
-									  options = {"maxiter":self.size_of_pop,
-										  "return_all":True} | self.algo_params
-									  )	
+									  options = {"maxiter":self.number_of_generations,
+										  "return_all":True, **self.algo_params}
+									  )
 			self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
-			self.result = min(list_of_results,key = lambda x:x.fun)
-		self.solutions = [my_candidate(self.result.x,self.result.fun)]
-
-	
-
-
+		
 
 class L_BFGS_B_SCIPY(baseOptimizer):
 	"""
@@ -842,8 +817,7 @@ class L_BFGS_B_SCIPY(baseOptimizer):
 		self.rand.seed(self.seed) 
 		self.algo_params =  copy.copy(option_obj.algorithm_parameters)
 		self.num_params = option_obj.num_params
-		self.min_max = option_obj.boundaries
-		self.bounder = SetBoundaries(option_obj.boundaries)
+		self.boundaries = option_obj.boundaries
 		try:
 			if isinstance(option_obj.starting_points[0],list):
 				raise TypeError
@@ -864,7 +838,7 @@ class L_BFGS_B_SCIPY(baseOptimizer):
 		self.result = optimize.fmin_l_bfgs_b(self.ffun,
 									  x0 = ndarray((self.num_params,),buffer = array(self.starting_points),offset = 0,dtype=float),
 									  args=[[]],
-									  bounds= [(0,1)]*len(self.min_max[0]),
+									  bounds= [(0,1)]*len(self.boundaries[0]),
 									  maxiter= self.number_of_generations,
 									  fprime= None,
 									  approx_grad= True,
@@ -893,8 +867,7 @@ class grid(baseOptimizer):
 		self.SetFFun(option_obj)
 		self.num_params=option_obj.num_params
 		self.num_points_per_dim=resolution
-		self.min_max=option_obj.boundaries
-		self.bounder=SetBoundaries(option_obj.boundaries)
+		self.boundaries=option_obj.boundaries
 
 	def Optimize(self,optimals):
 		"""
@@ -1062,9 +1035,9 @@ class CMAES_CMAES(baseOptimizer):
 		if option_obj.starting_points:
 			self.starting_points = [normalize(option_obj.starting_points, self)]
 		else:
-			self.starting_points = np.ones(len(self.min_max[0]))*0.5
+			self.starting_points = np.ones(len(self.boundaries[0]))*0.5
 		from cmaes import CMA
-		self.cmaoptimizer = CMA(mean=(self.starting_points), **self.algo_params, seed=1234, population_size=int(self.size_of_population), bounds=np.array([[0,1]]*len(self.min_max[0])))
+		self.cmaoptimizer = CMA(mean=(self.starting_points), **self.algo_params, seed=1234, population_size=int(self.size_of_population), bounds=np.array([[0,1]]*len(self.boundaries[0])))
 		
 				
 	def Optimize(self):
