@@ -23,7 +23,7 @@ except:
 
 from types import MethodType
 import os
-try:
+"""try:
     import cPickle as pickle
 except ImportError:
     import pickle
@@ -48,7 +48,7 @@ try:
 	copyreg.pickle(MethodType, _pickle_method, _unpickle_method)
 except:
 	copyreg.pickle(MethodType, _pickle_method, _unpickle_method)
-
+"""
 def frange(start, stop, step):
         """
         Generates range of real values.
@@ -92,7 +92,6 @@ class spike(spike_frame):
     def __init(self, start, start_val, peak, peak_val, stop, stop_val, spike):
         spike_frame.__init__(self, start, start_val, peak, peak_val, stop, stop_val)
         self.s = spike#vector, with the spike in it
-
 
 class fF(object):
     """
@@ -1026,10 +1025,6 @@ class fF(object):
                     self.model_trace.append(self.model.record[0])
                     if self.option.output_level == "1":
                         print(features, weigths)
-                    with open('model_data_gui.txt','w') as f:
-                        f.write(str(self.model.__dict__))
-                    with open('model_hoc_data_gui.txt','w') as f:
-                        f.write(str(self.model.hoc_obj.__dict__))
                     if (self.option.type[-1]!='features'):
                         for f, w in zip(features, weigths):
                             if abs(len(self.model.record[0])-len(self.reader.data.GetTrace(k)))>1:
@@ -1048,6 +1043,9 @@ class fF(object):
             if self.option.output_level == "1":
                 print("current fitness: ",temp_fit)
             temp_fit = 0
+            if(self.option.simulator == 'Neuron') and delete_model:
+                "Deletes the reference of the instance"
+                del self.model
         return self.fitnes
 
     def getErrorComponents(self, index_of_trace, model_output):
@@ -1170,13 +1168,11 @@ class fF(object):
                                                                 self.reader.features_data, f, k, args))
                 else:
                         temp_fit.append(0)
-
-            
             self.fitnes.append(temp_fit)
             if self.option.output_level == "1":
                 print("current fitness: ",temp_fit)
-            del temp_fit[:] 
-        if(self.option.simulator == 'Neuron') and delete_model:
-            "Deletes the reference of the instance"
-            del self.model
+            #del temp_fit[:] 
+            if(self.option.simulator == 'Neuron') and delete_model:
+                "Deletes the reference of the instance"
+                del self.model
         return self.fitnes

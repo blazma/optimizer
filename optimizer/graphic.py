@@ -715,6 +715,7 @@ class Ui_Neuroptimus(object):
         self.pushButton_30.clicked.connect(self.runsim)
         self.pushButton_31.setText(_translate("Neuroptimus", "Starting points"))
         self.pushButton_31.clicked.connect(self.startingpoints)
+        self.pushButton_31.setEnabled(False)
         self.pushButton_33.setText(_translate("Neuroptimus", "Evaluate"))
         self.pushButton_33.clicked.connect(self.evaluatewindow)
         self.pushButton_32.setText(_translate("Neuroptimus", "Boundaries"))
@@ -1129,26 +1130,12 @@ class Ui_Neuroptimus(object):
 
 
                 self.core.SetModel2(kwargs)
-        
-                """else:
-                    for idx in range(self.modellist.rowCount()):
-                        item = self.modellist.item(idx, 3)
-                        item1 = self.modellist.item(idx, 1)
-                        item2 = self.modellist.item(idx, 2)
-                        item0 = self.modellist.item(idx, 0)
-                        if (item0 == searchValue[0] and item1 == searchValue[1])and(item == searchValue[2] or item2 == searchValue[3]):
-
-                            for j in range(4):
-                                self.modellist.item(idx,j).setBackground(QtGui.QColor(0,255,0))
-
-                    self.core.SetModel(kwargs)"""
                 
             
 
     def Remove(self, e):
         """
         Remove the selected parameters to optimize on the model.
-
         Loop through every selected line.
         """
         items = self.modellist.selectionModel().selectedRows()
@@ -1587,16 +1574,16 @@ class Ui_Neuroptimus(object):
                 popup(errpop[0])
             self.tabwidget.setCurrentIndex(int(min(err)))
         else:
-            try:
-                self.core.FourthStep()
-                self.tabwidget.setTabEnabled(5,True)
-                self.tabwidget.setTabEnabled(6,True)
-                self.tabwidget.setCurrentIndex(5)
-                self.results_tab_plot()
-                if not singlerun:
-                    self.stat_tab_fun()
-            except:
-                popup("Evaluation step error")
+            #try:
+            self.core.FourthStep()
+            self.tabwidget.setTabEnabled(5,True)
+            self.tabwidget.setTabEnabled(6,True)
+            self.tabwidget.setCurrentIndex(5)
+            self.results_tab_plot()
+            if not singlerun:
+                self.stat_tab_fun()
+            """except:
+                popup("Evaluation step error")"""
 
 
 
@@ -1620,7 +1607,7 @@ class Ui_Neuroptimus(object):
                     else:
                         text += "\n" + param[0] + ": " + param[-1] + "\n" + "\t" + str(k)
         #text += "\n" + "fitness:\n" + "\t" + str(self.core.Neuroptimus.final_pop[0].fitnes)
-        text += "\n" + "fitness:\n" + "\t" + str(self.core.last_fitness)
+        text += "\n" + "fitness:\n" + "\t" + str(self.core.best_fit)
         for curr_label in self.result_labels:
             curr_label.setText(QtCore.QCoreApplication.translate("Neuroptimus", text))
             

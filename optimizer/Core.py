@@ -409,48 +409,46 @@ class coreModul():
 					del self.model_handler
 			except:
 				"no model yet"
-
+			
 			start_time=time.time()
 			self.optimizer.Optimize()
 			stop_time=time.time()
 
-			try:
-				os.remove(self.optimizer.directory + '/stat_file.txt')
-				os.remove(self.optimizer.directory + '/ind_file.txt')
-			except OSError:
-				pass
-			generation_fitness = []
-			with open(self.optimizer.directory+"/ind_file.txt","w") as ind_file:
-				number_of_individual = 1
-				number_of_generation = 1
-				current_population = []
-				for idx,solution in enumerate(self.optimizer.solutions):
-					current_population.append(solution.fitness)
-					if idx+1 % self.optimizer.size_of_population:
-						generation_fitness.append(current_population)
-						current_population = []
-						number_of_individual = 1
-						number_of_generation += 1 
-					ind_file.write("{0}, {1}, {2}, {3} \n".format(number_of_generation, number_of_individual ,solution.candidate,solution.fitness))
-			with open(self.optimizer.directory+"/stat_file.txt",'w') as stat_file:
-				for idx,current_generation in enumerate(generation_fitness):
-					stat_file.write("{0}, {1}, {2}, {3}, {4}, {5}, {6} \n".format(
-						idx+1, int(self.optimizer.size_of_population), np.max(current_generation),
-							np.min(current_generation), np.median(current_generation),
-							 np.mean(current_generation), np.std(current_generation)))
+			if self.option_handler.algorithm_name.split("_")[-1] != "INSPYRED":
+				try:
+					os.remove(self.optimizer.directory + '/stat_file.txt')
+					os.remove(self.optimizer.directory + '/ind_file.txt')
+				except OSError:
+					pass
+				generation_fitness = []
+				with open(self.optimizer.directory+"/ind_file.txt","w") as ind_file:
+					number_of_individual = 1
+					number_of_generation = 1
+					current_population = []
+					for idx,solution in enumerate(self.optimizer.solutions):
+						current_population.append(solution.fitness)
+						if idx+1 % self.optimizer.size_of_population:
+							generation_fitness.append(current_population)
+							current_population = []
+							number_of_individual = 1
+							number_of_generation += 1 
+						ind_file.write("{0}, {1}, {2}, {3} \n".format(number_of_generation, number_of_individual ,solution.candidate,solution.fitness))
+				with open(self.optimizer.directory+"/stat_file.txt",'w') as stat_file:
+					for idx,current_generation in enumerate(generation_fitness):
+						stat_file.write("{0}, {1}, {2}, {3}, {4}, {5}, {6} \n".format(
+							idx+1, int(self.optimizer.size_of_population), np.max(current_generation),
+								np.min(current_generation), np.median(current_generation),
+								np.mean(current_generation), np.std(current_generation)))
 
 			self.cands = [x.candidate for x in self.optimizer.solutions]
 			self.fits = [x.fitness for x in self.optimizer.solutions]
 			min_sol=min(self.optimizer.solutions, key=lambda x:x.fitness)
-			self.best_cand = min_sol.candidate #self.cands[0]
-			self.best_fit = min_sol.fitness #self.fits[0]
-			
-
+			self.best_cand = min_sol.candidate
+			self.best_fit = min_sol.fitness 
 			print((self.best_cand, "CANDS"))
 			print((self.best_fit, "FITS"))
 			print(("Optimization lasted for ", stop_time-start_time, " s"))	
-		else:
-			self.best_cand = normalize(self.optimal_params,self.optimizer)
+			self.optimal_params=self.optimizer.fit_obj.ReNormalize(self.best_cand)
 		
 		
 
@@ -461,14 +459,11 @@ class coreModul():
 		The components of the fitness value is calculated on this optimal trace.
 		Settings of the entire work flow are saved into a configuration file named "model name"_settings.xml.
 		A report of the results is generated in the form of a html document.
-
 		:param args: currently not in use
 		"""
+		self.best_fit=self.optimizer.fit_obj.single_objective_fitness([normalize(self.optimal_params,self.optimizer)],delete_model=False)
 		self.final_result=[]
 		self.error_comps=[]
-		self.last_fitness=self.optimizer.fit_obj.single_objective_fitness([self.best_cand],delete_model=False)
-		self.optimal_params=self.optimizer.fit_obj.ReNormalize(self.best_cand)
-		#calculate the error components
 		if self.option_handler.type[-1]!= 'features':
 			k_range=self.data_handler.number_of_traces()
 		else:
@@ -492,7 +487,6 @@ class coreModul():
 		tmp_str+=self.htmlStr(str(time.asctime( time.localtime(time.time()) )))+"\n"
 		tmp_str+="<p>"+self.htmlStyle("Optimization of <b>"+self.name+".hoc</b> based on: "+self.option_handler.input_dir,self.htmlAlign("center"))+"</p>\n"
 		tmp_list=[]
-		#tmp_fit=self.optimizer.fit_obj.ReNormalize(self.optimizer.final_pop[0].candidate[0:len(self.option_handler.adjusted_params)])
 		tmp_fit=self.optimal_params
 		for name,mmin,mmax,f in zip(self.option_handler.GetObjTOOpt(),self.option_handler.boundaries[0],self.option_handler.boundaries[1],tmp_fit):
 			tmp_list.append([str(name),str(mmin),str(mmax),str(f)])
@@ -500,20 +494,16 @@ class coreModul():
 		tmp_str+="<center><p>"+self.htmlStyle("Results",self.htmlUnderline(),self.htmlResize(200))+"</p></center>\n"
 		tmp_str+=self.htmlTable(["Parameter Name","Minimum","Maximum","Optimum"], tmp_list)+"\n"
 		tmp_str+="<center><p>"+self.htmlStrBold("Fitness: ")
-		#tmp_str+=self.htmlStrBold(str(self.optimizer.final_pop[0].fitness))+"</p></center>\n"
-		tmp_str+=self.htmlStrBold(str(self.last_fitness))+"</p></center>\n"
+		tmp_str+=self.htmlStrBold(str(self.best_fit))+"</p></center>\n"
 		tmp_str+=self.htmlPciture("result_trace.png")+"\n"
 		for k in list(self.option_handler.GetOptimizerOptions().keys()):
 			tmp_str+="<p><b>"+k+" =</b> "+str(self.option_handler.GetOptimizerOptions()[k])+"</p>\n"
-
 		tmp_str+="<p><b>feats =</b> "+self.option_handler.feat_str +"</p>\n"
 		tmp_str+="<p><b>weights =</b> "+ str(self.option_handler.weights)+"</p>\n"
 		tmp_str+="<p><b>user function =</b></p>\n"
 		for l in (self.option_handler.u_fun_string.split("\n")[4:-1]):
 			tmp_str+="<p>"+l+"</p>"
 		tmp_str+="</body>\n</html>\n"
-
-		#error components
 		tmp_str+="<p><b>Fitness Components:</b></p>\n"
 		tmp_w_sum=0
 		tmp_list=[]
@@ -536,18 +526,13 @@ class coreModul():
 			tmp_w_sum=0
 		error_comps_list=tmp_list
 		tmp_str+=self.htmlTable(["Name","Value","Weight","Weighted Value","Weighted Sum"], tmp_list)+"\n"
-		#print tmp_str
-		#transpose the error comps
 		tmp_list=[]
 		for c in zip(*self.error_comps):
 			tmp=[0]*4
-
 			for t_idx in range(len(c)):
-				#print c[t_idx]
 				tmp[1]+=c[t_idx][2]
 				tmp[2]=c[t_idx][0]
 				tmp[3]+=c[t_idx][2]*c[t_idx][0]
-
 			if self.option_handler.type[-1]!='features':
 				tmp[0]=self.ffun_mapper[c[t_idx][1].__name__]
 			else:
@@ -555,24 +540,18 @@ class coreModul():
 			tmp=list(map(str,tmp))
 			tmp_list.append(tmp)
 
-		#print tmp_list
 		tmp_str+=self.htmlTable(["Name","Value","Weight","Weighted Value"], tmp_list)+"\n"
-		#tmp_str+="<center><p><b>weighted sum = "+(str(tmp_w_sum)[0:5])+"</b></p></centered>"
-		#print tmp_str
 		f_handler.write(tmp_str)
 		f_handler.close()
 
-
-		param_dict=[{"name":value[0],"min_boundary":value[1],"max_boundary":value[2],"optimum":value[3]} for value in param_list]
-		error_dict=[{"name":value[0],"value":value[1],"weight":value[2],"weighted_value":value[3]} for value in tmp_list]  
-		alg_dict=self.option_handler.current_algorithm
-		opt_dict = {"final_fitness":self.last_fitness,"optimal_params":self.optimal_params}
+		param_dict = [{"name":value[0],"min_boundary":value[1],"max_boundary":value[2],"optimum":value[3]} for value in param_list]
+		error_dict = [{"name":value[0],"value":value[1],"weight":value[2],"weighted_value":value[3]} for value in tmp_list]  
+		alg_dict = self.option_handler.current_algorithm
+		opt_dict = {"final_fitness":self.best_fit,"optimal_params":self.optimal_params}
 		target_dict = {"data_type":self.option_handler.type[-1],"file_name":self.option_handler.input_dir.split('/')[-1],"number_of_traces":k_range,"stim_delay":self.option_handler.stim_del,
 			"stim_duration":self.option_handler.stim_dur}
-		json_var={"model":self.name,"optimization":opt_dict,"parameters":param_dict,"error_function":error_dict, "algorithm":alg_dict,"target_data":target_dict}
+		json_var = {"model":self.name,"optimization":opt_dict,"parameters":param_dict,"error_function":error_dict, "algorithm":alg_dict,"target_data":target_dict}
 		
-
-	
 		if self.option_handler.type[-1]=='features':
 			with open(self.option_handler.input_dir, 'r') as outfile:
 				input_features=json.load(outfile)

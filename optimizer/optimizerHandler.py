@@ -79,27 +79,11 @@ def uniform(random,args):
 
 	"""
 	size=args.get("num_params")
-	bounds=args.get("_ec",args.get("self")).bounder
+	bounds=args.get("self").min_max
 	candidate=[]
 	for i in range(int(size)):
-		candidate.append(random.uniform(bounds.lower_bound[i],bounds.upper_bound[i]))
+		candidate.append(random.uniform(bounds[0][i],bounds[1][i]))
 	return candidate
-
-def uniformz(random,size,bounds):
-	"""
-	Creates random values from a uniform distribution. Used to create initial population.
-
-	:param random: random number generator object
-	:param args: ``dictionary``, must contain key "num_params" and either "_ec" or "self"
-
-	:return: the created random values in a ``list``
-
-	"""
-	candidate=[]
-	for i in range(int(size)):
-		candidate.append(random.uniform(bounds.lower_bound[i],bounds.upper_bound[i]))
-	return candidate
-
 
 class my_candidate():
 	"""
@@ -114,9 +98,32 @@ class my_candidate():
 		self.candidate=vals
 		self.fitness=fitn
 
+class bounderObject(object):  #?!
+	"""
+	Creates a callable to perform the bounding of the parameters.
+	:param xmax: list of maxima
+	:param xmin: list of minima
+	"""
+	def __init__(self, xmax, xmin ):
+			self.lower_bound = np.array(xmax)
+			self.upper_bound = np.array(xmin)
+	def __call__(self, **kwargs):
+		"""
+		Performs the bounding by deciding if the given point is in the defined region of the parameter space.
+		This is required by some algorithms as part of their acceptance tests.
+
+		:return: `True` if the point is inside the given bounds.
+		"""
+		x = kwargs["x_new"]
+		tmax = bool(np.all(x <= self.lower_bound))
+		tmin = bool(np.all(x >= self.upper_bound))
+		return tmax and tmin
+
+
+
 class SINGLERUN():
 	"""
-	An abstract base class to implement an optimization process.
+	An abstract base class to implement a single evaluation process.
 	"""
 	def __init__(self, reader_obj, option_obj):
 		self.fit_obj = fF(reader_obj,  option_obj)
@@ -127,9 +134,7 @@ class SINGLERUN():
 	def SetFFun(self,option_obj):
 		"""
 		Sets the combination function and converts the name of the fitness functions into function instances.
-
 		:param option_obj: an ``optionHandler`` instance
-
 		"""
 
 		try:
@@ -143,40 +148,9 @@ class SINGLERUN():
 			except KeyError:
 				print("error with fitness function: ",option_obj.feats," not in: ",list(self.fit_obj.calc_dict.keys()))
 
-	
-
-class oldBaseOptimizer():
-	"""
-	An abstract base class to implement an optimization process.
-	"""
-	def __init__(self):
-		pass
-	def SetFFun(self,option_obj):
-		"""
-		Sets the combination function and converts the name of the fitness functions into function instances.
-
-		:param option_obj: an ``optionHandler`` instance
-
-		"""
-
-		try:
-			self.ffun = self.fit_obj.fun_dict["single_objective"]
-			self.mfun = self.fit_obj.fun_dict["multi_objective"]
-		except KeyError:
-			sys.exit("Unknown fitness function!")
-
-		if option_obj.type[-1]!= 'features':
-			try:
-				option_obj.feats = [self.fit_obj.calc_dict[x] for x in option_obj.feats]
-			except KeyError:
-				print("error with fitness function: ",option_obj.feats," not in: ",list(self.fit_obj.calc_dict.keys()))
-
-
-
-# to generate a new set of parameters
 class baseOptimizer():
 	"""
-	An abstract base class to implement an optimization process.
+	An abstract base class to implement the base of an optimization process.
 	"""
 	def __init__(self, reader_obj,  option_obj):
 		self.fit_obj = fF(reader_obj,  option_obj)
@@ -196,9 +170,7 @@ class baseOptimizer():
 	def SetFFun(self,option_obj):
 		"""
 		Sets the combination function and converts the name of the fitness functions into function instances.
-
 		:param option_obj: an ``optionHandler`` instance
-
 		"""
 
 		try:
@@ -227,6 +199,7 @@ class InspyredAlgorithmBasis(baseOptimizer):
 		self.stat_file = open(self.directory + "/stat_file.txt", "w")
 		self.ind_file = open(self.directory + "/ind_file.txt", "w")
 		self.number_of_cpu = int(self.algo_params.pop("number_of_cpu",1))
+		self.output_level = option_obj.output_level
 		"""try:
 			# print type(option_obj.starting_points)
 			if isinstance(option_obj.starting_points[0], list):
@@ -235,7 +208,7 @@ class InspyredAlgorithmBasis(baseOptimizer):
 				self.starting_points = [normalize(option_obj.starting_points, self)]
 		except TypeError:"""
 		self.starting_points = None
-		if option_obj.output_level == "1":
+		if self.output_level == "1":
 			print("starting points: ", self.starting_points)
 		self.kwargs = dict(generator=uniform,
 						   evaluator=self.inspyred.ec.evaluators.parallel_evaluation_mp,
@@ -264,11 +237,18 @@ class InspyredAlgorithmBasis(baseOptimizer):
 			formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 			file_handler.setFormatter(formatter)
 			logger.addHandler(file_handler)
-			self.evo_strat.terminator=self.inspyred.ec.terminators.generation_termination
+			self.evo_strat.terminator = self.inspyred.ec.terminators.generation_termination
+			self.evo_strat.selector = self.inspyred.ec.selectors.default_selection
+			self.evo_strat.replacer=self.inspyred.ec.replacers.generational_replacement
+			self.evo_strat.variator=[self.inspyred.ec.variators.gaussian_mutation,
+								 self.inspyred.ec.variators.blend_crossover]
+			if self.output_level=="1":
+				self.evo_strat.observer=[self.inspyred.ec.observers.population_observer,observers.file_observer]
+			else:
+				self.evo_strat.observer=[self.inspyred.ec.observers.file_observer]
 			self.kwargs={k: v for k, v in self.kwargs.items() if v!='None' and v!=None} #maximize equals none can't use if v
-			self.solutions = self.evo_strat.evolve(**self.kwargs, **self.algo_params)
-			
-
+			solution = self.evo_strat.evolve(**self.kwargs, **self.algo_params)
+			self.solutions = [my_candidate(x.candidate[:self.num_obj],x.fitness) for x in solution]
 			if hasattr(self.evo_strat, "archive"):
 				self.final_archive = self.evo_strat.archive
 	
@@ -291,54 +271,13 @@ class ScipyAlgorithmBasis(baseOptimizer):
 	def wrapper(self, candidates, args):
 		"""
 		Converts the ``ndarray`` object into a ``list`` and passes it to the fitness function.
-
 		:param candidates: the ``ndarray`` object
 		:param args: optional parameters to be passed to the fitness function
-
 		:return: the return value of the fitness function
-
 		"""
 		tmp = ndarray.tolist(candidates)
 		candidates = self.bounder(tmp, args)
-		return self.ffun([candidates], args)[0]
-
-class CMAES_CMAES(baseOptimizer):
-	def __init__(self, reader_obj,  option_obj):
-		baseOptimizer.__init__(self, reader_obj,  option_obj)
-		self.algo_params = copy.copy(option_obj.algorithm_parameters)
-		self.size_of_population = self.algo_params.pop("size_of_population")
-		self.number_of_generations = self.algo_params.pop("number_of_generations")
-		self.number_of_cpu = int(self.algo_params.pop("number_of_cpu",1))
-		self.stat_file = open(self.directory + "/stat_file.txt", "w")
-		self.ind_file = open(self.directory + "/ind_file.txt", "w")
-		self.solutions = []
-		"""try:
-			if isinstance(option_obj.starting_points[0], list):
-				self.starting_points = option_obj.starting_points
-			else:
-				self.starting_points = [normalize(option_obj.starting_points, self)]
-		except TypeError:
-			self.starting_points = None"""
-		if option_obj.output_level == "1":
-			print("starting points: ", self.starting_points)
-		from cmaes import CMA
-		self.cmaoptimizer = CMA(mean=(np.ones(len(self.min_max[0]))*0.5), **self.algo_params, seed=1234, population_size=int(self.size_of_population), bounds=np.array([[0,1]]*len(self.min_max[0])))
-		
-				
-	def Optimize(self):
-			"""
-			Performs the optimization.
-			"""
-			with Pool(int(self.number_of_cpu)) as pool:
-				for generation in range(int(self.number_of_generations)):
-					print("Generation: {0}".format(generation+1))
-					solutions = []
-					candidate = [[self.cmaoptimizer.ask()] for _ in range(self.cmaoptimizer.population_size)]
-					fitness = pool.map(self.ffun,candidate)
-					solutions=[(pop[0], fit[0]) for pop,fit in zip(candidate,fitness)]
-					self.cmaoptimizer.tell(solutions)
-					[self.solutions.append(my_candidate(c[0],f)) for c,f in zip(candidate,fitness)]
-			
+		return self.ffun([candidates], args)[0]		
 			
 
 class PygmoAlgorithmBasis(baseOptimizer):
@@ -354,7 +293,7 @@ class PygmoAlgorithmBasis(baseOptimizer):
 		self.multiprocessing=False
 		self.option_obj=option_obj
 		self.pg.set_global_rng_seed(seed = self.seed)
-		self.boundaries = option_obj.boundaries
+		self.boundaries = [[0]*len(option_obj.boundaries[0]),[1]*len(option_obj.boundaries[1])]
 		self.base_dir = option_obj.base_dir
 		if self.option_obj.type[-1]!="features":
 			self.number_of_traces=reader_obj.number_of_traces()
@@ -363,6 +302,7 @@ class PygmoAlgorithmBasis(baseOptimizer):
 		self.n_obj=len(option_obj.GetFitnessParam()[-1])*int(self.number_of_traces)
 		self.number_of_cpu = int(self.algo_params.pop("number_of_cpu",1))
 		self.num_islands = int(self.algo_params.pop("number_of_islands",1))
+		self.solutions = []
 
 	def Optimize(self):
 		
@@ -371,7 +311,7 @@ class PygmoAlgorithmBasis(baseOptimizer):
 		else:
 			fitfun=self.ffun
 			self.n_obj=1
-		self.prob = Problem(fitfun,self.boundaries, self.num_islands, self.size_of_population,1,self.n_obj,self.base_dir)		
+		self.prob = self.pg.problem(Problem(fitfun, self.boundaries, self.n_obj, self.size_of_population))		
 		
 		if self.multiprocessing:
 			self.mpbfe=self.pg.mp_bfe()
@@ -379,63 +319,57 @@ class PygmoAlgorithmBasis(baseOptimizer):
 			self.algorithm.set_bfe(self.pg.bfe())
 			self.pgalgo=self.pg.algorithm(self.algorithm)
 			self.pgalgo.set_verbosity(1)
-			self.archi = self.pg.population(prob=self.prob, size=self.size_of_population,b=self.mpbfe)
-			self.archi = self.pgalgo.evolve(self.archi)
-			
+			self.population = self.pg.population(prob=self.prob, size=self.size_of_population,b=self.mpbfe)
+			self.archi = self.pgalgo.evolve(self.population)
 			self.mpbfe.shutdown_pool()
-			
-			if self.multiobjective:
-				self.champions_x = self.archi.get_x()
-				self.champions_f = list(np.mean(self.archi.get_f(),axis=1))
-				self.best_fitness = min(self.champions_f)
-				self.best = self.best = normalize(self.champions_x[self.champions_f.index(self.best_fitness)], self)
-			else:
-				self.champions_x = self.archi.champion_x
-				self.champions_f = self.archi.champion_f
-				self.best_fitness = self.champions_f
-				self.best = normalize(self.champions_x, self)
-					
+			self.solutions = self.archi.problem.extract(Problem).solutions
 		else:
-			self.pgalgo=self.pgalgorithm(self.algorithm)
+			self.pgalgo=self.pg.algorithm(self.algorithm)
 			self.pgalgo.set_verbosity(1)
-			self.archi = self.pg.archipelago(n=self.num_islands,t = self.pg.fully_connected(),algo=self.pgalgo, prob=self.prob, pop_size=self.size_of_population)#,b=self.bfe)
+			self.archi = self.pg.archipelago(n = self.num_islands,t = self.pg.fully_connected(), algo = self.pgalgo, prob = self.prob, 
+						pop_size = self.size_of_population, r_pol = self.pg.fair_replace(.1), s_pol = self.pg.select_best(.1))#, b=self.mpbfe)
 			self.archi.evolve()
 			self.archi.wait()
-			for x in range(self.num_islands):
-				self.archi.push_back()
+			for island in self.archi:
+				a = island.get_population()
+				uda = a.problem.extract(Problem)
+				self.solutions.extend(uda.solutions)
 		
-			champions_x = self.archi.get_champions_x()
-			champions_f = self.archi.get_champions_f()
-		self.solutions=[my_candidate(c,f) for c,f in zip(champions_x,champions_f)]
-			
-
-		
-class Problem:
-	
-	def __init__(self, fitnes_fun, bounds, num_islands=1, size_of_population=1, number_of_generationss=1,n_obj=1, directory=''):
-		self.min_max = bounds
+class Problem:	
+	def __init__(self, fitnes_fun, bounds, n_obj, size_of_population):
+		self.bounds = bounds
 		self.fitnes_fun = fitnes_fun
-		self.num_islands = num_islands
+		self.n_obj = n_obj
 		self.size_of_population = size_of_population
-		self.number_of_generationss = number_of_generationss
-		self.pop_counter, self.gen_counter  = 0, 0
-		self.directory = directory
-		self.nobj=n_obj
-		
+		self.solutions = []
 
 	def fitness(self, x):
-		if self.nobj!=1:
-			fitness = self.fitnes_fun([normalize(x,self)])[0]
-		else:
-			fitness = self.fitnes_fun([normalize(x,self)])
+		fitness = self.fitnes_fun([x])
+		self.solutions.append(my_candidate(x,fitness))
+		if self.n_obj > 1:
+			fitness = fitness[0]
 		return fitness
 
-	
+	def batch_fitness(self, x):
+		n = int(len(x)/self.size_of_population)
+		x_chunks=[[x[i:i + n]] for i in range(0, len(x), n)]
+		with Pool(3) as pool:
+			fitness = pool.map(self.fitnes_fun,x_chunks)
+			[self.solutions.append(my_candidate(x[0],f[0])) for x,f in zip(x_chunks,fitness)]
+		if self.n_obj > 1:
+			fitness = [f[0] for f in fitness]
+		fitness = [item for sublist in fitness for item in sublist]
+		return fitness
+
+	def has_batch_fitness(self):
+		return True
+
 	def get_nobj(self):
-		return self.nobj
+		return self.n_obj
 
 	def get_bounds(self):
-		return(self.min_max[0], self.min_max[1])
+		return(self.bounds[0], self.bounds[1])
+
 
 
 class SinglePygmoAlgorithmBasis(baseOptimizer):
@@ -447,11 +381,10 @@ class SinglePygmoAlgorithmBasis(baseOptimizer):
 		self.pgset_global_rng_seed(seed = self.seed)
 		self.prob = SingleProblem(self.ffun,option_obj.boundaries)
 		self.directory = option_obj.base_dir
-
-		self.pop_kwargs = dict()
+		self.algo_params = copy.copy(option_obj.algorithm_parameters)
 
 	def Optimize(self):
-		self.population = self.pg.population(self.prob, **self.pop_kwargs)
+		self.population = self.pg.population(self.prob,**self.algo_params)
 
 		self.algorithm.set_verbosity(1)
 		self.evolved_pop = self.algorithm.evolve(self.population)
@@ -497,7 +430,7 @@ class BluepyoptAlgorithmBasis(baseOptimizer):
 			view.map_sync(os.chdir, [str(os.path.dirname(os.path.realpath(__file__)))]*int(self.number_of_cpu))
 			map_function = view.map_sync
 			optimisation = self.bpop.optimisations.DEAPOptimisation(evaluator = self.DeapEvaluator(self))
-			self.solutions, self.hall_of_fame, self.logs, self.hist = optimisation.run(int(self.number_of_generations),cp_frequency = int(self.number_of_generations))
+			self.solution, self.hall_of_fame, self.logs, self.hist = optimisation.run(int(self.number_of_generations),cp_frequency = int(self.number_of_generations))
 			os.system("ipcluster stop")
 		else:
 			print("*****************Single Run : " + self.selector_name + " *******************")
@@ -513,7 +446,6 @@ class BluepyoptAlgorithmBasis(baseOptimizer):
 			self.param_names = [param.name for param in self.params]
 			self.objectives = [self.parent.bpop.objectives.Objective(name=name, value=value) for name,value in feats*self.parent.number_of_traces]
 
-
 		def evaluate_with_lists(self, param_values):
 			err=self.parent.ffun([param_values])
 			self.parent.solutions.append(my_candidate(param_values,err[0]))
@@ -521,7 +453,6 @@ class BluepyoptAlgorithmBasis(baseOptimizer):
 
 
 class SingleProblem:
-	
 	def __init__(self, fitnes_fun, bounds):
 		self.bounds = bounds
 		self.min_max = bounds
@@ -545,32 +476,17 @@ class SingleProblem:
 
 class RANDOM_SEARCH(baseOptimizer):
 	"""
-	Implements the ``Differential Evolution Algorithm`` algorithm for minimization from the ``inspyred`` package.
+	Basic implementation of random search optimization
 	:param reader_obj: an instance of ``DATA`` object
-	:param model_obj: an instance of a model handler object, either ``externalHandler`` or ``modelHandlerNeuron``
 	:param option_obj: an instance of ``optionHandler`` object
-
-
-	.. seealso::
-
-		Documentation of the options from 'inspyred':
-			http://inspyred.github.io/reference.html#module-inspyred.ec
-
-
 	"""
 	def __init__(self, reader_obj,  option_obj):
 		baseOptimizer.__init__(self, reader_obj,  option_obj)
 		self.algo_params =  copy.copy(option_obj.algorithm_parameters)		
 		self.directory = str(option_obj.base_dir)
 		self.number_of_cpu = int(self.algo_params.pop("number_of_cpu",1))
-		for file_name in ["stat_file.txt", "ind_file.txt"]:
-			try:
-				os.remove(file_name)
-			except OSError:
-				pass
-				
-
-
+		self.size_of_population = self.algo_params.pop("size_of_population")
+			
 	def Optimize(self):
 		"""
 		Performs the optimization.
@@ -578,167 +494,32 @@ class RANDOM_SEARCH(baseOptimizer):
 		with Pool(processes=int(self.number_of_cpu),maxtasksperchild=1) as pool:
 			candidate=[]
 			fitness=[]
-			for j in range(int(self.algo_params["size_of_population"])):
+			for j in range(int(self.size_of_population)):
 				candidate.append([uniform(self.rand, {"self":self,"num_params":self.num_params})])
 			try:
 				fitness=pool.map(self.ffun,candidate)
 			except (OSError, RuntimeError) as e:
 				raise
-		self.solutions=[my_candidate(c[0],f) for c,f in zip(candidate,fitness)]
-		
+		self.solutions = [my_candidate(c[0],f) for c,f in zip(candidate,fitness)]
 
-
-
-class SDE_PYGMO(SinglePygmoAlgorithmBasis):
-	
-	def __init__(self, reader_obj,  option_obj):
-
-		SinglePygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.algo_params =  copy.copy(option_obj.algorithm_parameters)
-		self.pop_kwargs['size'] = int(self.algo_params.pop("size_of_population"))
-
-		self.algo_type = self.pg.de        
-		self.algorithm = self.pg.de(gen=self.number_of_generations, **self.algo_params)
-
-
-
-class bounderObject(object):  #?!
-	"""
-	Creates a callable to perform the bounding of the parameters.
-	:param xmax: list of maxima
-	:param xmin: list of minima
-	"""
-	def __init__(self, xmax, xmin ):
-			self.lower_bound = np.array(xmax)
-			self.upper_bound = np.array(xmin)
-	def __call__(self, **kwargs):
-		"""
-		Performs the bounding by deciding if the given point is in the defined region of the parameter space.
-		This is required by some algorithms as part of their acceptance tests.
-
-		:return: `True` if the point is inside the given bounds.
-		"""
-		x = kwargs["x_new"]
-		tmax = bool(np.all(x <= self.lower_bound))
-		tmin = bool(np.all(x >= self.upper_bound))
-		return tmax and tmin
-
-
-
-
-class PRAXIS_PYGMO(PygmoAlgorithmBasis):
+class ABC_PYGMO(PygmoAlgorithmBasis):
 	def __init__(self, reader_obj,  option_obj):
 		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.algorithm = self.pg.nlopt(solver="praxis", **self.algo_params)
-		self.algorithm.maxeval=int(self.algo_params.pop("number_of_generations"))
-
-
-class NM_PYGMO(PygmoAlgorithmBasis):
-	def __init__(self, reader_obj,  option_obj):
-		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.algorithm = self.pg.scipy_optimize(method="Nelder-Mead", options={'xatol': 0, 'fatol': 0})
+		self.algorithm = self.pg.bee_colony(gen=self.number_of_generations, **self.algo_params)
 
 class BH_PYGMO(PygmoAlgorithmBasis):
 	def __init__(self, reader_obj,  option_obj):
 		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.algorithm = self.pg.mbh(self.pg.algorithm(self.pg.scipy_optimize(method="L-BFGS-B")),stop=2)
-
+		self.algorithm = self.pg.mbh(self.pg.algorithm(self.pg.scipy_optimize(method="L-BFGS-B", options=self.algo_params)),stop=2)
+			
 class DE_PYGMO(PygmoAlgorithmBasis):
 	def __init__(self, reader_obj,  option_obj):
 		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
 		self.algorithm = self.pg.de(gen=self.number_of_generations, **self.algo_params)
 
-class CMAES_PYGMO(PygmoAlgorithmBasis):
-	def __init__(self, reader_obj,  option_obj):
-		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		
-		if int(self.size_of_population) < 5:
-			print("***************************************************")
-			print("CMA-ES NEEDS A POPULATION WITH AT LEAST 5 INDIVIDUALS")
-			print("***************************************************")
-			self.size_of_population = 5
-		self.algorithm = self.pg.cmaes(gen=self.number_of_generations, **self.algo_params)
-		
-class PSO_PYGMO(PygmoAlgorithmBasis):
-	def __init__(self, reader_obj,  option_obj):
-		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.algorithm = self.pg.pso(gen=self.number_of_generations, **self.algo_params)
-
-class PSOG_PYGMO(PygmoAlgorithmBasis):
-	def __init__(self, reader_obj,  option_obj):
-		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		
-		self.multiprocessing=True
-		self.algorithm = self.pg.pso_gen(gen=self.number_of_generations, **self.algo_params)
-
-class MACO_PYGMO(PygmoAlgorithmBasis):
-	def __init__(self, reader_obj,  option_obj):
-		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		
-		self.multiobjective=True
-		self.multiprocessing=True
-		self.algorithm = self.pg.maco(gen=self.number_of_generations, **self.algo_params)
-
-class GACO_PYGMO(PygmoAlgorithmBasis):
-	def __init__(self, reader_obj,  option_obj):
-		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		
-		self.multiprocessing=True
-		self.algorithm = self.pg.gaco(gen=self.number_of_generations, **self.algo_params)
-
-class NSPSO_PYGMO(PygmoAlgorithmBasis):
-	def __init__(self, reader_obj,  option_obj):
-		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		
-		self.multiobjective=True
-		self.multiprocessing=True
-		self.algorithm = self.pg.nspso(gen=self.number_of_generations, **self.algo_params)
-
-class NSGA2_PYGMO(PygmoAlgorithmBasis):
-	def __init__(self, reader_obj,  option_obj):
-		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		
-		self.multiobjective=True
-		self.multiprocessing=True
-		self.algorithm = self.pg.nsga2(gen=self.number_of_generations, **self.algo_params)
-
-class XNES_PYGMO(PygmoAlgorithmBasis):
-	def __init__(self, reader_obj,  option_obj):
-		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		
-		self.algorithm = self.pg.xnes(gen=self.number_of_generations, **self.algo_params)
-
-class ABC_PYGMO(PygmoAlgorithmBasis):
-	def __init__(self, reader_obj,  option_obj):
-		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		
-		self.algorithm = self.pg.bee_colony(gen=self.number_of_generations, **self.algo_params)
-
-class SGA_PYGMO(PygmoAlgorithmBasis):
-	def __init__(self, reader_obj,  option_obj):
-		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		
-		self.algorithm = self.pg.sga(gen=self.number_of_generations, **self.algo_params)
-
-class SADE_PYGMO(PygmoAlgorithmBasis):
-
-	def __init__(self, reader_obj,  option_obj):
-		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		
-		if int(self.size_of_population)<7:
-			print("***************************************************")
-			print("SADE NEEDS A POPULATION WITH AT LEAST 7 INDIVIDUALS")
-			print("***************************************************")
-			self.size_of_population = 7
-			
-		self.algorithm = self.pg.sade(gen=self.number_of_generations, **self.algo_params)
-
 class DE1220_PYGMO(PygmoAlgorithmBasis):
-
 	def __init__(self, reader_obj,  option_obj):
-
 		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-
 		if int(self.size_of_population)<7:
 			print("*****************************************************")
 			print("DE1220 NEEDS A POPULATION WITH AT LEAST 7 INDIVIDUALS")
@@ -747,478 +528,97 @@ class DE1220_PYGMO(PygmoAlgorithmBasis):
 			
 		self.algorithm = self.pg.de1220(gen=self.number_of_generations, **self.algo_params)
 
-
-
-class BH_SCIPY(ScipyAlgorithmBasis):
-	"""
-	Implements the ``Basinhopping`` algorithm for minimization from the ``scipy`` package.
-
-	:param reader_obj: an instance of ``DATA`` object
-	:param model_obj: an instance of a model handler object, either ``externalHandler`` or ``modelHandlerNeuron``
-	:param option_obj: an instance of ``optionHandler`` object
-
-	.. seealso::
-
-		Documentation of the Simulated Annealing from 'scipy':
-			http://docs.scipy.org/doc/scipy-dev/reference/generated/scipy.optimize.basinhopping.html
-
-	"""
+class CMAES_PYGMO(PygmoAlgorithmBasis):
 	def __init__(self, reader_obj,  option_obj):
-		ScipyAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		if int(self.size_of_population) < 5:
+			print("***************************************************")
+			print("CMA-ES NEEDS A POPULATION WITH AT LEAST 5 INDIVIDUALS")
+			print("***************************************************")
+			self.size_of_population = 5
+		self.algorithm = self.pg.cmaes(gen=self.number_of_generations, **self.algo_params)
+
+class GACO_PYGMO(PygmoAlgorithmBasis):
+	def __init__(self, reader_obj,  option_obj):
+		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.multiprocessing=True
+		self.algorithm = self.pg.gaco(gen=self.number_of_generations, **self.algo_params)
+
+
+class MACO_PYGMO(PygmoAlgorithmBasis):
+	def __init__(self, reader_obj,  option_obj):
+		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.multiobjective=True
+		self.multiprocessing=True
+		self.algorithm = self.pg.maco(gen=self.number_of_generations, **self.algo_params)
+
+class NM_PYGMO(PygmoAlgorithmBasis):
+	def __init__(self, reader_obj,  option_obj):
+		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.algorithm = self.pg.scipy_optimize(method="Nelder-Mead", options=self.algo_params)
+
+class NSGA2_PYGMO(PygmoAlgorithmBasis):
+	def __init__(self, reader_obj,  option_obj):
+		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.multiobjective=True
+		self.multiprocessing=True
+		self.algorithm = self.pg.nsga2(gen=self.number_of_generations, **self.algo_params)
+
+class NSPSO_PYGMO(PygmoAlgorithmBasis):
+	def __init__(self, reader_obj,  option_obj):
+		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.multiobjective=True
+		self.multiprocessing=True
+		self.algorithm = self.pg.nspso(gen=self.number_of_generations, **self.algo_params)
+
+class PRAXIS_PYGMO(PygmoAlgorithmBasis):
+	def __init__(self, reader_obj,  option_obj):
+		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.algorithm = self.pg.nlopt(solver="praxis", **self.algo_params)
+		self.algorithm.maxeval=int(self.algo_params.pop("number_of_generations"))
+
+class SDE_PYGMO(SinglePygmoAlgorithmBasis):
+	def __init__(self, reader_obj,  option_obj):
+		SinglePygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
 		self.algo_params =  copy.copy(option_obj.algorithm_parameters)
-		self.maxcor=self.algo_params.pop('maxcor')
-		self.ftol=self.algo_params.pop('ftol')
-		self.gtol=self.algo_params.pop('gtol')
-		self.eps=self.algo_params.pop('eps')
-		self.maxfun=self.algo_params.pop('maxfun')
-		self.maxiter=self.algo_params.pop('maxiter')
-		self.maxls=self.algo_params.pop('maxls')
+		self.pop_kwargs['size'] = int(self.algo_params.pop("size_of_population"))
+		self.algo_type = self.pg.de        
+		self.algorithm = self.pg.de(gen=self.number_of_generations, **self.algo_params)
 
-
-	def wrapper(self,candidates,args):
-		"""
-		Converts the ``ndarray`` object into a ``list`` and passes it to the fitness function.
-
-		:param candidates: the ``ndarray`` object
-		:param args: optional parameters to be passed to the fitness function
-
-		:return: the return value of the fitness function
-
-		"""
-		tmp = ndarray.tolist(candidates)
-		ec_bounder = ec.Bounder([0]*len(self.min_max[0]),[1]*len(self.min_max[1]))
-		candidates = ec_bounder(tmp,args)
-		return self.ffun([candidates],args)[0]
-
-
-
-	def Optimize(self):
-		"""
-		Performs the optimization.
-		"""
-		self.result=optimize.basinhopping(self.wrapper,
-						x0=ndarray((self.num_params,),buffer=array(self.starting_points),offset=0,dtype=float),
-						minimizer_kwargs={"method":"L-BFGS-B",
-										"jac":False,
-										"args":[[]],
-										"bounds": [(0,1)]*len(self.min_max[0]),
-										"options": {'maxcor': self.maxcor, 
-													'ftol': self.ftol, 
-													'gtol': self.gtol, 
-													'eps': self.eps, 
-													'maxfun': self.maxfun, 
-													'maxiter': self.maxiter, 
-													'maxls': self.maxls,
-													'iprint': 2}},
-						take_step = None,
-						accept_test = self.bounder,
-						niter_success = None,
-						**self.algo_params
-						)
-		self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
-		#print self.result.x
-		self.solutions = [my_candidate(self.result.x,self.result.fun)]
-
-	
-
-
-class NM_SCIPY(ScipyAlgorithmBasis):
-	"""
-	Implements a Nelder-Mead downhill simplex algorithm for minimization from the ``scipy`` package.
-
-	:param reader_obj: an instance of ``DATA`` object
-	:param model_obj: an instance of a model handler object, either ``externalHandler`` or ``modelHandlerNeuron``
-	:param option_obj: an instance of ``optionHandler`` object
-
-	.. seealso::
-
-		Documentation of the fmin from 'scipy':
-			http://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.fmin.html#scipy.optimize.fmin
-
-	"""
+class SGA_PYGMO(PygmoAlgorithmBasis):
 	def __init__(self, reader_obj,  option_obj):
-		ScipyAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.fit_obj = fF(reader_obj,option_obj)
-		self.SetFFun(option_obj)
-		self.algo_params =  copy.copy(option_obj.algorithm_parameters)
-		self.rand = random
-		self.seed = option_obj.seed
-		self.rand.seed(self.seed)
-		self.number_of_generations = self.algo_params.pop("number_of_generations")
-		self.num_params = option_obj.num_params
-		self.bounder = SetBoundaries(option_obj.boundaries)
-		try:
-			if isinstance(option_obj.starting_points[0],list):
-				raise TypeError
-			else:
-				self.starting_points = [normalize(option_obj.starting_points,self)]
-		except TypeError:
-			self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
-		if option_obj.output_level=="1":
-			print("starting points: ",self.starting_points)
-
-
-	def logger(self,x):
-		self.log_file.write(str(x))
-		self.log_file.write("\n")
-		self.log_file.flush()
+		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
 		
-		
-		
-	def wrapper(self,candidates,args):
-		"""
-		Converts the ``ndarray`` object into a ``list`` and passes it to the fitness function.
+		self.algorithm = self.pg.sga(gen=self.number_of_generations, **self.algo_params)
 
-		:param candidates: the ``ndarray`` object
-		:param args: optional parameters to be passed to the fitness function
+class PSO_PYGMO(PygmoAlgorithmBasis):
+	def __init__(self, reader_obj,  option_obj):
+		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.algorithm = self.pg.pso(gen=self.number_of_generations, **self.algo_params)
 
-		:return: the return value of the fitness function
+class PSOG_PYGMO(PygmoAlgorithmBasis):
+	def __init__(self, reader_obj,  option_obj):
+		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.multiprocessing=True
+		self.algorithm = self.pg.pso_gen(gen=self.number_of_generations, **self.algo_params)
 
-		"""
-		tmp = ndarray.tolist(candidates)
-		ec_bounder = ec.Bounder([0]*len(self.min_max[0]),[1]*len(self.min_max[1]))
-		candidates = ec_bounder(tmp,args)
-		fit = self.ffun([candidates],args)[0]
-		self.logger(fit)
-		return fit
+class SADE_PYGMO(PygmoAlgorithmBasis):
 
-
-
-
-	def Optimize(self):
-		"""
-		Performs the optimization.
-		"""
-		self.log_file = open(self.directory + "/nelder.log","w")
-		
-		list_of_results = [0]*int(self.number_of_generations)
-		for points in range(int(self.number_of_generations)):
+	def __init__(self, reader_obj,  option_obj):
+		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		if int(self.size_of_population)<7:
+			print("***************************************************")
+			print("SADE NEEDS A POPULATION WITH AT LEAST 7 INDIVIDUALS")
+			print("***************************************************")
+			self.size_of_population = 7
 			
-			
-			list_of_results[points] = optimize.minimize(self.wrapper,x0 = ndarray((self.num_params,),
-						buffer = array(self.starting_points),offset = 0,dtype = float),
-									  args = ((),),
-									  method = "Nelder-Mead",
-									  callback = self.logger,
-									  options = {"maxiter":self.size_of_pop,
-										  "return_all":True} | self.algo_params
-									  )
-			#self.log_file.write(str(points+1)+" "+str(self.starting_points)+" ("+str(list_of_results)+") \n")
-			
-			self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
-		self.stat_file = open(self.directory + "/ind_file.txt","w")
-		self.stat_file.write(str(list_of_results))	
-		self.log_file.close()
-		self.stat_file.close()
-		self.result = min(list_of_results,key = lambda x:x.fun)
-		#print self.result.x
-		self.solutions = [my_candidate(self.result.x,self.result.fun)]
+		self.algorithm = self.pg.sade(gen=self.number_of_generations, **self.algo_params)
 
-	
-
-
-
-class L_BFGS_B_SCIPY(baseOptimizer):
-	"""
-	Implements L-BFGS-B algorithm for minimization from the ``scipy`` package.
-
-	:param reader_obj: an instance of ``DATA`` object
-	:param model_obj: an instance of a model handler object, either ``externalHandler`` or ``modelHandlerNeuron``
-	:param option_obj: an instance of ``optionHandler`` object
-
-	.. seealso::
-
-		Documentation of the L-BFGS-B from 'scipy':
-			http://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.fmin_l_bfgs_b.html#scipy.optimize.fmin_l_bfgs_b
-
-	"""
+class XNES_PYGMO(PygmoAlgorithmBasis):
 	def __init__(self, reader_obj,  option_obj):
-		self.fit_obj = fF(reader_obj,option_obj)
-		self.SetFFun(option_obj)
-		self.rand = random
-		self.seed = option_obj.seed
-		self.rand.seed(self.seed) 
-		self.algo_params =  copy.copy(option_obj.algorithm_parameters)
-		self.num_params = option_obj.num_params
-		self.min_max = option_obj.boundaries
-		self.bounder = SetBoundaries(option_obj.boundaries)
-		try:
-			if isinstance(option_obj.starting_points[0],list):
-				raise TypeError
-			else:
-				self.starting_points = [normalize(option_obj.starting_points,self)]
-		except TypeError:
-			self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
-
-		if option_obj.output_level == "1":
-			print("starting points: ",self.starting_points)
-
-
-	def wrapper(self,candidates,args):
-		"""
-		Converts the ``ndarray`` object into a ``list`` and passes it to the fitness function.
-
-		:param candidates: the ``ndarray`` object
-		:param args: optional parameters to be passed to the fitness function
-
-		:return: the return value of the fitness function
-
-		"""
-		tmp = ndarray.tolist(candidates)
-		candidates = self.bounder(tmp,args)
-		return self.ffun([candidates],args)[0]
-
-
-
-
-	def Optimize(self):
-		"""
-		Performs the optimization.
-		"""
-		self.result = optimize.fmin_l_bfgs_b(self.wrapper,
-									  x0 = ndarray((self.num_params,),buffer = array(self.starting_points),offset = 0,dtype=float),
-									  args=[[]],
-									  bounds= [(0,1)]*len(self.min_max[0]),
-									  maxiter= self.number_of_generations,
-									  fprime= None,
-									  approx_grad= True,
-									  **self.algo_params,
-									  iprint= 2, #>1 creates log file
-									  )
-		print(self.result[-1]['warnflag'])
-		self.solutions=[my_candidate(self.result[0],self.result[1])]
-
-
-
-
-
-class grid(baseOptimizer):
-	"""
-	Implements a brute force algorithm for minimization by calculating the function's value
-	over the specified grid.
-
-	.. note::
-		This algorithm is highly inefficient and should not be used for complete optimization.
-
-	:param reader_obj: an instance of ``DATA`` object
-	:param model_obj: an instance of a model handler object, either ``externalHandler`` or ``modelHandlerNeuron``
-	:param option_obj: an instance of ``optionHandler`` object
-	:param resolution: number of sample points along each dimensions (default: 10)
-
-	"""
-	def __init__(self,reader_obj,option_obj,resolution):
-		self.fit_obj=fF(reader_obj,option_obj)
-		self.SetFFun(option_obj)
-		self.num_params=option_obj.num_params
-		self.num_points_per_dim=resolution
-		self.min_max=option_obj.boundaries
-		self.bounder=SetBoundaries(option_obj.boundaries)
-
-
-
-	def Optimize(self,optimals):
-		"""
-		Performs the optimization.
-		"""
-
-		self.solutions=[[],[]]
-		_o=copy.copy(optimals)
-		_o=normalize(_o, self)
-		points=[]
-		fitness=[]
-		tmp1=[]
-		tmp2=[]
-		for n in range(self.num_params):
-			for c in frange(0,1, float(1)/self.num_points_per_dim):
-				_o[n]=c
-				tmp1.append(self.fit_obj.ReNormalize(_o))
-				tmp2.append(self.ffun([_o],{}))
-			points.append(tmp1)
-			tmp1=[]
-			fitness.append(tmp2)
-			tmp2=[]
-			_o=copy.copy(optimals)
-			_o=normalize(_o, self)
-		self.solutions[0]=points
-		self.solutions[1]=fitness
-
-
-	
-
-
-class CES_INSPYRED(InspyredAlgorithmBasis):
-	"""
-	Implements a custom version of ``Evolution Strategy`` algorithm for minimization from the ``inspyred`` package.
-	:param reader_obj: an instance of ``DATA`` object
-	:param model_obj: an instance of a model handler object, either ``externalHandler`` or ``modelHandlerNeuron``
-	:param option_obj: an instance of ``optionHandler`` object
-
-	.. note::
-		The changed parameters compared to the defaults are the following:
-			* replacer: genrational_replacement
-			* variator: gaussian_mutation, blend_crossover
-
-	.. seealso::
-
-		Documentation of the options from 'inspyred':
-			http://inspyred.github.io/reference.html#module-inspyred.ec
-
-
-	"""
-	def __init__(self, reader_obj,  option_obj):
-		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.evo_strat=ec.ES(self.rand)
-		self.evo_strat.selector=self.inspyred.ec.selectors.default_selection
-		self.evo_strat.replacer=self.inspyred.ec.replacers.generational_replacement
-		self.evo_strat.variator=[self.inspyred.variators.gaussian_mutation,
-								 self.inspyred.variators.blend_crossover]
-		if option_obj.output_level=="1":
-			self.evo_strat.observer=[observers.population_observer,observers.file_observer]
-		else:
-			self.evo_strat.observer=[observers.file_observer]
-
-
-class DE_INSPYRED(InspyredAlgorithmBasis):
-	"""
-	Implements the ``Differential Evolution Algorithm`` algorithm for minimization from the ``inspyred`` package.
-	:param reader_obj: an instance of ``DATA`` object
-	:param model_obj: an instance of a model handler object, either ``externalHandler`` or ``modelHandlerNeuron``
-	:param option_obj: an instance of ``optionHandler`` object
-
-	.. seealso::
-
-		Documentation of the options from 'inspyred':
-			http://inspyred.github.io/reference.html#module-inspyred.ec
-
-
-	"""
-	def __init__(self, reader_obj,  option_obj):
-		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.evo_strat=ec.DEA(self.rand)
-		self.evo_strat.terminator=terminators.generation_termination
-		if option_obj.output_level=="1":
-			self.evo_strat.observer=[observers.population_observer,observers.file_observer]
-		else:
-			self.evo_strat.observer=[observers.file_observer]
-
-class PSO_INSPYRED(InspyredAlgorithmBasis):
-	"""
-	Implements the ``Particle Swarm`` algorithm for minimization from the ``inspyred`` package.
-
-	:param reader_obj: an instance of ``DATA`` object
-	:param model_obj: an instance of a model handler object, either ``externalHandler`` or ``modelHandlerNeuron``
-	:param option_obj: an instance of ``optionHandler`` object
-	.. seealso::
-
-		Documentation of the Particle Swarm from 'inspyred':
-			http://pythonhosted.org/inspyred/reference.html
-
-	"""
-	def __init__(self, reader_obj,  option_obj):
-		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.evo_strat=self.inspyred.swarm.PSO(self.rand)
-		if option_obj.output_level=="1":
-			self.evo_strat.observer=[self.inspyred.ec.observers.population_observer,observers.file_observer]
-		else:
-			self.evo_strat.observer=[self.inspyred.ec.observers.file_observer]
-
-
-class NSGA2_INSPYRED(InspyredAlgorithmBasis):
-	"""
-	Implements the ``Non-Dominated Genetic Algorithm`` algorithm for minimization from the ``inspyred`` package.
-	:param reader_obj: an instance of ``DATA`` object
-	:param model_obj: an instance of a model handler object, either ``externalHandler`` or ``modelHandlerNeuron``
-	:param option_obj: an instance of ``optionHandler`` object
-
-	.. note::
-		The changed parameters compared to the defaults are the following:
-			* replacer: genrational_replacement
-			* variator: gaussian_mutation, blend_crossover
-
-	.. seealso::
-
-		Documentation of the options from 'inspyred':
-			http://inspyred.github.io/reference.html#module-inspyred.ec
-
-
-	"""
-	def __init__(self, reader_obj,  option_obj):
-		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.kwargs["mp_evaluator"] = self.mfun
-		self.kwargs['mutation_rate'] = option_obj.mutation_rate
-		self.evo_strat=ec.emo.NSGA2(self.rand)
-		self.evo_strat.selector=inspyred.ec.selectors.default_selection
-		self.evo_strat.replacer=inspyred.ec.replacers.nsga_replacement
-
-		self.evo_strat.variator=[variators.gaussian_mutation,
-								 variators.blend_crossover]
-		if option_obj.output_level=="1":
-			self.evo_strat.observer=[observers.population_observer,observers.file_observer]
-		else:
-			self.evo_strat.observer=[observers.file_observer]
-
-
-
-class PAES_INSPYRED(InspyredAlgorithmBasis):
-	"""
-	Implements a custom version of ``Pareto Archived Evolution Strategies`` algorithm for minimization from the ``inspyred`` package.
-	:param reader_obj: an instance of ``DATA`` object
-	:param model_obj: an instance of a model handler object, either ``externalHandler`` or ``modelHandlerNeuron``
-	:param option_obj: an instance of ``optionHandler`` object
-
-
-	.. seealso::
-
-		Documentation of the options from 'inspyred':
-			http://inspyred.github.io/reference.html#module-inspyred.ec
-
-
-	"""
-	def __init__(self, reader_obj,  option_obj):
-		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-
-		self.kwargs["mp_evaluator"] = self.mfun
-
-
-		self.evo_strat=ec.emo.PAES(self.rand)
-		self.evo_strat.terminator=terminators.generation_termination
-		self.evo_strat.selector=inspyred.ec.selectors.default_selection
-		self.evo_strat.replacer=inspyred.ec.replacers.paes_replacement
-		self.evo_strat.variator=[variators.gaussian_mutation,
-								 variators.blend_crossover]
-		if option_obj.output_level=="1":
-			self.evo_strat.observer=[observers.population_observer,observers.file_observer]
-		else:
-			self.evo_strat.observer=[observers.file_observer]
-
-		self.kwargs['mutation_rate'] = option_obj.mutation_rate
-		#self.kwargs['num_elites'] = int(4)
-
-class SA_INSPYRED(InspyredAlgorithmBasis):
-	"""
-	Implements the ``Simulated Annealing`` algorithm for minimization from the ``inspyred`` package.
-
-	:param reader_obj: an instance of ``DATA`` object
-	:param model_obj: an instance of a model handler object, either ``externalHandler`` or ``modelHandlerNeuron``
-	:param option_obj: an instance of ``optionHandler`` object
-
-	.. seealso::
-
-		Documentation of the Simulated Annealing from 'inspyred':
-			http://inspyred.github.io/reference.html#replacers-survivor-replacement-methods
-
-
-	"""
-	def __init__(self, reader_obj,  option_obj):
-		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.kwargs['number_of_generationss'] = self.number_of_generations
-
-		self.evo_strat=self.inspyred.ec.SA(self.rand)
-		if option_obj.output_level=="1":
-			self.evo_strat.observer=[observers.population_observer,observers.file_observer]
-		else:
-			self.evo_strat.observer=[observers.file_observer]
-
+		PygmoAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		
+		self.algorithm = self.pg.xnes(gen=self.number_of_generations, **self.algo_params)
 
 class FULLGRID_PYGMO(InspyredAlgorithmBasis):
 	
@@ -1304,7 +704,339 @@ class FULLGRID_PYGMO(InspyredAlgorithmBasis):
 		self.kwargs["seeds"] = self.grid
 		self.kwargs["max_generations"] = 0
 		self.kwargs["pop_size"] = 1
+
+class BH_SCIPY(ScipyAlgorithmBasis):
+	"""
+	Implements the ``Basinhopping`` algorithm for minimization from the ``scipy`` package.
+
+	:param reader_obj: an instance of ``DATA`` object
+	
+	:param option_obj: an instance of ``optionHandler`` object
+
+	.. seealso::
+
+		Documentation of the Simulated Annealing from 'scipy':
+			http://docs.scipy.org/doc/scipy-dev/reference/generated/scipy.optimize.basinhopping.html
+
+	"""
+	def __init__(self, reader_obj,  option_obj):
+		ScipyAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.algo_params =  copy.copy(option_obj.algorithm_parameters)
+		self.maxcor=self.algo_params.pop('maxcor')
+		self.ftol=self.algo_params.pop('ftol')
+		self.gtol=self.algo_params.pop('gtol')
+		self.eps=self.algo_params.pop('eps')
+		self.maxfun=self.algo_params.pop('maxfun')
+		self.maxiter=self.algo_params.pop('maxiter')
+		self.maxls=self.algo_params.pop('maxls')
+
+
+
+
+	def Optimize(self):
+		"""
+		Performs the optimization.
+		"""
+		self.result=optimize.basinhopping(self.ffun,
+						x0=ndarray((self.num_params,),buffer=array(self.starting_points),offset=0,dtype=float),
+						minimizer_kwargs={"method":"L-BFGS-B",
+										"jac":False,
+										"args":[[]],
+										"bounds": [(0,1)]*len(self.min_max[0]),
+										"options": {'maxcor': self.maxcor, 
+													'ftol': self.ftol, 
+													'gtol': self.gtol, 
+													'eps': self.eps, 
+													'maxfun': self.maxfun, 
+													'maxiter': self.maxiter, 
+													'maxls': self.maxls,
+													'iprint': 2}},
+						take_step = None,
+						accept_test = self.bounder,
+						niter_success = None,
+						**self.algo_params
+						)
+		self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
+		#print self.result.x
+		self.solutions = [my_candidate(self.result.x,self.result.fun)]
+
+	
+
+
+class NM_SCIPY(ScipyAlgorithmBasis):
+	"""
+	Implements a Nelder-Mead downhill simplex algorithm for minimization from the ``scipy`` package.
+	:param reader_obj: an instance of ``DATA`` object
+	:param option_obj: an instance of ``optionHandler`` object
+	.. seealso::
+		Documentation of the fmin from 'scipy':
+			http://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.fmin.html#scipy.optimize.fmin
+
+	"""
+	def __init__(self, reader_obj,  option_obj):
+		ScipyAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.fit_obj = fF(reader_obj,option_obj)
+		self.SetFFun(option_obj)
+		self.algo_params =  copy.copy(option_obj.algorithm_parameters)
+		self.rand = random
+		self.seed = option_obj.seed
+		self.rand.seed(self.seed)
+		self.number_of_generations = self.algo_params.pop("number_of_generations")
+		self.num_params = option_obj.num_params
+		self.bounder = SetBoundaries(option_obj.boundaries)
+		try:
+			if isinstance(option_obj.starting_points[0],list):
+				raise TypeError
+			else:
+				self.starting_points = [normalize(option_obj.starting_points,self)]
+		except TypeError:
+			self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
+		if option_obj.output_level=="1":
+			print("starting points: ",self.starting_points)
+
+
+	def logger(self,x):
+		self.log_file.write(str(x))
+		self.log_file.write("\n")
+		self.log_file.flush()
 		
+
+	def Optimize(self):
+		"""
+		Performs the optimization.
+		"""
+	
+		list_of_results = [0]*int(self.number_of_generations)
+		for points in range(int(self.number_of_generations)):
+			list_of_results[points] = optimize.minimize(self.ffun,x0 = ndarray((self.num_params,),
+						buffer = array(self.starting_points),offset = 0,dtype = float),
+									  args = ((),),
+									  method = "Nelder-Mead",
+									  callback = self.logger,
+									  options = {"maxiter":self.size_of_pop,
+										  "return_all":True} | self.algo_params
+									  )	
+			self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
+			self.result = min(list_of_results,key = lambda x:x.fun)
+		self.solutions = [my_candidate(self.result.x,self.result.fun)]
+
+	
+
+
+
+class L_BFGS_B_SCIPY(baseOptimizer):
+	"""
+	Implements L-BFGS-B algorithm for minimization from the ``scipy`` package.
+	:param reader_obj: an instance of ``DATA`` object
+	:param option_obj: an instance of ``optionHandler`` object
+	.. seealso::
+		Documentation of the L-BFGS-B from 'scipy':
+			http://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.fmin_l_bfgs_b.html#scipy.optimize.fmin_l_bfgs_b
+
+	"""
+	def __init__(self, reader_obj,  option_obj):
+		self.fit_obj = fF(reader_obj,option_obj)
+		self.SetFFun(option_obj)
+		self.rand = random
+		self.seed = option_obj.seed
+		self.rand.seed(self.seed) 
+		self.algo_params =  copy.copy(option_obj.algorithm_parameters)
+		self.num_params = option_obj.num_params
+		self.min_max = option_obj.boundaries
+		self.bounder = SetBoundaries(option_obj.boundaries)
+		try:
+			if isinstance(option_obj.starting_points[0],list):
+				raise TypeError
+			else:
+				self.starting_points = [normalize(option_obj.starting_points,self)]
+		except TypeError:
+			self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
+
+		if option_obj.output_level == "1":
+			print("starting points: ",self.starting_points)
+
+
+
+	def Optimize(self):
+		"""
+		Performs the optimization.
+		"""
+		self.result = optimize.fmin_l_bfgs_b(self.ffun,
+									  x0 = ndarray((self.num_params,),buffer = array(self.starting_points),offset = 0,dtype=float),
+									  args=[[]],
+									  bounds= [(0,1)]*len(self.min_max[0]),
+									  maxiter= self.number_of_generations,
+									  fprime= None,
+									  approx_grad= True,
+									  **self.algo_params,
+									  iprint= 2, #>1 creates log file
+									  )
+		self.solutions=[my_candidate(self.result[0],self.result[1])]
+
+
+
+
+
+class grid(baseOptimizer):
+	"""
+	Implements a brute force algorithm for minimization by calculating the function's value
+	over the specified grid.
+	.. note::
+		This algorithm is highly inefficient and should not be used for complete optimization.
+	:param reader_obj: an instance of ``DATA`` object
+	:param option_obj: an instance of ``optionHandler`` object
+	:param resolution: number of sample points along each dimensions (default: 10)
+
+	"""
+	def __init__(self,reader_obj,option_obj,resolution):
+		self.fit_obj=fF(reader_obj,option_obj)
+		self.SetFFun(option_obj)
+		self.num_params=option_obj.num_params
+		self.num_points_per_dim=resolution
+		self.min_max=option_obj.boundaries
+		self.bounder=SetBoundaries(option_obj.boundaries)
+
+	def Optimize(self,optimals):
+		"""
+		Performs the optimization.
+		"""
+
+		self.solutions=[[],[]]
+		_o=copy.copy(optimals)
+		_o=normalize(_o, self)
+		points=[]
+		fitness=[]
+		tmp1=[]
+		tmp2=[]
+		for n in range(self.num_params):
+			for c in frange(0,1, float(1)/self.num_points_per_dim):
+				_o[n]=c
+				tmp1.append(self.fit_obj.ReNormalize(_o))
+				tmp2.append(self.ffun([_o],{}))
+			points.append(tmp1)
+			tmp1=[]
+			fitness.append(tmp2)
+			tmp2=[]
+			_o=copy.copy(optimals)
+			_o=normalize(_o, self)
+		self.solutions[0]=points
+		self.solutions[1]=fitness
+		
+
+class CES_INSPYRED(InspyredAlgorithmBasis):
+	"""
+	Implements a custom version of ``Evolution Strategy`` algorithm for minimization from the ``inspyred`` package.
+	:param reader_obj: an instance of ``DATA`` object
+	:param option_obj: an instance of ``optionHandler`` object
+	.. note::
+		The changed parameters compared to the defaults are the following:
+			* replacer: genrational_replacement
+			* variator: gaussian_mutation, blend_crossover
+	.. seealso::
+		Documentation of the options from 'inspyred':
+			http://inspyred.github.io/reference.html#module-inspyred.ec
+	"""
+	def __init__(self, reader_obj,  option_obj):
+		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.evo_strat=self.inspyred.ec.ES(self.rand)
+
+class DE_INSPYRED(InspyredAlgorithmBasis):
+	"""
+	Implements the ``Differential Evolution Algorithm`` algorithm for minimization from the ``inspyred`` package.
+	:param reader_obj: an instance of ``DATA`` object
+	:param option_obj: an instance of ``optionHandler`` object
+	.. seealso::
+		Documentation of the options from 'inspyred':
+			http://inspyred.github.io/reference.html#module-inspyred.ec
+	"""
+	def __init__(self, reader_obj,  option_obj):
+		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.evo_strat=self.inspyred.ec.DEA(self.rand)
+
+class EDA_INSPYRED(InspyredAlgorithmBasis):
+	"""
+	Implements the ``Estimation of Distribution Algorithm`` algorithm for minimization from the ``inspyred`` package.
+	:param reader_obj: an instance of ``DATA`` object
+	:param option_obj: an instance of ``optionHandler`` object
+	.. seealso::
+		Documentation of the options from 'inspyred':
+			http://inspyred.github.io/reference.html#module-inspyred.ec
+	"""
+	def __init__(self, reader_obj,  option_obj):
+		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.evo_strat=self.inspyred.ec.EDA(self.rand)
+
+class PSO_INSPYRED(InspyredAlgorithmBasis):
+	"""
+	Implements the ``Particle Swarm`` algorithm for minimization from the ``inspyred`` package.
+	:param reader_obj: an instance of ``DATA`` object
+	:param option_obj: an instance of ``optionHandler`` object
+	.. seealso::
+		Documentation of the Particle Swarm from 'inspyred':
+			http://pythonhosted.org/inspyred/reference.html
+	"""
+	def __init__(self, reader_obj,  option_obj):
+		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.evo_strat=self.inspyred.swarm.PSO(self.rand)
+
+
+class NSGA2_INSPYRED(InspyredAlgorithmBasis):
+	"""
+	Implements the ``Non-Dominated Genetic Algorithm`` algorithm for minimization from the ``inspyred`` package.
+	:param reader_obj: an instance of ``DATA`` object
+	:param option_obj: an instance of ``optionHandler`` object
+	.. note::
+		The changed parameters compared to the defaults are the following:
+			* replacer: genrational_replacement
+			* variator: gaussian_mutation, blend_crossover
+	.. seealso::
+		Documentation of the options from 'inspyred':
+			http://inspyred.github.io/reference.html#module-inspyred.ec
+	"""
+	def __init__(self, reader_obj,  option_obj):
+		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.kwargs["mp_evaluator"] = self.mfun
+		self.evo_strat=self.inspyred.ec.emo.NSGA2(self.rand)
+		self.evo_strat.replacer=self.inspyred.ec.replacers.nsga_replacement
+		self.evo_strat.variator=[self.inspyred.ec.variators.gaussian_mutation,
+								 self.inspyred.ec.variators.blend_crossover]
+
+class PAES_INSPYRED(InspyredAlgorithmBasis):
+	"""
+	Implements a custom version of ``Pareto Archived Evolution Strategies`` algorithm for minimization from the ``inspyred`` package.
+	:param reader_obj: an instance of ``DATA`` object
+	:param option_obj: an instance of ``optionHandler`` object
+	.. seealso::
+
+		Documentation of the options from 'inspyred':
+			http://inspyred.github.io/reference.html#module-inspyred.ec
+
+	"""
+	def __init__(self, reader_obj,  option_obj):
+		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.kwargs["mp_evaluator"] = self.mfun
+		self.evo_strat=ec.emo.PAES(self.rand)
+		self.evo_strat.replacer=inspyred.ec.replacers.paes_replacement
+		self.evo_strat.variator=[variators.gaussian_mutation,
+								 variators.blend_crossover]
+		#self.kwargs['num_elites'] = int(4)
+
+class SA_INSPYRED(InspyredAlgorithmBasis):
+	"""
+	Implements the ``Simulated Annealing`` algorithm for minimization from the ``inspyred`` package.
+	:param reader_obj: an instance of ``DATA`` object
+	:param option_obj: an instance of ``optionHandler`` object
+	.. seealso::
+
+		Documentation of the Simulated Annealing from 'inspyred':
+			http://inspyred.github.io/reference.html#replacers-survivor-replacement-methods
+
+
+	"""
+	def __init__(self, reader_obj,  option_obj):
+		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
+		self.evo_strat=self.inspyred.ec.SA(self.rand)
+	
 
 class IBEA_BLUEPYOPT(BluepyoptAlgorithmBasis):
 	def __init__(self, reader_obj,  option_obj):
@@ -1316,3 +1048,36 @@ class NSGA2_BLUEPYOPT(BluepyoptAlgorithmBasis):
 	def __init__(self, reader_obj,  option_obj):
 		BluepyoptAlgorithmBasis.__init__(self, reader_obj,  option_obj)
 		self.selector_name = "NSGA2"
+
+class CMAES_CMAES(baseOptimizer):
+	def __init__(self, reader_obj,  option_obj):
+		baseOptimizer.__init__(self, reader_obj,  option_obj)
+		self.algo_params = copy.copy(option_obj.algorithm_parameters)
+		self.size_of_population = self.algo_params.pop("size_of_population")
+		self.number_of_generations = self.algo_params.pop("number_of_generations")
+		self.number_of_cpu = int(self.algo_params.pop("number_of_cpu",1))
+		self.stat_file = open(self.directory + "/stat_file.txt", "w")
+		self.ind_file = open(self.directory + "/ind_file.txt", "w")
+		self.solutions = []
+		if option_obj.starting_points:
+			self.starting_points = [normalize(option_obj.starting_points, self)]
+		else:
+			self.starting_points = np.ones(len(self.min_max[0]))*0.5
+		from cmaes import CMA
+		self.cmaoptimizer = CMA(mean=(self.starting_points), **self.algo_params, seed=1234, population_size=int(self.size_of_population), bounds=np.array([[0,1]]*len(self.min_max[0])))
+		
+				
+	def Optimize(self):
+			"""
+			Performs the optimization.
+			"""
+			with Pool(int(self.number_of_cpu)) as pool:
+				for generation in range(int(self.number_of_generations)):
+					print("Generation: {0}".format(generation+1))
+					solutions = []
+					candidate = [[self.cmaoptimizer.ask()] for _ in range(self.cmaoptimizer.population_size)]
+					fitness = pool.map(self.ffun,candidate)
+					solutions=[(pop[0], fit[0]) for pop,fit in zip(candidate,fitness)]
+					self.cmaoptimizer.tell(solutions)
+					[self.solutions.append(my_candidate(c[0],f)) for c,f in zip(candidate,fitness)]
+	
