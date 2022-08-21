@@ -487,13 +487,13 @@ class traceWriter(Trace):
         """
         if self.flag_m==1:
             for f_n in self.no_traces:
-                f=open(self.path[f_n],'w')
+                f=open(self.path[f_n],'w+')
                 f.write(self.comment)
                 if self.flag_w==1:
                     f.write(str(self.scale) + " " + str(self.t_length) + " " + str(self.freq) + "\n")
                 f.write(self.GetTrace(f_n))
         else:
-            f=open(self.path[0],'w')
+            f=open(self.path[0],'w+')
             f.write(self.comment+"\n")
             if self.flag_w==1:
                 f.write(str(self.scale) + " " + str(self.t_length) + " " + str(self.freq) + "\n")

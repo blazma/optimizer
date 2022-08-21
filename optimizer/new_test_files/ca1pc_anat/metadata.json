@@ -1,0 +1,64 @@
+{
+    "model": "morphology_131117-C2",
+    "optimization": {
+        "final_fitness": [
+            NaN
+        ],
+        "optimal_params": [
+            10.0,
+            3000.0,
+            0.0006584412998002867
+        ]
+    },
+    "parameters": [
+        {
+            "name": "cm",
+            "min_boundary": "1.0",
+            "max_boundary": "10.0",
+            "optimum": "10.0"
+        },
+        {
+            "name": "Ra",
+            "min_boundary": "30.0",
+            "max_boundary": "3000.0",
+            "optimum": "3000.0"
+        },
+        {
+            "name": "g_pas",
+            "min_boundary": "1e-05",
+            "max_boundary": "0.01",
+            "optimum": "0.0006584412998002867"
+        }
+    ],
+    "error_function": [
+        {
+            "name": "MSE",
+            "value": "nan",
+            "weight": "0.5",
+            "weighted_value": "nan"
+        },
+        {
+            "name": "Latency to 1st spike",
+            "value": "1",
+            "weight": "0.5",
+            "weighted_value": "0.5"
+        }
+    ],
+    "algorithm": {
+        "CMAES - Cmaes": {
+            "number_of_generations": 10,
+            "size_of_population": 10,
+            "number_of_cpu": 2,
+            "sigma": 2
+        }
+    },
+    "target_data": {
+        "data_type": "voltage",
+        "file_name": "131117-C2_short.dat",
+        "number_of_traces": 1,
+        "stim_delay": 0.0,
+        "stim_duration": 1000000000.0,
+        "length_ms": 1500.0,
+        "sampling_frequency": 20000.0
+    }
+}

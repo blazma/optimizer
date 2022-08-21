@@ -1,1 +1,10 @@
-0, 10, 0.22021683810851067, 0.0012197826199047735, 0.00486448316250661, 0.030918080627666773, 0.06513317505852254
+1, 10, nan, nan, nan, nan, nan 
+2, 10, nan, nan, nan, nan, nan 
+3, 10, nan, nan, nan, nan, nan 
+4, 10, nan, nan, nan, nan, nan 
+5, 10, nan, nan, nan, nan, nan 
+6, 10, nan, nan, nan, nan, nan 
+7, 10, nan, nan, nan, nan, nan 
+8, 10, nan, nan, nan, nan, nan 
+9, 10, nan, nan, nan, nan, nan 
+10, 10, nan, nan, nan, nan, nan 

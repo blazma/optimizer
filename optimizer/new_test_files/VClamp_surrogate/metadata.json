@@ -1,0 +1,65 @@
+{
+    "model": "simple_hh_syn_vclamp_toopt2",
+    "optimization": {
+        "final_fitness": [
+            0.0018828738574066255
+        ],
+        "optimal_params": [
+            0.008282187570781467,
+            1.9271875224508073,
+            0.7453777776972322,
+            1.393859572999435
+        ]
+    },
+    "parameters": [
+        {
+            "name": "weight",
+            "min_boundary": "0.001",
+            "max_boundary": "1.0",
+            "optimum": "0.008282187570781467"
+        },
+        {
+            "name": "delay",
+            "min_boundary": "0.0",
+            "max_boundary": "5.0",
+            "optimum": "1.9271875224508073"
+        },
+        {
+            "name": "tau_rise",
+            "min_boundary": "0.001",
+            "max_boundary": "1.0",
+            "optimum": "0.7453777776972322"
+        },
+        {
+            "name": "tau_decay",
+            "min_boundary": "0.1",
+            "max_boundary": "5.0",
+            "optimum": "1.393859572999435"
+        }
+    ],
+    "error_function": [
+        {
+            "name": "MSE",
+            "value": "0.0018828738574066255",
+            "weight": "1.0",
+            "weighted_value": "0.0018828738574066255"
+        }
+    ],
+    "algorithm": {
+        "CMAES - Cmaes": {
+            "number_of_generations": 20,
+            "size_of_population": 12,
+            "number_of_cpu": 3,
+            "sigma": 3
+        }
+    },
+    "target_data": {
+        "data_type": "voltage",
+        "file_name": "iclamp_new.dat",
+        "number_of_traces": 1,
+        "stim_delay": 1.0,
+        "stim_duration": 1.0,
+        "length_ms": 500.0,
+        "sampling_frequency": 40000.0
+    }
+}

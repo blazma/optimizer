@@ -183,7 +183,7 @@ class fF(object):
             self.model.record[0] = []
             print('PID ', pid, ' ************')
             
-            with open(self.option.base_dir + "/params" + unique_ID + ".param" , "w") as out_handler:
+            with open(self.option.base_dir + "/params" + unique_ID + ".param" , "w+") as out_handler:
                 for c in candidates:
                     out_handler.write(str(c) + "\n")
                 out_handler.write(str(act_trace_idx))
@@ -1159,12 +1159,12 @@ class fF(object):
                         for f, w in zip(features, weigths):
                             if abs(len(self.model.record[0])-len(self.reader.data.GetTrace(k)))>1:
                                 raise sizeError("model: " + str(len(self.model.record[0])) + ", target: " + str(len(self.reader.data.GetTrace(k))))
-                            temp_fit.append((f(self.model.record[0],
+                            temp_fit.append(w * (f(self.model.record[0],
                                                               self.reader.data.GetTrace(k), args)))
 
                     else:
                         for f, w in zip(features, weigths):
-                            temp_fit.append(self.FFun_for_Features(self.model.record[0],
+                            temp_fit.append(w * self.FFun_for_Features(self.model.record[0],
                                                                 self.reader.features_data, f, k, args))
                 else:
                         temp_fit.append(0)
@@ -1176,3 +1176,4 @@ class fF(object):
                 "Deletes the reference of the instance"
                 del self.model
         return self.fitnes
+

@@ -1,8 +1,10 @@
 
 import time
+import os
 import re
 import collections
 import json
+import numpy as np
 
 class OrderedSet(collections.MutableSet):
 
@@ -140,10 +142,10 @@ class optionHandler(object):
 		post=dir(self)
 		self.class_content=list(OrderedSet(post)-OrderedSet(prev))
 			
-		self.algorithm_parameters_dict=json.load(open("algorithm_parameters.json", "r"))
+		self.algorithm_parameters_dict=json.load(open(os.path.dirname(os.path.abspath(__file__))+"/algorithm_parameters.json", "r"))
 
 
-	def create_dict_for_json(self,f_mapper):
+	def CreateDictForJson(self,f_mapper):
 		json_dict={}
 		for m in self.class_content:
 			if m=="feats":
@@ -157,7 +159,7 @@ class optionHandler(object):
 		return {"selectable_algorithms":self.algorithm_parameters_dict,"attributes":json_dict}
 
 
-	def read_all_json(self,settings):
+	def ReadJson(self,settings):
 		for key, value in settings.items():
 			self.__setattr__(key,value)
 		if isinstance(self.current_algorithm, str):
@@ -165,7 +167,9 @@ class optionHandler(object):
 			self.algorithm_parameters=self.algorithm_parameters_dict[self.algorithm_name]
 		else:
 			self.algorithm_name=re.sub('_+',"_",re.sub("[\(\[].*?[\)\]]", "", list(self.current_algorithm.keys())[0]).replace("-","_").replace(" ","_")).upper()
-			self.algorithm_parameters=list(self.current_algorithm.values())[0]
+			self.algorithm_parameters=self.algorithm_parameters_dict[self.algorithm_name]
+			self.algorithm_parameters.update(list(self.current_algorithm.values())[0])
+			print(self.algorithm_parameters)
 		
 
 
@@ -448,3 +452,29 @@ class optionHandler(object):
 		:param options: a real value
 		"""
 		self.param_vals.append(options)#float list, with all the values which selected for optimization
+
+	def WriteStatFile(self, solutions_by_generation):
+		with open(self.base_dir+"/stat_file.txt",'w+') as stat_file:
+					for idx,current_generation in enumerate(solutions_by_generation):
+						generation_fitness = [x.fitness for x in current_generation]
+						stat_file.write("{0}, {1}, {2}, {3}, {4}, {5}, {6} \n".format(
+							idx+1, len(current_generation), np.max(generation_fitness),
+								np.min(generation_fitness), np.median(generation_fitness),
+								np.mean(generation_fitness), np.std(generation_fitness)))
+
+	def WriteIndFile(self, solutions_by_generation):
+		with open(self.base_dir+"/ind_file.txt","w+") as ind_file:
+			for number_of_generation,population in enumerate(solutions_by_generation):
+					for number_of_individual,solution in enumerate(population):
+						ind_file.write("{0}, {1}, {2}, {3} \n".format(number_of_generation,number_of_individual,solution.fitness,solution.candidate))
+
+	def ReadIndFile(self): 
+		from optimizerHandler import my_candidate
+		solutions = []
+		with open(self.base_dir+"/ind_file.txt","r") as ind_file:
+			for line in ind_file:
+				solution = json.loads("["+line+"]")
+				candidate=solution[3]
+				fitness=solution[2]
+				solutions.append(my_candidate(candidate[:self.num_params],fitness))
+		return solutions

@@ -46,6 +46,8 @@ class coreModul():
 		self.optimal_params=None
 		self.wfits = []
 		self.wfits2 = []
+		self.cands = []
+		self.fits = []
 		f_m={"MSE": "calc_ase",
 						"Spike count": "calc_spike",
 						"MSE (excl. spikes)": "calc_spike_ase",
@@ -302,7 +304,7 @@ class coreModul():
 		then it re-samples the input using linear interpolation to create more points.
 		Currently running a simulation with lower sampling rate than the input trace is not supported!
 		After storing the necessary settings the ``optimizer`` object is initialized and the optimization is performed.
-		The raw results are stored in the ``final_pop`` variable in the ``optimizer`` object.
+		The raw results are stored in the ``solutions`` variable in the ``optimizer`` object.
 
 		:param args: a dictionary containing the following keys:
 
@@ -327,24 +329,6 @@ class coreModul():
 					* pop_size
 					* num_params
 					* boundaries
-
-				optional parameters belonging to the different algorithms (see the optimizerHandler module for more)
-					* max_evaluation
-					* mutation_rate
-					* cooling_rate
-					* m_gauss
-					* std_gauss
-					* schedule
-					* init_temp
-					* final_temp
-					* acc
-					* dwell
-					* x_tol
-					* f_tol
-			* inertia
-			* social_rate
-			* cognitive_rate
-			* neighoborhood_size
 				optional parameter shared by every algorithm
 					* starting_points
 		"""
@@ -352,7 +336,6 @@ class coreModul():
 		if args!=None:
 			self.option_handler.SetModelRun(args.get("runparam"))
 			fit_par=[]
-			#fit_par.append(args.get("ffun",[]))
 			fit_par.append(args.get("feat",[]))
 			fit_par.append(args.get("weights",[]))
 			self.option_handler.SetFitnesParam(fit_par)
@@ -401,8 +384,8 @@ class coreModul():
 			self.option_handler.feat_str=", ".join(self.option_handler.feats)
 
 		if self.option_handler.algorithm_name != "SINGLERUN":
-			with open(self.option_handler.GetFileOption()+"/"+self.option_handler.GetFileOption().split("/")[-1]+"_settings.json", 'w') as outfile:
-				json.dump(self.option_handler.create_dict_for_json(self.ffun_mapper), outfile,sort_keys=True, indent=4)
+			with open(self.option_handler.GetFileOption()+"/"+self.option_handler.GetFileOption().split("/")[-1]+"_settings.json", 'w+') as outfile:
+				json.dump(self.option_handler.CreateDictForJson(self.ffun_mapper), outfile,sort_keys=True, indent=4)
 				
 			try:
 				if(self.option_handler.simulator == 'Neuron'):
@@ -413,38 +396,33 @@ class coreModul():
 			start_time=time.time()
 			self.optimizer.Optimize()
 			stop_time=time.time()
-
+			self.solutions_by_generations = []
 			if self.option_handler.algorithm_name.split("_")[-1] != "INSPYRED":
 				try:
 					os.remove(self.optimizer.directory + '/stat_file.txt')
 					os.remove(self.optimizer.directory + '/ind_file.txt')
 				except OSError:
 					pass
-				generation_fitness = []
-				with open(self.optimizer.directory+"/ind_file.txt","w") as ind_file:
-					number_of_individual = 1
-					number_of_generation = 1
-					current_population = []
-					for idx,solution in enumerate(self.optimizer.solutions):
-						current_population.append(solution.fitness)
-						if idx+1 % self.optimizer.size_of_population:
-							generation_fitness.append(current_population)
-							current_population = []
-							number_of_individual = 1
-							number_of_generation += 1 
-						ind_file.write("{0}, {1}, {2}, {3} \n".format(number_of_generation, number_of_individual ,solution.candidate,solution.fitness))
-				with open(self.optimizer.directory+"/stat_file.txt",'w') as stat_file:
-					for idx,current_generation in enumerate(generation_fitness):
-						stat_file.write("{0}, {1}, {2}, {3}, {4}, {5}, {6} \n".format(
-							idx+1, int(self.optimizer.size_of_population), np.max(current_generation),
-								np.min(current_generation), np.median(current_generation),
-								np.mean(current_generation), np.std(current_generation)))
+				current_population = []
+				for idx,solution in enumerate(self.optimizer.solutions):
+					current_population.append(solution)
+					if not (idx+1)%self.optimizer.size_of_population:
+						self.solutions_by_generations.append(current_population)
+						current_population = []
+				self.option_handler.WriteIndFile(self.solutions_by_generations)
+				self.option_handler.WriteStatFile(self.solutions_by_generations)
+			else:
+				self.optimizer.solutions = self.option_handler.ReadIndFile()
+				
 
 			self.cands = [x.candidate for x in self.optimizer.solutions]
 			self.fits = [x.fitness for x in self.optimizer.solutions]
 			min_sol=min(self.optimizer.solutions, key=lambda x:x.fitness)
 			self.best_cand = min_sol.candidate
-			self.best_fit = min_sol.fitness 
+			if isinstance(min_sol.fitness,list):
+				self.best_fit = sum(min_sol.fitness) 
+			else:
+				self.best_fit = min_sol.fitness
 			print((self.best_cand, "CANDS"))
 			print((self.best_fit, "FITS"))
 			print(("Optimization lasted for ", stop_time-start_time, " s"))	
@@ -471,7 +449,7 @@ class coreModul():
 			
 		for k in range(k_range):
 			self.error_comps.append(self.optimizer.fit_obj.getErrorComponents(k, self.optimizer.fit_obj.model_trace[k]))
-			trace_handler=open("result_trace"+str(k)+".txt","w")
+			trace_handler=open("result_trace"+str(k)+".txt","w+")
 			for l in self.optimizer.fit_obj.model_trace[k]:
 				trace_handler.write(str(l))
 				trace_handler.write("\n")
@@ -482,7 +460,7 @@ class coreModul():
 			self.optimizer.fit_obj.model.record[0]=[]
 
 		self.name=self.option_handler.model_path.split("/")[-1].split(".")[0]
-		f_handler=open(self.name+"_results.html","w")
+		f_handler=open(self.name+"_results.html","w+")
 		tmp_str="<!DOCTYPE html>\n<html>\n<body>\n"
 		tmp_str+=self.htmlStr(str(time.asctime( time.localtime(time.time()) )))+"\n"
 		tmp_str+="<p>"+self.htmlStyle("Optimization of <b>"+self.name+".hoc</b> based on: "+self.option_handler.input_dir,self.htmlAlign("center"))+"</p>\n"
@@ -565,11 +543,11 @@ class coreModul():
 							pt["Feature"]=x
 							amp_dict[amp].append(sorted(pt))
 				json_var["target_data"].update({"stim_amp":amp_dict})
-			with open('metadata.json', 'w') as outfile:
+			with open('metadata.json', 'w+') as outfile:
 				json.dump(json_var, outfile, indent=4)
 		else:
 			json_var["target_data"].update({"length_ms":self.data_handler.data.t_length,"sampling_frequency":self.data_handler.data.freq})
-			with open('metadata.json', 'w') as outfile:
+			with open('metadata.json', 'w+') as outfile:
 				json.dump(json_var, outfile, indent=4)
 			
 		

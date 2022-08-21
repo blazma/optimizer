@@ -16,7 +16,7 @@
             0.01,
             0.0001,
             3.0,
-            0.002918006461030755
+            1e-05
         ]
     },
     "parameters": [
@@ -90,7 +90,7 @@
             "name": "gbar_kd 11",
             "min_boundary": "1e-05",
             "max_boundary": "0.01",
-            "optimum": "0.002918006461030755"
+            "optimum": "1e-05"
         }
     ],
     "error_function": [
@@ -215,7 +215,14 @@
             "weighted_value": "12.5"
         }
     ],
-    "algorithm": "CMAES_CMAES",
+    "algorithm": {
+        "CMAES - Cmaes": {
+            "number_of_generations": 4,
+            "size_of_population": 4,
+            "number_of_cpu": 4,
+            "sigma": 4
+        }
+    },
     "target_data": {
         "data_type": "features",
         "file_name": "opt_data_JMakara_OUR_features_selected_stim.json",

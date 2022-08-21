@@ -2,12 +2,12 @@
     "model": "hh_pas",
     "optimization": {
         "final_fitness": [
-            0.035781975028201636
+            0.03280067622997625
         ],
         "optimal_params": [
-            0.15871531039183628,
-            0.037426795784112,
-            0.000895002988739111
+            0.6367727607080939,
+            0.12993318519054758,
+            0.0009696636991565608
         ]
     },
     "parameters": [
@@ -15,39 +15,41 @@
             "name": "soma 0 hh gnabar_hh",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.15871531039183628"
+            "optimum": "0.6367727607080939"
         },
         {
             "name": "soma 0 hh gkbar_hh",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.037426795784112"
+            "optimum": "0.12993318519054758"
         },
         {
             "name": "soma 0 hh gl_hh",
             "min_boundary": "1e-05",
             "max_boundary": "0.001",
-            "optimum": "0.000895002988739111"
+            "optimum": "0.0009696636991565608"
         }
     ],
     "error_function": [
         {
             "name": "MSE",
-            "value": "0.04339493597189623",
+            "value": "0.050895470107011315",
             "weight": "0.5",
-            "weighted_value": "0.021697467985948116"
+            "weighted_value": "0.025447735053505657"
         },
         {
             "name": "Spike count",
-            "value": "0.028169014084507043",
+            "value": "0.014705882352941176",
             "weight": "0.5",
-            "weighted_value": "0.014084507042253521"
+            "weighted_value": "0.007352941176470588"
         }
     ],
     "algorithm": {
-        "nm_scipy": {
-            "number_of_generations": 5,
-            "size_of_population": 5
+        "CMAES - Cmaes": {
+            "number_of_generations": 10,
+            "size_of_population": 10,
+            "number_of_cpu": 1,
+            "sigma": 1
         }
     },
     "target_data": {
