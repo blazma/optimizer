@@ -458,7 +458,7 @@ class optionHandler(object):
 					for idx,current_generation in enumerate(solutions_by_generation):
 						generation_fitness = [x.fitness for x in current_generation]
 						stat_file.write("{0}, {1}, {2}, {3}, {4}, {5}, {6} \n".format(
-							idx+1, len(current_generation), np.max(generation_fitness),
+							idx, len(current_generation), np.max(generation_fitness),
 								np.min(generation_fitness), np.median(generation_fitness),
 								np.mean(generation_fitness), np.std(generation_fitness)))
 
@@ -468,10 +468,10 @@ class optionHandler(object):
 					for number_of_individual,solution in enumerate(population):
 						ind_file.write("{0}, {1}, {2}, {3} \n".format(number_of_generation,number_of_individual,solution.fitness,solution.candidate))
 
-	def ReadIndFile(self): 
+	def ReadIndFile(self, ind_file_path): 
 		from optimizerHandler import my_candidate
 		solutions = []
-		with open(self.base_dir+"/ind_file.txt","r") as ind_file:
+		with open(ind_file_path,"r") as ind_file:
 			for line in ind_file:
 				solution = json.loads("["+line+"]")
 				candidate=solution[3]

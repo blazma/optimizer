@@ -58,7 +58,6 @@ class coreModul():
 						"AHP depth": "AHP_depth",
 						"AP width": "AP_width",
 						"Derivative difference" : "calc_grad_dif"}
-						#"PPTD" : "pyelectro_pptd"}
 		self.ffun_mapper=dict((v,k) for k,v in list(f_m.items()))
 		self.ffun_calc_list=["MSE",
 						"MSE (excl. spikes)",
@@ -70,7 +69,6 @@ class coreModul():
 						"AHP depth",
 						"AP width",
 						"Derivative difference"]
-						#"PPTD"]
 		self.grid_result=None
 
 	def htmlStrBold(self,inp):
@@ -396,33 +394,30 @@ class coreModul():
 			start_time=time.time()
 			self.optimizer.Optimize()
 			stop_time=time.time()
+			if isinstance(self.optimizer.solutions[0].fitness,list):
+				for solution in self.optimizer.solutions:
+					solution.fitness = numpy.average(solution.fitness, weights = self.option_handler.weights)
 			self.solutions_by_generations = []
-			if self.option_handler.algorithm_name.split("_")[-1] != "INSPYRED":
-				try:
-					os.remove(self.optimizer.directory + '/stat_file.txt')
-					os.remove(self.optimizer.directory + '/ind_file.txt')
-				except OSError:
-					pass
-				current_population = []
-				for idx,solution in enumerate(self.optimizer.solutions):
-					current_population.append(solution)
-					if not (idx+1)%self.optimizer.size_of_population:
-						self.solutions_by_generations.append(current_population)
-						current_population = []
-				self.option_handler.WriteIndFile(self.solutions_by_generations)
-				self.option_handler.WriteStatFile(self.solutions_by_generations)
-			else:
-				self.optimizer.solutions = self.option_handler.ReadIndFile()
-				
+			try:
+				os.remove(self.optimizer.directory + '/stat_file.txt')
+				os.remove(self.optimizer.directory + '/ind_file.txt')
+			except OSError:
+				pass
+			current_population = []
+			for idx,solution in enumerate(self.optimizer.solutions):
+				current_population.append(solution)
+				if not (idx+1)%self.optimizer.size_of_population:
+					self.solutions_by_generations.append(current_population)
+					current_population = []
+			self.option_handler.WriteIndFile(self.solutions_by_generations)
+			self.option_handler.WriteStatFile(self.solutions_by_generations)
 
 			self.cands = [x.candidate for x in self.optimizer.solutions]
 			self.fits = [x.fitness for x in self.optimizer.solutions]
+
 			min_sol=min(self.optimizer.solutions, key=lambda x:x.fitness)
+			self.best_fit = min_sol.fitness
 			self.best_cand = min_sol.candidate
-			if isinstance(min_sol.fitness,list):
-				self.best_fit = sum(min_sol.fitness) 
-			else:
-				self.best_fit = min_sol.fitness
 			print((self.best_cand, "CANDS"))
 			print((self.best_fit, "FITS"))
 			print(("Optimization lasted for ", stop_time-start_time, " s"))	

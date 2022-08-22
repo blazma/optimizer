@@ -2,12 +2,12 @@
     "model": "hh_pas",
     "optimization": {
         "final_fitness": [
-            0.03280067622997625
+            0.013320880614203072
         ],
         "optimal_params": [
-            0.6367727607080939,
-            0.12993318519054758,
-            0.0009696636991565608
+            0.22749242525210425,
+            0.05324670582818407,
+            1e-05
         ]
     },
     "parameters": [
@@ -15,41 +15,39 @@
             "name": "soma 0 hh gnabar_hh",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.6367727607080939"
+            "optimum": "0.22749242525210425"
         },
         {
             "name": "soma 0 hh gkbar_hh",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.12993318519054758"
+            "optimum": "0.05324670582818407"
         },
         {
             "name": "soma 0 hh gl_hh",
             "min_boundary": "1e-05",
             "max_boundary": "0.001",
-            "optimum": "0.0009696636991565608"
+            "optimum": "1e-05"
         }
     ],
     "error_function": [
         {
             "name": "MSE",
-            "value": "0.050895470107011315",
+            "value": "0.026641761228406145",
             "weight": "0.5",
-            "weighted_value": "0.025447735053505657"
+            "weighted_value": "0.013320880614203072"
         },
         {
             "name": "Spike count",
-            "value": "0.014705882352941176",
+            "value": "0.0",
             "weight": "0.5",
-            "weighted_value": "0.007352941176470588"
+            "weighted_value": "0.0"
         }
     ],
     "algorithm": {
-        "CMAES - Cmaes": {
+        "psog_pygmo": {
             "number_of_generations": 10,
-            "size_of_population": 10,
-            "number_of_cpu": 1,
-            "sigma": 1
+            "size_of_population": 10
         }
     },
     "target_data": {

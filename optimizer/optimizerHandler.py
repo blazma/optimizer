@@ -193,19 +193,18 @@ class InspyredAlgorithmBasis(baseOptimizer):
 		baseOptimizer.__init__(self, reader_obj,  option_obj)
 		import inspyred
 		self.inspyred = inspyred
+		self.option_obj = option_obj
 		self.bounder = self.inspyred.ec.Bounder([0]*len(option_obj.boundaries[0]),[1]*len(option_obj.boundaries[1]))
 		self.size_of_population = self.algo_params.pop("size_of_population")
 		self.number_of_generations = self.algo_params.pop("number_of_generations")
-		self.stat_file = open(self.directory + "/stat_file.txt", "w+")
-		self.ind_file = open(self.directory + "/ind_file.txt", "w+")
+		self.stat_file = open(self.directory + "/stat_file_inspyred.txt", "w+")
+		self.ind_file = open(self.directory + "/ind_file_inspyred.txt", "w+")
 		self.number_of_cpu = int(self.algo_params.pop("number_of_cpu",1))
 		self.output_level = option_obj.output_level
 		self.solutions = []
 		self.starting_points = None
 		if self.output_level == "1":
 			print("starting points: ", self.starting_points)
-		from functools import partial
-		#self.ffun=partial(self.ffun, self.solutions)
 		self.kwargs = dict(generator=uniform,
 						   evaluator=self.inspyred.ec.evaluators.parallel_evaluation_mp,
 						   mp_evaluator=self.ffun,
@@ -243,7 +242,7 @@ class InspyredAlgorithmBasis(baseOptimizer):
 				self.evo_strat.observer=[self.inspyred.ec.observers.file_observer]
 			self.kwargs={k: v for k, v in self.kwargs.items() if v!='None' and v!=None} #maximize equals none can't use if v
 			solution = self.evo_strat.evolve(**self.kwargs, **self.algo_params)
-			self.solutions = [my_candidate(x.candidate[:self.num_obj],x.fitness) for x in solution]
+			self.solutions = self.option_obj.ReadIndFile(self.directory + "/ind_file_inspyred.txt")
 			if hasattr(self.evo_strat, "archive"):
 				self.final_archive = self.evo_strat.archive
 
@@ -306,7 +305,7 @@ class PygmoAlgorithmBasis(baseOptimizer):
 		else:
 			fitfun=self.ffun
 			self.n_obj=1
-		self.prob = self.pg.problem(Problem(fitfun, self.boundaries, self.n_obj, self.size_of_population))		
+		self.prob = self.pg.problem(Problem(fitfun, self.boundaries, self.n_obj, self.size_of_population, self.number_of_cpu))		
 		
 		if self.multiprocessing:
 			self.mpbfe=self.pg.mp_bfe()
@@ -331,12 +330,13 @@ class PygmoAlgorithmBasis(baseOptimizer):
 				self.solutions.extend(uda.solutions)
 		
 class Problem:	
-	def __init__(self, fitnes_fun, bounds, n_obj, size_of_population):
+	def __init__(self, fitnes_fun, bounds, n_obj, size_of_population, number_of_cpu):
 		self.bounds = bounds
 		self.fitnes_fun = fitnes_fun
 		self.n_obj = n_obj
 		self.size_of_population = size_of_population
 		self.solutions = []
+		self.number_of_cpu = number_of_cpu
 
 	def fitness(self, x):
 		fitness = self.fitnes_fun([x])
@@ -348,7 +348,7 @@ class Problem:
 	def batch_fitness(self, x):
 		n = int(len(x)/self.size_of_population)
 		x_chunks=[[x[i:i + n]] for i in range(0, len(x), n)]
-		with Pool(3) as pool:
+		with Pool(self.number_of_cpu) as pool:
 			fitness = pool.map(self.fitnes_fun,x_chunks)
 			[self.solutions.append(my_candidate(x[0],f[0])) for x,f in zip(x_chunks,fitness)]
 		if self.n_obj > 1:
@@ -395,7 +395,6 @@ class BluepyoptAlgorithmBasis(baseOptimizer):
 		baseOptimizer.__init__(self, reader_obj,  option_obj)
 		import bluepyopt as bpop
 		self.bpop = bpop
-		self.fit_obj = fF(reader_obj,option_obj)
 		self.option_obj = option_obj
 		self.seed = option_obj.seed
 		self.selector_name  =  "IBEA"
@@ -724,6 +723,7 @@ class BH_SCIPY(ScipyAlgorithmBasis):
 		"""
 		Performs the optimization.
 		"""
+		print(dir(self.scipy))
 		self.scipy.optimize.basinhopping(self.wrapper,
 						x0 = self.scipy.ndarray((self.num_params,),buffer=self.scipy.array(self.starting_points),offset=0,dtype=float),
 						niter = self.size_of_population,
@@ -953,11 +953,8 @@ class PAES_INSPYRED(InspyredAlgorithmBasis):
 	def __init__(self, reader_obj,  option_obj):
 		InspyredAlgorithmBasis.__init__(self, reader_obj,  option_obj)
 		self.kwargs["mp_evaluator"] = self.mfun
-		self.evo_strat=ec.emo.PAES(self.rand)
-		self.evo_strat.replacer=inspyred.ec.replacers.paes_replacement
-		self.evo_strat.variator=[variators.gaussian_mutation,
-								 variators.blend_crossover]
-		#self.kwargs['num_elites'] = int(4)
+		self.evo_strat=self.inspyred.ec.emo.PAES(self.rand)
+		self.evo_strat.replacer=self.inspyred.ec.replacers.paes_replacement
 
 class SA_INSPYRED(InspyredAlgorithmBasis):
 	"""

@@ -22,7 +22,7 @@
         "cognitive_rate": null,
         "cooling_rate": null,
         "crossover_rate": null,
-        "current_algorithm":{"ces_inspyred":{"number_of_generations": 10,
+        "current_algorithm":{"psog_pygmo":{"number_of_generations": 10,
             "size_of_population": 10}},
         "f_tol": null,
         "feats": [

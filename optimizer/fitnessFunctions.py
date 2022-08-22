@@ -1,6 +1,5 @@
 from math import fsum, sqrt
 from copy import copy
-from pyelectro import analysis
 from traceHandler import sizeError
 import efel
 import numpy as np
@@ -845,39 +844,6 @@ class fF(object):
 
 
 
-
-    def pyelectro_pptd(self, mod_t, exp_t, args):
-        """
-        Returns error function value from comparison of two phase
-        pptd maps as described by Van Geit 2007.
-
-        :param mod_t: the trace obtained from the model as ``list``
-        :param exp_t: the input trace as ``list``
-        :param args: optional arguments as ``dictionary``
-
-        :return: resulting fitness value
-
-        """
-        t_gen = frange(0, self.option.run_controll_tstop + self.option.run_controll_dt, self.option.run_controll_dt)
-        t = []
-        for n in t_gen:
-            t.append(n)
-        t = t[0:len(exp_t)]
-        mod_t = mod_t[0:len(exp_t)]
-        try:
-            error = analysis.pptd_error(t, mod_t, t, exp_t, dvdt_threshold=None)
-
-            #normalised_error = analysis.normalised_cost_function(error, 0.001)
-
-            Q = 0.001 # from earlier code - its effect should be tested
-            #if Q==None:
-            #Q=7/(300*(target**2))
-            normalised_error=1-1/(Q*(error)**2+1)
-
-            return normalised_error
-
-        except ValueError:
-            return 1
 
     def get_efel_values(self, traces, feature):
 
