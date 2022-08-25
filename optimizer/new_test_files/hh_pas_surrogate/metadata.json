@@ -2,12 +2,12 @@
     "model": "hh_pas",
     "optimization": {
         "final_fitness": [
-            0.013320880614203072
+            0.0007206509036534032
         ],
         "optimal_params": [
-            0.22749242525210425,
-            0.05324670582818407,
-            1e-05
+            0.20999680458418415,
+            0.05384932988477719,
+            0.00014658721434991832
         ]
     },
     "parameters": [
@@ -15,27 +15,27 @@
             "name": "soma 0 hh gnabar_hh",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.22749242525210425"
+            "optimum": "0.20999680458418415"
         },
         {
             "name": "soma 0 hh gkbar_hh",
             "min_boundary": "0.001",
             "max_boundary": "1.0",
-            "optimum": "0.05324670582818407"
+            "optimum": "0.05384932988477719"
         },
         {
             "name": "soma 0 hh gl_hh",
             "min_boundary": "1e-05",
             "max_boundary": "0.001",
-            "optimum": "1e-05"
+            "optimum": "0.00014658721434991832"
         }
     ],
     "error_function": [
         {
             "name": "MSE",
-            "value": "0.026641761228406145",
+            "value": "0.0014413018073068063",
             "weight": "0.5",
-            "weighted_value": "0.013320880614203072"
+            "weighted_value": "0.0007206509036534032"
         },
         {
             "name": "Spike count",
@@ -45,7 +45,7 @@
         }
     ],
     "algorithm": {
-        "psog_pygmo": {
+        "nm_scipy": {
             "number_of_generations": 10,
             "size_of_population": 10
         }

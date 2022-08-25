@@ -251,8 +251,10 @@ class ScipyAlgorithmBasis(baseOptimizer):
 
 	def __init__(self, reader_obj,  option_obj):
 		baseOptimizer.__init__(self, reader_obj,  option_obj)
-		import scipy
-		self.scipy = scipy
+		from scipy import optimize, array, ndarray 
+		self.scipy_optimize = optimize
+		self.scipy_array = array
+		self.scipy_ndarray = ndarray
 		self.solutions = []
 		"""try:
 			if isinstance(option_obj.starting_points[0], list):
@@ -725,8 +727,8 @@ class BH_SCIPY(ScipyAlgorithmBasis):
 		Performs the optimization.
 		"""
 		print(dir(self.scipy))
-		self.scipy.optimize.basinhopping(self.wrapper,
-						x0 = self.scipy.ndarray((self.num_params,),buffer=self.scipy.array(self.starting_points),offset=0,dtype=float),
+		self.scipy_optimize.basinhopping(self.wrapper,
+						x0 = self.scipy_ndarray((self.num_params,),buffer=self.scipy_array(self.starting_points),offset=0,dtype=float),
 						niter = self.size_of_population,
 						minimizer_kwargs={"method":"L-BFGS-B",
 										"jac":False,
@@ -756,7 +758,7 @@ class NM_SCIPY(ScipyAlgorithmBasis):
 	"""
 	def __init__(self, reader_obj,  option_obj):
 		ScipyAlgorithmBasis.__init__(self, reader_obj,  option_obj)
-		self.number_of_generations = self.algo_params.pop("number_of_generations")
+		self.number_of_generations = self.algo_params.pop("maxfev")
 		self.size_of_population = self.algo_params.pop("size_of_population")
 		self.starting_points = uniform(self.rand,{"num_params" : self.num_params,"self": self})
 		if option_obj.output_level=="1":
@@ -768,8 +770,8 @@ class NM_SCIPY(ScipyAlgorithmBasis):
 		Performs the optimization.
 		"""
 		for points in range(int(self.size_of_population)):
-			self.scipy.optimize.minimize(self.wrapper,x0 = self.scipy.ndarray((self.num_params,),
-						buffer = self.scipy.array(self.starting_points),offset = 0,dtype = float),
+			self.scipy_optimize.minimize(self.wrapper,x0 = self.scipy_ndarray((self.num_params,),
+						buffer = self.scipy_array(self.starting_points),offset = 0,dtype = float),
 									  args = ((),),
 									  bounds= [(0,1)]*len(self.boundaries[0]),
 									  method = "Nelder-Mead",
@@ -805,8 +807,8 @@ class L_BFGS_B_SCIPY(ScipyAlgorithmBasis):
 		Performs the optimization.
 		"""
 		for points in range(int(self.size_of_population)):
-			self.scipy.optimize.minimize(self.wrapper,x0 = self.scipy.ndarray((self.num_params,),
-						buffer = self.scipy.array(self.starting_points),offset = 0,dtype = float),
+			self.scipy_optimize.minimize(self.wrapper,x0 = self.scipy_ndarray((self.num_params,),
+						buffer = self.scipy_array(self.starting_points),offset = 0,dtype = float),
 									  args = ((),),
 									  bounds= [(0,1)]*len(self.boundaries[0]),
 									  method = "L-BFGS-B",

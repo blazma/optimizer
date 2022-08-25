@@ -19,7 +19,7 @@
             ]
         ],
         "current_algorithm": {
-            "psog_pygmo": {
+            "nm_scipy": {
                 "number_of_generations": 10,
                 "size_of_population": 10
             }
@@ -88,7 +88,7 @@
             "gtol": 1e-05,
             "interval": 50,
             "maxcor": 10,
-            "maxfun": 15000,
+            "maxfun": 100,
             "maxiter": 10,
             "maxls": 20,
             "niter": 10,
@@ -249,8 +249,9 @@
         "NM_SCIPY": {
             "adaptive": false,
             "fatol": 0.0001,
-            "number_of_generations": 100,
-            "size_of_population": 100,
+            "maxfev": 100,
+            "number_of_generations": 10,
+            "size_of_population": 10,
             "xatol": 0.0001
         },
         "NSGA2_BLUEPYOPT": {
@@ -305,9 +306,9 @@
             "neighb_param": 4,
             "neighb_type": 2,
             "number_of_cpu": 1,
-            "number_of_generations": 10,
+            "number_of_generations": 100,
             "omega": 0.7298,
-            "size_of_population": 10,
+            "size_of_population": 100,
             "variant": 5
         },
         "PSO_INSPYRED": {
