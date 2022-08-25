@@ -415,11 +415,13 @@ class coreModul():
 			self.cands = [x.candidate for x in self.optimizer.solutions]
 			self.fits = [x.fitness for x in self.optimizer.solutions]
 
-			min_sol=min(self.optimizer.solutions, key=lambda x:x.fitness)
+			min_sol = min(self.optimizer.solutions, key=lambda x:x.fitness)
 			self.best_fit = min_sol.fitness
 			self.best_cand = min_sol.candidate
-			print((self.best_cand, "CANDS"))
-			print((self.best_fit, "FITS"))
+			min_ind = self.fits.index(self.best_fit)+1
+			print((self.best_cand, "Best Candidate (Normalized)"))
+			print((self.best_fit, "Best Fitness"))
+			print((min_ind, "INDEX"))
 			print(("Optimization lasted for ", stop_time-start_time, " s"))	
 			self.optimal_params=self.optimizer.fit_obj.ReNormalize(self.best_cand)
 		

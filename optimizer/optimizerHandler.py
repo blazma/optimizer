@@ -67,6 +67,7 @@ def normalize(values,args):
 	return copied_values
 
 
+
 def uniform(random,args):
 	"""
 	Creates random values from a uniform distribution. Used to create initial population.
@@ -271,7 +272,7 @@ class ScipyAlgorithmBasis(baseOptimizer):
 		:return: the return value of the fitness function
 		"""
 		fitness = self.ffun([candidates], args)[0]
-		self.solutions.append(my_candidate(candidates,fitness))
+		self.solutions.append(my_candidate(list(candidates),fitness))
 		return fitness
 			
 
@@ -489,7 +490,7 @@ class RANDOM_SEARCH(baseOptimizer):
 				fitness=pool.map(self.ffun,candidate)
 			except (OSError, RuntimeError) as e:
 				raise
-		self.solutions = [my_candidate(c[0],f) for c,f in zip(candidate,fitness)]
+		self.solutions = [my_candidate(c[0],f[0]) for c,f in zip(candidate,fitness)]
 
 class ABC_PYGMO(PygmoAlgorithmBasis):
 	def __init__(self, reader_obj,  option_obj):
@@ -1003,8 +1004,8 @@ class CMAES_CMAES(baseOptimizer):
 			Performs the optimization.
 			"""
 			with Pool(int(self.number_of_cpu)) as pool:
-				for generation in range(int(self.number_of_generations)):
-					print("Generation: {0}".format(generation+1))
+				for generation in range(int(self.number_of_generations)+1):
+					print("Generation: {0}".format(generation))
 					solutions = []
 					candidate = [[self.cmaoptimizer.ask()] for _ in range(self.cmaoptimizer.population_size)]
 					fitness = pool.map(self.ffun,candidate)

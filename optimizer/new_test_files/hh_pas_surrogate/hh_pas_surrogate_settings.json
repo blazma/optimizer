@@ -19,7 +19,7 @@
             ]
         ],
         "current_algorithm": {
-            "nspso_pygmo": {
+            "psog_pygmo": {
                 "number_of_generations": 10,
                 "size_of_population": 10
             }
@@ -282,9 +282,9 @@
             "leader_selection_range": 2,
             "memory": false,
             "number_of_cpu": 1,
-            "number_of_generations": 10,
+            "number_of_generations": 100,
             "omega": 0.6,
-            "size_of_population": 10,
+            "size_of_population": 100,
             "v_coeff": 0.5
         },
         "PAES_INSPYRED": {
@@ -305,9 +305,9 @@
             "neighb_param": 4,
             "neighb_type": 2,
             "number_of_cpu": 1,
-            "number_of_generations": 100,
+            "number_of_generations": 10,
             "omega": 0.7298,
-            "size_of_population": 100,
+            "size_of_population": 10,
             "variant": 5
         },
         "PSO_INSPYRED": {

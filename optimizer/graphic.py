@@ -705,7 +705,7 @@ class Ui_Neuroptimus(object):
         self.fitlist.horizontalHeader().setStretchLastSection(True)
         self.label_69.setText(_translate("Neuroptimus", "Spike detection tresh. (mV)"))
         self.label_70.setText(_translate("Neuroptimus", "Spike window (ms)"))
-        self.pushButton_normalize.clicked.connect(self.Normalize)
+        self.pushButton_normalize.clicked.connect(self.Fit_normalize)
 
         #runtab 5
         self.tabwidget.setTabText(self.tabwidget.indexOf(self.fittab), _translate("Neuroptimus", "Fitness"))
@@ -1377,7 +1377,7 @@ class Ui_Neuroptimus(object):
             self.fitlist.item(row, 1).setText("0")
         
 
-    def Normalize(self, e):
+    def Fit_normalize(self, e):
         """
         Normalize the weigths of only the selected fitness functions.
         Iterates through all fitness functions and scans the ones contained in the fitness set (selected ones) with an 'if' statement.
@@ -1609,7 +1609,7 @@ class Ui_Neuroptimus(object):
                     else:
                         text += "\n" + param[0] + ": " + param[-1] + "\n" + "\t" + str(k)
         #text += "\n" + "fitness:\n" + "\t" + str(self.core.Neuroptimus.final_pop[0].fitnes)
-        text += "\n" + "fitness:\n" + "\t" + str(self.core.best_fit)
+        text += "\n" + "Fitness:\n" + "\t" + str(self.core.best_fit)
         for curr_label in self.result_labels:
             curr_label.setText(QtCore.QCoreApplication.translate("Neuroptimus", text))
             
