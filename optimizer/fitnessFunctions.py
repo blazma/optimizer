@@ -255,7 +255,21 @@ class fF(object):
             tmp.append(l[i] * (self.option.boundaries[1][i] - self.option.boundaries[0][i]) + self.option.boundaries[0][i])
         return tmp
 
+    def normalize(self, values):
+        """
+        Normalizes the values of the given ``list`` using the defined boundaries.
 
+        :param v: the ``list`` of values
+        :param args: an object which has a ``boundaries`` attribute which consists of two ``lists``
+            each with the same number of values as the given list
+
+        :return: the ``list`` of normalized values
+
+        """
+        tmp = []
+        for i in range(len(values)):
+            tmp.append((values[i]-self.option.boundaries[0][i])/(self.option.boundaries[1][i]-self.option.boundaries[0][i]))
+        return tmp
 
 
     # spike detection

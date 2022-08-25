@@ -50,23 +50,6 @@ except:
 	copyreg.pickle(MethodType, _pickle_method, _unpickle_method)
 
 
-def normalize(values,args):
-	"""
-	Normalizes the values of the given ``list`` using the defined boundaries.
-
-	:param v: the ``list`` of values
-	:param args: an object which has a ``boundaries`` attribute which consists of two ``lists``
-		each with the same number of values as the given list
-
-	:return: the ``list`` of normalized values
-
-	"""
-	copied_values = copy.copy(values)
-	for i in range(len(values)):
-		copied_values[i]=(values[i]-args.boundaries[0][i])/(args.boundaries[1][i]-args.boundaries[0][i])
-	return copied_values
-
-
 
 def uniform(random,args):
 	"""

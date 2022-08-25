@@ -424,8 +424,6 @@ class coreModul():
 			print((min_ind, "INDEX"))
 			print(("Optimization lasted for ", stop_time-start_time, " s"))	
 			self.optimal_params=self.optimizer.fit_obj.ReNormalize(self.best_cand)
-		
-		
 
 	def FourthStep(self,args={}):
 		"""
@@ -436,7 +434,7 @@ class coreModul():
 		A report of the results is generated in the form of a html document.
 		:param args: currently not in use
 		"""
-		self.best_fit=self.optimizer.fit_obj.single_objective_fitness([normalize(self.optimal_params,self.optimizer)],delete_model=False)
+		self.best_fit=self.optimizer.fit_obj.single_objective_fitness([self.optimizer.fit_obj.normalize(self.optimal_params)],delete_model=False)
 		self.final_result=[]
 		self.error_comps=[]
 		if self.option_handler.type[-1]!= 'features':

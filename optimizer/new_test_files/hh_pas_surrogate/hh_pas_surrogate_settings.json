@@ -19,7 +19,7 @@
             ]
         ],
         "current_algorithm": {
-            "nm_scipy": {
+            "psog_pygmo": {
                 "number_of_generations": 10,
                 "size_of_population": 10
             }
@@ -250,8 +250,7 @@
             "adaptive": false,
             "fatol": 0.0001,
             "maxfev": 100,
-            "number_of_generations": 10,
-            "size_of_population": 10,
+            "size_of_population": 100,
             "xatol": 0.0001
         },
         "NSGA2_BLUEPYOPT": {
@@ -306,9 +305,9 @@
             "neighb_param": 4,
             "neighb_type": 2,
             "number_of_cpu": 1,
-            "number_of_generations": 100,
+            "number_of_generations": 10,
             "omega": 0.7298,
-            "size_of_population": 100,
+            "size_of_population": 10,
             "variant": 5
         },
         "PSO_INSPYRED": {
