@@ -16,7 +16,7 @@ from functools import partial
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog , QTableWidgetItem , QSizePolicy , QVBoxLayout, QGroupBox
+from PyQt5.QtWidgets import QToolTip, QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog , QTableWidgetItem , QSizePolicy , QVBoxLayout, QGroupBox
 from PyQt5.QtGui import *
 
 
@@ -32,6 +32,9 @@ def popup(message):
     msg.setInformativeText("")
     msg.setWindowTitle("Warning")
     msg.exec()
+
+
+
 
 
 class Ui_Neuroptimus(object):
@@ -335,12 +338,10 @@ class Ui_Neuroptimus(object):
         self.lineEdit_tstop.setValidator(self.doublevalidator)
         self.label_49 = QtWidgets.QLabel(self.simtab)
         self.label_49.setGeometry(QtCore.QRect(10, 130, 200, 16))
-        font.setWeight(50)
         self.label_49.setFont(font)
         self.label_49.setObjectName("label_49")
         self.label_68 = QtWidgets.QLabel(self.simtab)
         self.label_68.setGeometry(QtCore.QRect(420, 180, 200, 16))
-        font.setWeight(50)
         self.label_68.setFont(font)
         self.label_68.setObjectName("label_68")
         font.setWeight(75)
@@ -355,7 +356,6 @@ class Ui_Neuroptimus(object):
         self.label_51.setObjectName("label_51")
         self.label_52 = QtWidgets.QLabel(self.simtab)
         self.label_52.setGeometry(QtCore.QRect(220, 80, 200, 16))
-        font.setWeight(50)
         self.label_52.setFont(font)
         self.label_52.setObjectName("label_52")
         self.lineEdit_dt = QtWidgets.QLineEdit(self.simtab)
@@ -415,7 +415,13 @@ class Ui_Neuroptimus(object):
         self.pushButton_normalize.setGeometry(QtCore.QRect(220, 50, 80, 22))
         self.pushButton_normalize.setObjectName("pushButton_normalize")
         self.pushButton_normalize.setText("Normalize")
-
+        font.setPointSize(13)
+        font.setWeight(80)
+        QToolTip.setFont(font)
+        self.fittab_help = QtWidgets.QPushButton("?",self.fittab)
+        self.fittab_help.setGeometry(350, 260, 30, 30)
+        self.fittab_help.setStyleSheet("border: 3px solid grey; border-radius: 15px; background-color: #1E90FF; color: white;")
+        self.fittab_help.setFont(font)
         
 
         #run tab 5
@@ -706,6 +712,7 @@ class Ui_Neuroptimus(object):
         self.label_69.setText(_translate("Neuroptimus", "Spike detection tresh. (mV)"))
         self.label_70.setText(_translate("Neuroptimus", "Spike window (ms)"))
         self.pushButton_normalize.clicked.connect(self.Fit_normalize)
+        self.fittab_help.clicked.connect(self.help_popup_fit)
 
         #runtab 5
         self.tabwidget.setTabText(self.tabwidget.indexOf(self.fittab), _translate("Neuroptimus", "Fitness"))
@@ -817,7 +824,14 @@ class Ui_Neuroptimus(object):
             scroll_area.setGeometry(QtCore.QRect(10, 100, 170, 256))
             scroll_area.setWidget(label)
             scroll_area.setWidgetResizable(True)
-    
+
+    def help_popup_fit(self):
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Question)
+        msg.setText("""Normalize button will adjust active fitness weights sum to 1
+        \nFitness functions with 0 values considered as inactive""")
+        msg.exec()
+
 
     def unlocktabs(self): 
         self.tabwidget.setTabEnabled(1,True)
