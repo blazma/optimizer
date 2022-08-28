@@ -13,7 +13,7 @@ import Core
 import numpy
 import os.path
 from functools import partial
-
+import re
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QToolTip, QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog , QTableWidgetItem , QSizePolicy , QVBoxLayout, QGroupBox
@@ -248,6 +248,7 @@ class Ui_Neuroptimus(object):
         self.dd_type.addItem("External (Python)")
         self.dd_type.addItem("External")
         self.dd_type.currentIndexChanged.connect(self.sim_plat)
+        self.dd_type.setToolTip("Simulator type")
         self.lineEdit_folder2 = QtWidgets.QLineEdit(self.modeltab)
         self.lineEdit_folder2.setGeometry(QtCore.QRect(10, 150, 221, 22))
         self.lineEdit_folder2.setObjectName("lineEdit_folder2")
@@ -416,13 +417,16 @@ class Ui_Neuroptimus(object):
         self.pushButton_normalize.setObjectName("pushButton_normalize")
         self.pushButton_normalize.setText("Normalize")
         font.setPointSize(13)
-        font.setWeight(80)
         QToolTip.setFont(font)
-        self.fittab_help = QtWidgets.QPushButton("?",self.fittab)
-        self.fittab_help.setGeometry(350, 260, 30, 30)
-        self.fittab_help.setStyleSheet("border: 3px solid grey; border-radius: 15px; background-color: #1E90FF; color: white;")
-        self.fittab_help.setFont(font)
-        
+        """self.fittab_help_icon = QtWidgets.QLabel("?",self.fittab)
+        self.fittab_help_icon.setGeometry(350, 260, 30, 30)
+        self.fittab_help_icon.setStyleSheet("border: 3px solid grey; border-radius: 15px; background-color: #1E90FF; color: white;")
+        self.fittab_help_icon.setFont(font)
+        self.fittab_help_icon.setAlignment(QtCore.Qt.AlignCenter)
+        self.fittab_help = QtWidgets.QLabel("",self.fittab)
+        self.fittab_help.setGeometry(350, 260, 30, 30)"""
+        self.pushButton_normalize.setToolTip("<p>Rescale the active fitness weights sum to 1</p>")
+        self.fitlist.setToolTip("<p>Fitness functions with 0 weights considered inactive</p>")
 
         #run tab 5
         self.tabwidget.addTab(self.fittab, "")
@@ -712,7 +716,7 @@ class Ui_Neuroptimus(object):
         self.label_69.setText(_translate("Neuroptimus", "Spike detection tresh. (mV)"))
         self.label_70.setText(_translate("Neuroptimus", "Spike window (ms)"))
         self.pushButton_normalize.clicked.connect(self.Fit_normalize)
-        self.fittab_help.clicked.connect(self.help_popup_fit)
+        #self.fittab_help.clicked.connect(self.help_popup_fit)
 
         #runtab 5
         self.tabwidget.setTabText(self.tabwidget.indexOf(self.fittab), _translate("Neuroptimus", "Fitness"))
@@ -723,6 +727,7 @@ class Ui_Neuroptimus(object):
         self.pushButton_31.setEnabled(False)
         self.pushButton_33.setText(_translate("Neuroptimus", "Evaluate"))
         self.pushButton_33.clicked.connect(self.evaluatewindow)
+        self.pushButton_33.setToolTip("Evaluate user defined parameter set")
         self.pushButton_32.setText(_translate("Neuroptimus", "Boundaries"))
         self.pushButton_32.clicked.connect(self.boundarywindow)
         self.label_59.setText(_translate("Neuroptimus", "Algorithms"))
@@ -764,8 +769,7 @@ class Ui_Neuroptimus(object):
                 "Extended Ant Colony (GACO) - Pygmo","Multi-Objective Ant Colony (MACO) - Pygmo","Self-Adaptive DE (SADE) - Pygmo",
                 "Particle Swarm (PSO) - Pygmo","Exponential Natural ES (XNES) - Pygmo",
                 "Simple Genetic Algorithm (SGA) - Pygmo","Covariance Matrix Adaptation ES (CMAES) - Pygmo",
-                "Single Differential Evolution (SDE) - Pygmo","Differential Evolution (DE1220) - Pygmo",
-                "Bee Colony (ABC) - Pygmo","FullGrid - Pygmo","Praxis - Pygmo","Nelder-Mead (NM) - Pygmo"]
+                "Differential Evolution (DE1220) - Pygmo", "Bee Colony (ABC) - Pygmo","Praxis - Pygmo","Nelder-Mead (NM) - Pygmo"] #"FullGrid - Pygmo","Single Differential Evolution (SDE) - Pygmo"
         self.algos={
             'Recommended':self.Recom,
             'Inspyred': self.Inspyred,
@@ -776,6 +780,60 @@ class Ui_Neuroptimus(object):
         for index,item in enumerate(self.Recom): 
             self.algolist.setItem(index, 0, QTableWidgetItem(item))  
         
+        self.algo_param_dict = {"ker" : "Kernel: number of solutions stored in the solution archive.",
+                                "q" : "Convergence speed parameter: this parameter is useful for managing \nthe convergence speed towards the found minima (the smaller the faster).",
+                                "oracle" : "Oracle parameter: this is the oracle parameter used in the penalty method.",
+                                "acc" : "Accuracy parameter: for maintaining a minimum penalty function's values distances.",
+                                "threshold" : "Threshold parameter: when the generations reach the threshold \nthen q is set to 0.01 automatically.",
+                                "n_gen_mark" : "Standard deviations convergence speed parameter: this parameters \ndetermines the convergence speed of the standard deviations values.",
+                                "impstop" : "Improvement stopping criterion: if a positive integer is assigned here, \nthe algorithm will count the runs without improvements, \nif this number will exceed impstop value, the algorithm will be stopped.",
+                                "evalstop" : "Evaluation stopping criterion: same as previous one, but with function evaluations.",
+                                "focus" : "Focus parameter: this parameter makes the search for the optimum greedier \nand more focused on local improvements (the higher the greedier). \nIf the value is very high, the search is more focused around the current best solutions.",
+                                "memory" : " Memory parameter: if true, memory is activated in the algorithm for multiple calls",
+                                "cc"  :  "backward time horizon for the evolution path",
+                                "cs"  :  "makes partly up for the small variance loss in case the indicator is zero",
+                                "c1"  :  "CMAES: learning rate for the rank-one update of the covariance matrix \nNSPSO: magnitude of the force, applied to the particle's velocity, in the direction of its previous best position.",
+                                "cmu"  :  "learning rate for the rank - update of the covariance matrix",
+                                "sigma0"  :  "initial step-size",
+                                "ftol"  :  "stopping criteria on the x tolerance",
+                                "xtol"  :  "stopping criteria on the f tolerance",
+                                "memory"  :  "when true the adapted parameters are not reset between successive calls to the evolve method",
+                                "force_bounds"  :  "when true the box bounds are enforced. The fitness will never be called outside the bounds but the covariance matrix adaptation mechanism will worsen",
+                                "omega"  :  "particles' inertia weight, or alternatively, the constriction coefficient (definition depends on the variant used)",
+                                "eta1"  :  "magnitude of the force, applied to the particle's velocity, in the direction of its previous best position",
+                                "eta2"  :  "magnitude of the force, applied to the particle's velocity, in the direction of the best position in its neighborhood",
+                                "max_vel"  :  "maximum allowed particle velocity (as a fraction of the box bounds)",
+                                "variant"  :  "PSO: algorithm variant to use (one of 1 .. 6) \nDE: mutation variant",
+                                "neighb_type"  :  "swarm topology to use (one of 1 .. 4) [gbest, lbest, Von Neumann, adaptive random]",
+                                "neighb_param"  :  "the neighbourhood parameter. If the lbest topology is selected (neighb_type=2), it represents each particle's indegree (also outdegree) in the swarm topology. Particles have neighbours up to a radius of k = neighb_param / 2 in the ring. If the Randomly-varying neighbourhood topology is selected (neighb_type=4), it represents each particle's maximum outdegree in the swarm topology. The minimum outdegree is 1 (the particle always connects back to itself). If neighb_type is 1 or 3 this parameter is ignored.",
+                                "F" : "weight coefficient",
+                                "CR" : "crossover probability",
+                                "cr" : "crossover probability",
+                                "variant_adptv" : "weight coefficient and crossover probability parameter adaptation scheme to be used (one of 1..2)",
+                                "c2" : "magnitude of the force, applied to the particle's velocity, in the direction of its global best (i.e., leader).",
+                                "chi" : "velocity scaling factor.",
+                                "v_coeff" : "velocity coefficient (determining the maximum allowed particle velocity).",
+                                "leader_selection_range" : "leader selection range parameter (i.e., the leader of each particle is selected among the best).",
+                                "diversity_mechanism" : "the diversity mechanism used to maintain diversity on the Pareto front.",
+                                "cr" : "Crossover probability.",
+                                "eta_c" : "Distribution index for crossover.",
+                                "m" : "Mutation probability.",
+                                "eta_m" : "Distribution index for mutation.",
+                                "eta_c" : "distribution index for “sbx” crossover. This is an inactive parameter if other types of crossovers are selected.",
+                                "m" : "mutation probability.",
+                                "param_m" : "distribution index (“polynomial” mutation), gaussian width (“gaussian” mutation) or inactive (“uniform” mutation)",
+                                "param_s" : "when “truncated” selection is used this indicates the number of best individuals to use. When “tournament” selection is used this indicates the size of the tournament.",
+                                "eta_mu" : "learning rate for mean update ",
+                                "eta_sigma" : "learning rate for step-size update",
+                                "eta_b" : "learning rate for the covariance matrix update",
+                                "fatol"  :  "stopping criteria on the x tolerance",
+                                "xatol"  :  "stopping criteria on the f tolerance",
+                                "mutpb" : "Mutation probability",
+                                "cxpb" : "Crossover probability",
+                                "sigma" : "coordinate wise standard deviation (step size)"
+                                }
+
+
         self.algo_dict=self.core.option_handler.algorithm_parameters_dict.copy()
 
         self.tabwidget.setTabText(self.tabwidget.indexOf(self.results_tab), _translate("Neuroptimus", "Results"))
@@ -1450,6 +1508,8 @@ class Ui_Neuroptimus(object):
             self.algorithm_parameter_list.setItem(0, 1, item2)
             for index, (key, value) in enumerate(aspects.items()):
                 item = QTableWidgetItem(key)
+                if self.algo_param_dict.get(key):
+                    item.setToolTip(str(self.algo_param_dict.get(key)).rjust(30))
                 item.setFlags( QtCore.Qt.ItemIsSelectable |  QtCore.Qt.ItemIsEnabled )      
                 self.algorithm_parameter_list.setItem(index+1, 0, item)     
                 item2 = QTableWidgetItem(str(value))

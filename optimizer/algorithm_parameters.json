@@ -102,16 +102,6 @@
     "DE1220_PYGMO": {
         "number_of_generations": 100,
         "size_of_population": 100,
-        "allowed_variants": [
-            2,
-            3,
-            7,
-            10,
-            13,
-            14,
-            15,
-            16
-        ],
         "variant_adptv": 1,
         "ftol": 1e-06,
         "xtol": 1e-06,
