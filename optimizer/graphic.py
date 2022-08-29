@@ -219,6 +219,7 @@ class Ui_Neuroptimus(object):
         self.modellist = QtWidgets.QTableWidget(self.modeltab)
         self.modellist.setGeometry(QtCore.QRect(10, 200, 441, 261))
         self.modellist.setObjectName("modellist")
+        self.modellist.setToolTip("<p>Select the desired parameters then click the Set button</p>")
         self.pushButton_14 = QtWidgets.QPushButton(self.modeltab)
         self.pushButton_14.setGeometry(QtCore.QRect(240, 150, 80, 22))
         self.pushButton_14.setObjectName("pushButton_14")
