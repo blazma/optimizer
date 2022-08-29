@@ -326,7 +326,7 @@ class Problem:
 
 	def fitness(self, x):
 		fitness = self.fitnes_fun([x])
-		self.solutions.append(my_candidate(x,fitness))
+		self.solutions.append(my_candidate(x,fitness[0]))
 		if self.n_obj > 1:
 			fitness = fitness[0]
 		return fitness

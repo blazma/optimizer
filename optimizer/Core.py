@@ -394,6 +394,7 @@ class coreModul():
 			start_time=time.time()
 			self.optimizer.Optimize()
 			stop_time=time.time()
+			print(self.optimizer.solutions[0].fitness)
 			if isinstance(self.optimizer.solutions[0].fitness,list):
 				for solution in self.optimizer.solutions:
 					solution.fitness = numpy.average(solution.fitness, weights = self.option_handler.weights)

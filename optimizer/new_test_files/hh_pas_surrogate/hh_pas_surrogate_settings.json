@@ -19,7 +19,7 @@
             ]
         ],
         "current_algorithm": {
-            "psog_pygmo": {
+            "cmaes_pygmo": {
                 "number_of_generations": 10,
                 "size_of_population": 10
             }
@@ -134,23 +134,13 @@
             "force_bounds": false,
             "ftol": 1e-06,
             "memory": false,
-            "number_of_generations": 100,
+            "number_of_generations": 10,
             "number_of_islands": 1,
             "sigma0": 0.5,
-            "size_of_population": 100,
+            "size_of_population": 10,
             "xtol": 1e-06
         },
         "DE1220_PYGMO": {
-            "allowed_variants": [
-                2,
-                3,
-                7,
-                10,
-                13,
-                14,
-                15,
-                16
-            ],
             "ftol": 1e-06,
             "memory": false,
             "number_of_generations": 100,
@@ -305,9 +295,9 @@
             "neighb_param": 4,
             "neighb_type": 2,
             "number_of_cpu": 1,
-            "number_of_generations": 10,
+            "number_of_generations": 100,
             "omega": 0.7298,
-            "size_of_population": 10,
+            "size_of_population": 100,
             "variant": 5
         },
         "PSO_INSPYRED": {
