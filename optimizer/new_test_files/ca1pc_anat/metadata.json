@@ -2,12 +2,12 @@
     "model": "morphology_131117-C2",
     "optimization": {
         "final_fitness": [
-            NaN
+            0.008885622229183895
         ],
         "optimal_params": [
-            10.0,
-            3000.0,
-            0.0006584412998002867
+            1.0,
+            50.443668837456514,
+            0.009851534941918021
         ]
     },
     "parameters": [
@@ -15,46 +15,45 @@
             "name": "cm",
             "min_boundary": "1.0",
             "max_boundary": "10.0",
-            "optimum": "10.0"
+            "optimum": "1.0"
         },
         {
             "name": "Ra",
             "min_boundary": "30.0",
             "max_boundary": "3000.0",
-            "optimum": "3000.0"
+            "optimum": "50.443668837456514"
         },
         {
             "name": "g_pas",
             "min_boundary": "1e-05",
             "max_boundary": "0.01",
-            "optimum": "0.0006584412998002867"
+            "optimum": "0.009851534941918021"
         }
     ],
     "error_function": [
         {
             "name": "MSE",
-            "value": "nan",
+            "value": "0.015571634458367789",
             "weight": "0.5",
-            "weighted_value": "nan"
+            "weighted_value": "0.0077858172291838945"
         },
         {
             "name": "Latency to 1st spike",
-            "value": "1",
+            "value": "0.00219961",
             "weight": "0.5",
-            "weighted_value": "0.5"
+            "weighted_value": "0.001099805"
         }
     ],
     "algorithm": {
-        "CMAES - Cmaes": {
+        "CMAES - pygmo": {
             "number_of_generations": 10,
             "size_of_population": 10,
-            "number_of_cpu": 2,
-            "sigma": 2
+            "force_bounds": true
         }
     },
     "target_data": {
         "data_type": "voltage",
-        "file_name": "131117-C2_short.dat",
+        "file_name": "131117-C2_short_evendt.dat",
         "number_of_traces": 1,
         "stim_delay": 0.0,
         "stim_duration": 1000000000.0,

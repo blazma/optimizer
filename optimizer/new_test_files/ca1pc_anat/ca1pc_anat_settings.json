@@ -19,10 +19,9 @@
             ]
         ],
         "current_algorithm": {
-            "CMAES - Cmaes": {
-                "number_of_cpu": 2,
+            "CMAES - pygmo": {
+                "force_bounds": true,
                 "number_of_generations": 10,
-                "sigma": 2,
                 "size_of_population": 10
             }
         },
@@ -32,7 +31,7 @@
             "Latency to 1st spike"
         ],
         "input_cont_t": true,
-        "input_dir": "/home/mohacsi/Desktop/optimizer/optimizer/new_test_files/ca1pc_anat/131117-C2_short.dat",
+        "input_dir": "/home/mohacsi/Desktop/optimizer/optimizer/new_test_files/ca1pc_anat/131117-C2_short_evendt.dat",
         "input_freq": 20000.0,
         "input_length": 1500.0,
         "input_scale": "mV",
@@ -67,6 +66,7 @@
         "stim_sec": "soma",
         "stim_type": "IClamp",
         "type": [
+            "voltage",
             "voltage"
         ],
         "u_fun_string": "#Please define your function below in the template!\n#You may choose an arbitrary name for your function,\n#but the input parameters must be self and a vector!In the first line of the function specify the length of the vector in a comment!\n#In the second line you may specify the names of the parameters in a comment, separated by spaces.\ndef usr_fun(self,v):\n#3\n#cm\n#Ra\n#g_pas\n\tfor sec in h.allsec():\n\t\tsec.cm=v[0]\n\t\tsec.Ra=v[1]\n\t\tfor seg in sec:\n\t\t\tseg.g_pas=v[2]\n\t\t\tseg.e_pas=0\n",
@@ -88,7 +88,7 @@
             "gtol": 1e-05,
             "interval": 50,
             "maxcor": 10,
-            "maxfun": 15000,
+            "maxfun": 100,
             "maxiter": 10,
             "maxls": 20,
             "niter": 10,
@@ -131,26 +131,16 @@
             "cc": -1,
             "cmu": -1,
             "cs": -1,
-            "force_bounds": false,
+            "force_bounds": true,
             "ftol": 1e-06,
             "memory": false,
-            "number_of_generations": 100,
+            "number_of_generations": 10,
             "number_of_islands": 1,
             "sigma0": 0.5,
-            "size_of_population": 100,
+            "size_of_population": 10,
             "xtol": 1e-06
         },
         "DE1220_PYGMO": {
-            "allowed_variants": [
-                2,
-                3,
-                7,
-                10,
-                13,
-                14,
-                15,
-                16
-            ],
             "ftol": 1e-06,
             "memory": false,
             "number_of_generations": 100,
@@ -249,7 +239,7 @@
         "NM_SCIPY": {
             "adaptive": false,
             "fatol": 0.0001,
-            "number_of_generations": 100,
+            "maxfev": 100,
             "size_of_population": 100,
             "xatol": 0.0001
         },
