@@ -1,4 +1,4 @@
-from fitnessFunctions import fF,frange
+from fitnessFunctions import fF_Factory,frange
 from optionHandler import optionHandler
 import sys
 import logging
@@ -109,7 +109,7 @@ class SINGLERUN():
 	An abstract base class to implement a single evaluation process.
 	"""
 	def __init__(self, reader_obj, option_obj):
-		self.fit_obj = fF(reader_obj,  option_obj)
+		self.fit_obj = fF_Factory.create(reader_obj,  option_obj)
 		self.SetFFun(option_obj)
 		self.directory = option_obj.base_dir
 		self.num_params = option_obj.num_params
@@ -137,14 +137,14 @@ class baseOptimizer():
 	An abstract base class to implement the base of an optimization process.
 	"""
 	def __init__(self, reader_obj,  option_obj):
-		self.fit_obj = fF(reader_obj,  option_obj)
+		self.fit_obj = fF_Factory.create(reader_obj,  option_obj)
 		self.SetFFun(option_obj)
 		self.rand = random
 		self.seed = int(option_obj.seed)
 		self.rand.seed(self.seed)
 		self.directory = option_obj.base_dir
 		self.num_params = option_obj.num_params
-		if option_obj.type[-1]!= "features":
+		if option_obj.type[-1]!= "features" and option_obj.type[-1]!="hippounit":
 			self.number_of_traces = reader_obj.number_of_traces()
 		else:
 			self.number_of_traces = len(reader_obj.features_data["stim_amp"])
@@ -814,7 +814,7 @@ class grid(baseOptimizer):
 
 	"""
 	def __init__(self,reader_obj,option_obj,resolution):
-		self.fit_obj=fF(reader_obj,option_obj)
+		self.fit_obj=fF_Factory.create(reader_obj,  option_obj)
 		self.SetFFun(option_obj)
 		self.num_params=option_obj.num_params
 		self.num_points_per_dim=resolution

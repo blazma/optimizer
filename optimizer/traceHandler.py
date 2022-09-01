@@ -247,7 +247,7 @@ class DATA():
             i+=1
         if trace_type=="spike":
             self.additional_data=self.spikeTimeReader(path, no_traces, scale, t_length, freq, trace_type)
-        elif trace_type=="features":
+        elif trace_type=="features" or trace_type=="hippounit":
             self.features_data=self.abstractDataReader(path)
         else:
             self.data=self.detect_format(tmp[4])(path,no_traces,scale,t_length,freq,trace_type)

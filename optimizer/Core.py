@@ -156,6 +156,8 @@ class coreModul():
 		if self.option_handler.GetSimParam()[0]=="Neuron":
 			self.option_handler.SetModelOptions(args.get("model"))
 			self.model_handler=modelHandlerNeuron(self.option_handler.model_path,self.option_handler.model_spec_dir,self.option_handler.base_dir)
+		elif self.option_handler.GetSimParam()[0] == "hippounit":
+			self.model_handler = modelHandlerHippounit(self.option_handler)
 		else:
 			self.model_handler=externalHandler(self.option_handler.GetSimParam()[1])
 			self.model_handler.SetNParams(self.option_handler)
@@ -347,7 +349,7 @@ class coreModul():
 			#tmp.append(args.get("starting_points"))
 			self.option_handler.SetOptimizerOptions(tmp)
 
-		if self.option_handler.type[-1]!='features':
+		if self.option_handler.type[-1]!='features' and self.option_handler.type[-1]!='hippounit':
 			if self.option_handler.run_controll_dt<self.data_handler.data.step:
 				print("re-sampling because integration step is smaller then data step")
 				print((self.option_handler.run_controll_dt,self.data_handler.data.step))
@@ -376,7 +378,7 @@ class coreModul():
 
 		exec("self.optimizer="+self.option_handler.algorithm_name+"(self.data_handler,self.option_handler)")
 
-		if self.option_handler.type[-1]!= 'features':
+		if self.option_handler.type[-1]!= 'features' and self.option_handler.type[-1]!='hippounit':
 			self.option_handler.feat_str=", ".join([self.ffun_mapper[x.__name__] for x in self.option_handler.feats])
 		else:
 			self.option_handler.feat_str=", ".join(self.option_handler.feats)
@@ -435,10 +437,13 @@ class coreModul():
 		A report of the results is generated in the form of a html document.
 		:param args: currently not in use
 		"""
+		if self.option_handler.type[-1] == 'hippounit':
+			self.optimizer.fit_obj.is_figures_saved = True
+
 		self.best_fit=self.optimizer.fit_obj.single_objective_fitness([self.optimizer.fit_obj.normalize(self.optimal_params)],delete_model=False)
 		self.final_result=[]
 		self.error_comps=[]
-		if self.option_handler.type[-1]!= 'features':
+		if self.option_handler.type[-1]!= 'features' and self.option_handler.type[-1]!= 'hippounit':
 			k_range=self.data_handler.number_of_traces()
 		else:
 			k_range=len(self.data_handler.features_data["stim_amp"])
@@ -483,7 +488,7 @@ class coreModul():
 		tmp_list=[]
 		for t in self.error_comps:
 			for c in t:
-				if self.option_handler.type[-1]!='features':
+				if self.option_handler.type[-1]!='features' and self.option_handler.type[-1]!= 'hippounit':
 				#tmp_str.append( "*".join([str(c[0]),c[1].__name__]))
 					tmp_list.append([self.ffun_mapper[c[1].__name__],
 										str(c[2]),
@@ -507,7 +512,7 @@ class coreModul():
 				tmp[1]+=c[t_idx][2]
 				tmp[2]=c[t_idx][0]
 				tmp[3]+=c[t_idx][2]*c[t_idx][0]
-			if self.option_handler.type[-1]!='features':
+			if self.option_handler.type[-1]!='features' and self.option_handler.type[-1]!= 'hippounit':
 				tmp[0]=self.ffun_mapper[c[t_idx][1].__name__]
 			else:
 				tmp[0]=(c[t_idx][1])
@@ -526,7 +531,7 @@ class coreModul():
 			"stim_duration":self.option_handler.stim_dur}
 		json_var = {"model":self.name,"optimization":opt_dict,"parameters":param_dict,"error_function":error_dict, "algorithm":alg_dict,"target_data":target_dict}
 		
-		if self.option_handler.type[-1]=='features':
+		if self.option_handler.type[-1]=='features' or self.option_handler.type[-1]=='hippounit':
 			with open(self.option_handler.input_dir, 'r') as outfile:
 				input_features=json.load(outfile)
 				amp_dict={amp_vals:[] for amp_vals in input_features["stimuli"]["amplitudes"]}

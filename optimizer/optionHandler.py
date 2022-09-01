@@ -139,17 +139,18 @@ class optionHandler(object):
 		self.feats=[]
 		self.feat_str=[]
 		self.weights=[]
+		self.hippounit_settings_path=None
+
 		post=dir(self)
 		self.class_content=list(OrderedSet(post)-OrderedSet(prev))
 			
 		self.algorithm_parameters_dict=json.load(open(os.path.dirname(os.path.abspath(__file__))+"/algorithm_parameters.json", "r"))
 
-
 	def CreateDictForJson(self,f_mapper):
 		json_dict={}
 		for m in self.class_content:
 			if m=="feats":
-				if self.type[-1]!='features':
+				if self.type[-1]!='features' and self.type[-1]!='hippounit':
 					json_dict[m]=[f_mapper[x.__name__] for x in self.__getattribute__(m)]
 				else:
 					json_dict[m]=self.feats
@@ -157,7 +158,6 @@ class optionHandler(object):
 				json_dict[m]=self.__getattribute__(m)
 		
 		return {"selectable_algorithms":self.algorithm_parameters_dict,"attributes":json_dict}
-
 
 	def ReadJson(self,settings):
 		for key, value in settings.items():
@@ -170,8 +170,6 @@ class optionHandler(object):
 			self.algorithm_parameters=self.algorithm_parameters_dict[self.algorithm_name]
 			self.algorithm_parameters.update(list(self.current_algorithm.values())[0])
 			print(self.algorithm_parameters)
-		
-
 
 	# returns the current settings of the current working directory (referred as base in modelHandler, used in traceReader )
 	def GetFileOption(self):

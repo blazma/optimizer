@@ -14,6 +14,9 @@ import time
 import random
 import threading
 import matplotlib.pyplot as plt
+import json
+import collections
+import traceback
 
 try:
     import copyreg
@@ -91,6 +94,16 @@ class spike(spike_frame):
     def __init(self, start, start_val, peak, peak_val, stop, stop_val, spike):
         spike_frame.__init__(self, start, start_val, peak, peak_val, stop, stop_val)
         self.s = spike#vector, with the spike in it
+
+
+class fF_Factory:
+    @classmethod
+    def create(cls, reader_object, option_object):
+        if option_object.type[-1] == "hippounit":
+            return fF_HippoUnit(reader_object, option_object)
+        else:
+            return fF(reader_object, option_object)
+
 
 class fF(object):
     """
@@ -1051,7 +1064,7 @@ class fF(object):
             add_data = None
         args = {}
         args["add_data"] = add_data
-        if (self.option.type[-1]!='features'):
+        if self.option.type[-1]!='features' and self.option.type[-1]!='hippounit':
             for f, w in zip(features, weigths):
                 fit_list.append([w, f, (f(model_output, self.reader.data.GetTrace(index_of_trace), args))])
         else:
@@ -1157,3 +1170,33 @@ class fF(object):
                 del self.model
         return self.fitnes
 
+class fF_HippoUnit(fF):
+    def __init__(self, reader_object, option_object):
+        super().__init__(reader_object, option_object)
+        self.model_trace = []
+        self.is_figures_saved = False
+
+    def single_objective_fitness(self, candidates, args={}, delete_model=True):
+        os.chdir(self.option.base_dir)
+        self.fitnes = []
+
+        self.model=modelHandler.modelHandlerHippounit(self.option)
+        candidate_renormalized = self.ReNormalize(candidates[0])
+        self.model.model.set_candidate(candidate_renormalized)
+
+        from hippounit import tests
+        test = tests.SomaticFeaturesTest(observation=self.model.observation, config=self.model.config, force_run=True, show_plot=False,
+                                         save_all=self.is_figures_saved, base_directory=self.model.output_directory, serialized=True)
+        test.specify_data_set = 'UCL_data'
+        test.npool = 1
+
+        try:
+            error = self.model.run(test)
+            self.fitnes.append(error)
+            self.model_trace = self.model.record
+        except Exception as e:
+            print('Model: ' + self.model.model.name + ' could not be run')
+            traceback.print_stack()
+            pass
+
+        return self.fitnes

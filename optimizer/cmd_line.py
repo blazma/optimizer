@@ -46,11 +46,11 @@ def main(fname, param=None):
     core.ThirdStep(kwargs)
     core.FourthStep()
     print("resulting parameters: ", core.optimal_params)
-    fig = figure(1, figsize=(7, 6))
+    fig = figure(figsize=(7, 6))
     axes = fig.add_subplot(111)
     exp_data = []
     model_data = []
-    if core.option_handler.type[-1] != 'features':
+    if core.option_handler.type[-1] != 'features' and core.option_handler.type[-1] != 'hippounit':
         for n in range(core.data_handler.number_of_traces()):
             exp_data.extend(core.data_handler.data.GetTrace(n))
             model_data.extend(core.final_result[n])
@@ -59,7 +59,7 @@ def main(fname, param=None):
         for n in range(len(core.data_handler.features_data["stim_amp"])):
             model_data.extend(core.final_result[n])
         no_traces = len(core.data_handler.features_data["stim_amp"])
-    if core.option_handler.type[-1]  != 'features':
+    if core.option_handler.type[-1]  != 'features' and core.option_handler.type[-1] != 'hippounit':
         t = int(ceil(core.option_handler.input_length))
     else:
         t = int(ceil(core.option_handler.run_controll_tstop))
@@ -69,12 +69,12 @@ def main(fname, param=None):
 
     
     axes.set_xlabel("time [ms]")
-    if core.option_handler.type[-1]!= 'features':
+    if core.option_handler.type[-1]!= 'features' and core.option_handler.type[-1] != 'hippounit':
         _type = core.data_handler.data.type
     else:
         _type = "Voltage" if core.option_handler.run_controll_record =="v" else "Current" if core.option_handler.run_controll_record == "c" else ""
     axes.set_ylabel(_type + " [" + core.option_handler.input_scale + "]")
-    if core.option_handler.type[-1]!= 'features':
+    if core.option_handler.type[-1]!= 'features' and core.option_handler.type[-1] != 'hippounit':
         axes.plot(list(range(0, len(exp_data))), exp_data)
         axes.plot(list(range(0, len(model_data))), model_data, 'r')
         axes.legend(["target", "model"])
