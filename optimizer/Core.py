@@ -159,7 +159,7 @@ class coreModul():
 			self.option_handler.SetModelOptions(args.get("model"))
 			self.model_handler=modelHandlerNeuron(self.option_handler.model_path,self.option_handler.model_spec_dir,self.option_handler.base_dir)
 		elif self.option_handler.GetSimParam()[0] == "hippounit":
-			self.model_handler = modelHandlerHippounit(self.option_handler)
+			return
 		else:
 			self.model_handler=externalHandler(self.option_handler.GetSimParam()[1])
 			self.model_handler.SetNParams(self.option_handler)
@@ -481,9 +481,10 @@ class coreModul():
 		tmp_str+="<center><p>"+self.htmlStrBold("Fitness: ")
 		tmp_str+=self.htmlStrBold(str(self.best_fit))+"</p></center>\n"
 		if self.option_handler.type[-1] == "hippounit":
-			model_name = self.model_handler.model.name
+			hippounit_settings = self.optimizer.fit_obj.model.settings
+			model_name = hippounit_settings["model"]["name"]
 			test_name = 'somaticfeat'
-			dataset_name = self.model_handler.settings["model"]["dataset"]
+			dataset_name = hippounit_settings["model"]["dataset"]
 			pdf_path = "output/figs/{}_{}/{}/traces.pdf".format(test_name, dataset_name, model_name)
 			tmp_str+=self.htmlPdf(pdf_path)+"\n"
 		else:
