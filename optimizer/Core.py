@@ -112,6 +112,8 @@ class coreModul():
 	def htmlPciture(self,inp):
 		return "<p align=\"center\"><img style=\"border:none;\" src=\""+inp+"\" ></p>"
 
+	def htmlPdf(self, inp):
+		return "<p align=\"center\"><embed src = \""+inp+"#toolbar=0&navpanes=0&scrollbar=0\" width = \"800px\" height = \"630px\" /></p>"
 
 	def Print(self):
 		print([self.option_handler.GetFileOption(),
@@ -136,11 +138,11 @@ class coreModul():
 		self.option_handler.SetFileOptions(args.get("file"))
 		self.option_handler.SetInputOptions(args.get("input"))
 
-		self.data_handler.Read([self.option_handler.input_dir],self.option_handler.input_size,self.option_handler.input_scale,self.option_handler.input_length,self.option_handler.input_freq,self.option_handler.type[-1])
-
-
-		if self.option_handler.type[-1]=='features':
-			self.option_handler.input_size= len(self.data_handler.features_data['stim_amp'])
+		stim_type = self.option_handler.type[-1]
+		if stim_type != "hippounit":
+			self.data_handler.Read([self.option_handler.input_dir],self.option_handler.input_size,self.option_handler.input_scale,self.option_handler.input_length,self.option_handler.input_freq,stim_type)
+			if stim_type == "features":
+				self.option_handler.input_size= len(self.data_handler.features_data['stim_amp'])
 
 	def LoadModel(self,args):
 		"""
@@ -378,7 +380,9 @@ class coreModul():
 
 		exec("self.optimizer="+self.option_handler.algorithm_name+"(self.data_handler,self.option_handler)")
 
-		if self.option_handler.type[-1]!= 'features' and self.option_handler.type[-1]!='hippounit':
+		if self.option_handler.type[-1] == 'hippounit':
+			self.option_handler.feat_str = ""  # TODO
+		elif self.option_handler.type[-1]!= 'features':
 			self.option_handler.feat_str=", ".join([self.ffun_mapper[x.__name__] for x in self.option_handler.feats])
 		else:
 			self.option_handler.feat_str=", ".join(self.option_handler.feats)
@@ -443,7 +447,9 @@ class coreModul():
 		self.best_fit=self.optimizer.fit_obj.single_objective_fitness([self.optimizer.fit_obj.normalize(self.optimal_params)],delete_model=False)
 		self.final_result=[]
 		self.error_comps=[]
-		if self.option_handler.type[-1]!= 'features' and self.option_handler.type[-1]!= 'hippounit':
+		if self.option_handler.type[-1] == 'hippounit':
+			k_range = 0
+		elif self.option_handler.type[-1]!= 'features':
 			k_range=self.data_handler.number_of_traces()
 		else:
 			k_range=len(self.data_handler.features_data["stim_amp"])
@@ -474,7 +480,14 @@ class coreModul():
 		tmp_str+=self.htmlTable(["Parameter Name","Minimum","Maximum","Optimum"], tmp_list)+"\n"
 		tmp_str+="<center><p>"+self.htmlStrBold("Fitness: ")
 		tmp_str+=self.htmlStrBold(str(self.best_fit))+"</p></center>\n"
-		tmp_str+=self.htmlPciture("result_trace.png")+"\n"
+		if self.option_handler.type[-1] == "hippounit":
+			model_name = self.model_handler.model.name
+			test_name = 'somaticfeat'
+			dataset_name = self.model_handler.settings["model"]["dataset"]
+			pdf_path = "output/figs/{}_{}/{}/traces.pdf".format(test_name, dataset_name, model_name)
+			tmp_str+=self.htmlPdf(pdf_path)+"\n"
+		else:
+			tmp_str+=self.htmlPciture("result_trace.png")+"\n"
 		for k in list(self.option_handler.GetOptimizerOptions().keys()):
 			tmp_str+="<p><b>"+k+" =</b> "+str(self.option_handler.GetOptimizerOptions()[k])+"</p>\n"
 		tmp_str+="<p><b>feats =</b> "+self.option_handler.feat_str +"</p>\n"
@@ -530,8 +543,11 @@ class coreModul():
 		target_dict = {"data_type":self.option_handler.type[-1],"file_name":self.option_handler.input_dir.split('/')[-1],"number_of_traces":k_range,"stim_delay":self.option_handler.stim_del,
 			"stim_duration":self.option_handler.stim_dur}
 		json_var = {"model":self.name,"optimization":opt_dict,"parameters":param_dict,"error_function":error_dict, "algorithm":alg_dict,"target_data":target_dict}
-		
-		if self.option_handler.type[-1]=='features' or self.option_handler.type[-1]=='hippounit':
+
+		if self.option_handler.type[-1]=='hippounit':
+			with open('metadata.json', 'w+') as outfile:
+				json.dump(json_var, outfile, indent=4)
+		elif self.option_handler.type[-1]=='features':
 			with open(self.option_handler.input_dir, 'r') as outfile:
 				input_features=json.load(outfile)
 				amp_dict={amp_vals:[] for amp_vals in input_features["stimuli"]["amplitudes"]}

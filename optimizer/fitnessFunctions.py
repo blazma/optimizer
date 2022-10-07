@@ -1175,20 +1175,22 @@ class fF_HippoUnit(fF):
         super().__init__(reader_object, option_object)
         self.model_trace = []
         self.is_figures_saved = False
+        self.model=modelHandler.modelHandlerHippounit(self.option)
 
     def single_objective_fitness(self, candidates, args={}, delete_model=True):
         os.chdir(self.option.base_dir)
         self.fitnes = []
 
-        self.model=modelHandler.modelHandlerHippounit(self.option)
         candidate_renormalized = self.ReNormalize(candidates[0])
         self.model.model.set_candidate(candidate_renormalized)
 
         from hippounit import tests
-        test = tests.SomaticFeaturesTest(observation=self.model.observation, config=self.model.config, force_run=True, show_plot=False,
-                                         save_all=self.is_figures_saved, base_directory=self.model.output_directory, serialized=True)
-        test.specify_data_set = 'UCL_data'
-        test.npool = 1
+        if self.model.settings["model"]["test"] == "SomaticFeaturesTest":
+            test = tests.SomaticFeaturesTest(observation=self.model.observation, config=self.model.config, force_run=True, show_plot=False,
+                                             save_all=self.is_figures_saved, base_directory=self.model.output_directory, serialized=True)
+        else:
+            test = None
+        test.specify_data_set = self.model.settings["model"]["dataset"]
 
         try:
             error = self.model.run(test)

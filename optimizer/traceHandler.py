@@ -247,7 +247,7 @@ class DATA():
             i+=1
         if trace_type=="spike":
             self.additional_data=self.spikeTimeReader(path, no_traces, scale, t_length, freq, trace_type)
-        elif trace_type=="features" or trace_type=="hippounit":
+        elif trace_type=="features":
             self.features_data=self.abstractDataReader(path)
         else:
             self.data=self.detect_format(tmp[4])(path,no_traces,scale,t_length,freq,trace_type)
@@ -447,8 +447,6 @@ class DATA():
             except IOError:
                 sys.exit("Can't open data file at " + my_file + " ! Exiting...")
         return data_dict
-
-
 
 # class to write data to file
 #it receives a trace object and other settings
