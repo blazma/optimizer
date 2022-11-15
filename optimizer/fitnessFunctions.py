@@ -138,10 +138,6 @@ class fF(object):
                         "AHP depth": self.AHP_depth,
                         "AP width": self.AP_width,
                         "Derivative difference" : self.calc_grad_dif}
-        
-        
-
-
 
     def setParameters(self, section, params):
         """
@@ -168,9 +164,6 @@ class fF(object):
         else:
             #cal the user def.ed function
             usr_fun(self, params)
-
-
-
 
     def modelRunner(self, candidates, act_trace_idx):
         """
@@ -1177,28 +1170,80 @@ class fF_HippoUnit(fF):
         self.is_figures_saved = False
         self.model=modelHandler.modelHandlerHippounit(self.option)
 
+    def select_test(self, test_name):
+        from hippounit import tests
+
+        if test_name == "SomaticFeaturesTest":
+            with open(self.model.settings["tests"]["SomaticFeaturesTest"]["target_data_path"], "r") as target_data_file:
+                observation = json.load(target_data_file)
+            with open(self.model.settings["tests"]["SomaticFeaturesTest"]["stimuli_file_path"], "r") as stimuli_file:
+                config = json.load(stimuli_file)
+            return tests.SomaticFeaturesTest(observation=observation, config=config, force_run=True, show_plot=False,
+                                             save_all=self.is_figures_saved, base_directory=self.model.output_directory,
+                                             serialized=True)
+        elif test_name == "DepolarizationBlockTest":
+            with open(self.model.settings["tests"]["DepolarizationBlockTest"]["target_data_path"],
+                      "r") as target_data_file:
+                observation = json.load(target_data_file)
+            return tests.DepolarizationBlockTest(observation=observation, force_run=True,
+                                                 show_plot=False, save_all=self.is_figures_saved,
+                                                 base_directory=self.model.output_directory, serialized=True)
+        elif test_name == "BackpropagatingAPTest":
+            with open(self.model.settings["tests"]["BackpropagatingAPTest"]["target_data_path"], "r") as f:
+                observation = json.load(f, object_pairs_hook=collections.OrderedDict)
+            with open(self.model.settings["tests"]["BackpropagatingAPTest"]["stimuli_file_path"], "r") as f:
+                config = json.load(f, object_pairs_hook=collections.OrderedDict)
+            return tests.BackpropagatingAPTest(config=config, observation=observation, force_run=True,
+                                               force_run_FindCurrentStim=True, show_plot=False,
+                                               save_all=self.is_figures_saved, base_directory=self.model.output_directory,
+                                               serialized=True)
+
     def single_objective_fitness(self, candidates, args={}, delete_model=True):
         os.chdir(self.option.base_dir)
-        self.fitnes = []
 
         candidate_renormalized = self.ReNormalize(candidates[0])
         self.model.model.set_candidate(candidate_renormalized)
 
-        from hippounit import tests
-        if self.model.settings["model"]["test"] == "SomaticFeaturesTest":
-            test = tests.SomaticFeaturesTest(observation=self.model.observation, config=self.model.config, force_run=True, show_plot=False,
-                                             save_all=self.is_figures_saved, base_directory=self.model.output_directory, serialized=True)
-        else:
-            test = None
-        test.specify_data_set = self.model.settings["model"]["dataset"]
+        self.fitnes = []
+        tests_selected = self.model.settings["model"]["tests"]
+        error = 0
+        for idx, test_name in enumerate(tests_selected):
+            test = self.select_test(test_name)
+            test.specify_data_set = self.model.settings["model"]["dataset"]
+            try:
+                score = self.model.run(test)
+                error += self.option.weights[idx] * score
+                self.model_trace = self.model.record
+            except Exception as e:
+                print('Model: ' + self.model.model.name + ' could not be run')
+                traceback.print_stack()
 
-        try:
-            error = self.model.run(test)
-            self.fitnes.append(error)
-            self.model_trace = self.model.record
-        except Exception as e:
-            print('Model: ' + self.model.model.name + ' could not be run')
-            traceback.print_stack()
-            pass
+        self.fitnes.append(error)
+        return self.fitnes
 
+    def multi_objective_fitness(self, candidates, args={}, delete_model=True):
+        os.chdir(self.option.base_dir)
+
+        candidate_renormalized = self.ReNormalize(candidates[0])
+        self.model.model.set_candidate(candidate_renormalized)
+
+        self.fitnes = []
+        temp_fit = []
+
+        tests_selected = self.model.settings["model"]["tests"]
+        for test_name in tests_selected:
+            test = self.select_test(test_name)
+            test.specify_data_set = self.model.settings["model"]["dataset"]
+
+            print("Running {test} on {model}".format(test=test, model=self.model.model.name))
+            try:
+                error = self.model.run(test)
+                temp_fit.append(error)
+                self.model_trace = self.model.record
+            except Exception as e:
+                print('Model: ' + self.model.model.name + ' could not be run')
+                print(e)
+                traceback.print_stack()
+
+        self.fitnes.append(temp_fit)
         return self.fitnes

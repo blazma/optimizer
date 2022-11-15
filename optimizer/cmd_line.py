@@ -22,7 +22,7 @@ def main(fname, param=None):
     """
     try:
         with open(fname, "r") as f:
-            json_data = json.load(f)
+             json_data = json.load(f)
     except IOError as ioe:
         print(ioe)
         sys.exit("File not found!\n")

@@ -472,7 +472,7 @@ class modelHandlerHippounit:
         # load observations and stimuli json
         self.observation = {}
         self.config = {}
-        self.load_target_and_stimuli()
+        #self.load_target_and_stimuli()
 
     def load_settings(self):
         with open(self.option.hippounit_settings_path) as settings_file:
@@ -486,7 +486,8 @@ class modelHandlerHippounit:
         self.model.soma = self.settings["model"]["soma"]
         self.model.v_init = self.settings["model"]["v_init"]
         self.model.celsius = self.settings["model"]["celsius"]
-        self.model.cvode_active = True
+        self.model.TrunkSecList_name = self.settings["model"]["TrunkSecList_name"]
+        self.model.cvode_active = False
 
     def load_target_and_stimuli(self):
         target_data_path = self.settings["model"]["target_data_path"]
@@ -499,18 +500,4 @@ class modelHandlerHippounit:
     def run(self, test):
         score = test.judge(self.model)
         score.summarize()
-
-        traces_results = test.SomaFeaturesDict["traces_results"]
-        for current_trace_dict in traces_results:
-            current, trace = list(current_trace_dict.items())[0]
-            t, v = trace
-            self.record.append(list(v))
-
-        """
-        f = scipy.interpolate.interp1d(t, v)
-        no_traces = len(traces_results)
-        t = int(numpy.ceil(self.option.run_controll_tstop))
-        step = self.option.run_controll_dt
-        """
-
         return score.norm_score

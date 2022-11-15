@@ -277,7 +277,9 @@ class PygmoAlgorithmBasis(baseOptimizer):
 		self.pg.set_global_rng_seed(seed = self.seed)
 		self.boundaries = [[0]*len(option_obj.boundaries[0]),[1]*len(option_obj.boundaries[1])]
 		self.base_dir = option_obj.base_dir
-		if self.option_obj.type[-1]!="features":
+		if self.option_obj.type[-1]=="hippounit":
+			self.number_of_traces=1 # TODO: this is fake
+		elif self.option_obj.type[-1]!="features":
 			self.number_of_traces=reader_obj.number_of_traces()
 		else:
 			self.number_of_traces=len(reader_obj.features_data["stim_amp"])

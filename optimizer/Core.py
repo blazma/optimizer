@@ -139,7 +139,9 @@ class coreModul():
 		self.option_handler.SetInputOptions(args.get("input"))
 
 		stim_type = self.option_handler.type[-1]
-		if stim_type != "hippounit":
+		if stim_type == "hippounit":
+			self.option_handler.SetSimParam(["hippounit", []])
+		else:
 			self.data_handler.Read([self.option_handler.input_dir],self.option_handler.input_size,self.option_handler.input_scale,self.option_handler.input_length,self.option_handler.input_freq,stim_type)
 			if stim_type == "features":
 				self.option_handler.input_size= len(self.data_handler.features_data['stim_amp'])
