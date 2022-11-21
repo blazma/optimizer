@@ -1197,6 +1197,17 @@ class fF_HippoUnit(fF):
                                                force_run_FindCurrentStim=True, show_plot=False,
                                                save_all=self.is_figures_saved, base_directory=self.model.output_directory,
                                                serialized=True)
+        elif test_name == "PSPAttenuationTest":
+            with open(self.model.settings["tests"]["PSPAttenuationTest"]["target_data_path"], "r") as f:
+                observation = json.load(f, object_pairs_hook=collections.OrderedDict)
+            with open(self.model.settings["tests"]["PSPAttenuationTest"]["stimuli_file_path"], "r") as f:
+                config = json.load(f, object_pairs_hook=collections.OrderedDict)
+            num_of_dend_locations = self.model.settings["tests"]["PSPAttenuationTest"]["num_of_dend_locations"]
+            #trunk_origin = self.model.settings["tests"]["PSPAttenuationTest"]["trunk_origin"]
+            self.model.model.SecList = self.model.model.TrunkSecList_name
+            return tests.PSPAttenuationTest(config=config, observation=observation, num_of_dend_locations=num_of_dend_locations,
+                                            force_run=True, show_plot=False, save_all=self.is_figures_saved,
+                                            base_directory=self.model.output_directory, serialized=True)
 
     def single_objective_fitness(self, candidates, args={}, delete_model=True):
         os.chdir(self.option.base_dir)
