@@ -1163,12 +1163,15 @@ class fF(object):
                 del self.model
         return self.fitnes
 
+
 class fF_HippoUnit(fF):
     def __init__(self, reader_object, option_object):
         super().__init__(reader_object, option_object)
         self.model_trace = []
         self.is_figures_saved = False
         self.model=modelHandler.modelHandlerHippounit(self.option)
+        self.tests_selected = self.model.settings["model"]["tests"]
+        self.tests_fitness = {}
 
     def select_test(self, test_name):
         from hippounit import tests
@@ -1208,6 +1211,12 @@ class fF_HippoUnit(fF):
             return tests.PSPAttenuationTest(config=config, observation=observation, num_of_dend_locations=num_of_dend_locations,
                                             force_run=True, show_plot=False, save_all=self.is_figures_saved,
                                             base_directory=self.model.output_directory, serialized=True)
+        elif test_name == "ObliqueIntegrationTest":
+            with open(self.model.settings["tests"]["ObliqueIntegrationTest"]["target_data_path"], "r") as f:
+                observation = json.load(f, object_pairs_hook=collections.OrderedDict)
+            return tests.ObliqueIntegrationTest(observation=observation, save_all=self.is_figures_saved,
+                                                force_run_synapse=True, force_run_bin_search=True, show_plot=False,
+                                                base_directory=self.model.output_directory, serialized=True)
 
     def single_objective_fitness(self, candidates, args={}, delete_model=True):
         os.chdir(self.option.base_dir)
@@ -1216,15 +1225,14 @@ class fF_HippoUnit(fF):
         self.model.model.set_candidate(candidate_renormalized)
 
         self.fitnes = []
-        tests_selected = self.model.settings["model"]["tests"]
         error = 0
-        for idx, test_name in enumerate(tests_selected):
+        for idx, test_name in enumerate(self.tests_selected):
             test = self.select_test(test_name)
             test.specify_data_set = self.model.settings["model"]["dataset"]
             try:
                 score = self.model.run(test)
                 error += self.option.weights[idx] * score
-                self.model_trace = self.model.record
+                self.tests_fitness[test_name] = score
             except Exception as e:
                 print('Model: ' + self.model.model.name + ' could not be run')
                 traceback.print_stack()
@@ -1258,3 +1266,12 @@ class fF_HippoUnit(fF):
 
         self.fitnes.append(temp_fit)
         return self.fitnes
+
+    def getTestErrorComponents(self):
+        fit_list = []
+        for i in range(len(self.tests_selected)):
+            f = self.tests_selected[i]
+            w = self.option.weights[i]
+            e = self.tests_fitness[f]
+            fit_list.append([w, f, e])
+        return fit_list

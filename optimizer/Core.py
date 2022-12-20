@@ -450,20 +450,22 @@ class coreModul():
 		self.final_result=[]
 		self.error_comps=[]
 		if self.option_handler.type[-1] == 'hippounit':
-			k_range = 0
-		elif self.option_handler.type[-1]!= 'features':
-			k_range=self.data_handler.number_of_traces()
+			k_range = 1
+			self.error_comps.append(self.optimizer.fit_obj.getTestErrorComponents())
 		else:
-			k_range=len(self.data_handler.features_data["stim_amp"])
-			
-		for k in range(k_range):
-			self.error_comps.append(self.optimizer.fit_obj.getErrorComponents(k, self.optimizer.fit_obj.model_trace[k]))
-			trace_handler=open("result_trace"+str(k)+".txt","w+")
-			for l in self.optimizer.fit_obj.model_trace[k]:
-				trace_handler.write(str(l))
-				trace_handler.write("\n")
-			trace_handler.close()
-			self.final_result.append(self.optimizer.fit_obj.model_trace[k])
+			if self.option_handler.type[-1]!= 'features':
+				k_range=self.data_handler.number_of_traces()
+			else:
+				k_range=len(self.data_handler.features_data["stim_amp"])
+
+			for k in range(k_range):
+				self.error_comps.append(self.optimizer.fit_obj.getErrorComponents(k, self.optimizer.fit_obj.model_trace[k]))
+				trace_handler=open("result_trace"+str(k)+".txt","w+")
+				for l in self.optimizer.fit_obj.model_trace[k]:
+					trace_handler.write(str(l))
+					trace_handler.write("\n")
+				trace_handler.close()
+				self.final_result.append(self.optimizer.fit_obj.model_trace[k])
 
 		if isinstance(self.optimizer.fit_obj.model, externalHandler):
 			self.optimizer.fit_obj.model.record[0]=[]
